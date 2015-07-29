@@ -205,10 +205,6 @@ void copy_block(buf, len, header)
     bits_sent += (off_t)len<<3;
 #endif
     while (len--) {
-#ifdef CRYPT
-        int t;
-        if (key) zencode(*buf, t);
-#endif
         put_byte(*buf++);
     }
 }

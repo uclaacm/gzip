@@ -219,13 +219,7 @@ static ush mask_bits[] = {
 
 #define GETBYTE() (inptr < insize ? inbuf[inptr++] : (wp = w, fill_inbuf(0)))
 
-#ifdef CRYPT
-  uch cc;
-#  define NEXTBYTE() \
-     (decrypt ? (cc = GETBYTE(), zdecode(cc), cc) : GETBYTE())
-#else
-#  define NEXTBYTE()  (uch)GETBYTE()
-#endif
+#define NEXTBYTE()  (uch)GETBYTE()
 #define NEEDBITS(n) {while(k<(n)){b|=((ulg)NEXTBYTE())<<k;k+=8;}}
 #define DUMPBITS(n) {b>>=(n);k-=(n);}
 
