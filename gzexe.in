@@ -13,7 +13,8 @@
 # On Ultrix, /bin/sh is too buggy, change the first line to: #!/bin/sh5
 
 
-# Copyright (C) 1998, 2002, 2004, 2006, 2007 Free Software Foundation
+# Copyright (C) 1998, 2002, 2004, 2006-2007, 2010-2015 Free Software
+# Foundation, Inc.
 # Copyright (C) 1993 Jean-loup Gailly
 
 # This program is free software; you can redistribute it and/or modify
