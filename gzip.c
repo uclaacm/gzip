@@ -65,6 +65,7 @@ static char const *const license_msg[] = {
 #include "closein.h"
 #include "tailor.h"
 #include "gzip.h"
+#include "intprops.h"
 #include "lzw.h"
 #include "revision.h"
 #include "timespec.h"
@@ -114,12 +115,8 @@ static char const *const license_msg[] = {
   off_t lseek (int fd, off_t offset, int whence);
 #endif
 
-#ifndef OFF_T_MIN
-#define OFF_T_MIN (~ (off_t) 0 << (sizeof (off_t) * CHAR_BIT - 1))
-#endif
-
 #ifndef OFF_T_MAX
-#define OFF_T_MAX (~ (off_t) 0 - OFF_T_MIN)
+# define OFF_T_MAX TYPE_MAXIMUM (off_t)
 #endif
 
 /* Use SA_NOCLDSTOP as a proxy for whether the sigaction machinery is
