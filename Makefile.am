@@ -108,16 +108,19 @@ gen-ChangeLog:
 FILES_TO_CHECK = $(bin_SCRIPTS) \
   $(top_srcdir)/ChangeLog $(top_srcdir)/configure $(top_srcdir)/gzip.c
 check-local: $(FILES_TO_CHECK) $(bin_PROGRAMS) gzip.doc.gz
-	{ test '$(srcdir)' != . || ./zdiff --__bindir . -c gzip.doc.gz; }
-	./zdiff --__bindir . -c $(srcdir)/gzip.doc $(srcdir)/gzip.doc
-	./zdiff --__bindir . $(srcdir)/gzip.doc gzip.doc.gz
-	./zdiff --__bindir . -c - $(srcdir)/gzip.doc <gzip.doc.gz
-	./zdiff --__bindir . -c gzip.doc.gz gzip.doc.gz
-	./zgrep --__bindir . -iV >/dev/null
-	for file in $(FILES_TO_CHECK); do \
-	  ./gzip -cv -- "$$file" | ./gzip -d | cmp - "$$file" || exit 1; \
+	$(AM_V_GEN){ test '$(srcdir)' != . \
+		       || ./zdiff --__bindir . -c gzip.doc.gz; }
+	$(AM_V_at)./zdiff --__bindir . -c $(srcdir)/gzip.doc $(srcdir)/gzip.doc
+	$(AM_V_at)./zdiff --__bindir . $(srcdir)/gzip.doc gzip.doc.gz
+	$(AM_V_at)./zdiff --__bindir . -c - $(srcdir)/gzip.doc <gzip.doc.gz
+	$(AM_V_at)./zdiff --__bindir . -c gzip.doc.gz gzip.doc.gz
+	$(AM_V_at)./zgrep --__bindir . -iV >/dev/null
+	$(AM_V_at)for opt in --rsyncable '' -1 -9; do	\
+          for file in $(FILES_TO_CHECK); do		\
+            ./gzip $$opt -c -- "$$file"			\
+              | ./gzip -d | cmp - "$$file" || exit 1;	\
+          done;						\
 	done
-	@echo 'Test succeeded.'
 
 install-exec-hook: remove-installed-links
 install-exec-hook remove-installed-links:

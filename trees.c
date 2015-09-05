@@ -856,9 +856,10 @@ local void send_all_trees(lcodes, dcodes, blcodes)
  * trees or store, and output the encoded block to the zip file. This function
  * returns the total compressed length for the file so far.
  */
-off_t flush_block(buf, stored_len, eof)
+off_t flush_block(buf, stored_len, pad, eof)
     char *buf;        /* input block, or NULL if too old */
     ulg stored_len;   /* length of input block */
+    int pad;          /* pad output to byte boundary */
     int eof;          /* true if this is the last block for a file */
 {
     ulg opt_lenb, static_lenb; /* opt_len and static_len in bytes */
@@ -951,6 +952,10 @@ off_t flush_block(buf, stored_len, eof)
         Assert (input_len == bytes_in, "bad input size");
         bi_windup();
         compressed_len += 7;  /* align on byte boundary */
+    } else if (pad && (compressed_len % 8) != 0) {
+        send_bits((STORED_BLOCK<<1)+eof, 3);  /* send block type */
+        compressed_len = (compressed_len + 3 + 7) & ~7L;
+        copy_block(buf, 0, 1); /* with header */
     }
 
     return compressed_len >> 3;

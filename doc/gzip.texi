@@ -360,6 +360,13 @@ specified on the command line are directories, @command{gzip} will descend
 into the directory and compress all the files it finds there (or
 decompress them in the case of @command{gunzip}).
 
+@item --rsyncable
+Cater better to the @command{rsync} program by periodically resetting
+the internal structure of the compressed data stream.  This lets the
+@code{rsync} program take advantage of similarities in the uncompressed
+input when synchronizing two files compressed with this flag.  The cost:
+the compressed output is usually about one percent larger.
+
 @item --suffix @var{suf}
 @itemx -S @var{suf}
 Use suffix @var{suf} instead of @samp{.gz}.  Any suffix can be

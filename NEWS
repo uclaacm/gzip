@@ -16,6 +16,14 @@ GNU gzip NEWS                                    -*- outline -*-
   this option makes gzip safer in the presence of system crashes, it
   can make gzip considerably slower.
 
+  gzip now accepts the --rsyncable option. This option is accepted in
+  all modes, but has effect only when compressing: it makes the resulting
+  output more amenable to efficient use of rsync.  For example, when a
+  large input file gets a small change, a gzip --rsyncable image of
+  that file will remain largely unchanged, too.  Without --rsyncable,
+  even a tiny change in the input could result in a totally different
+  gzip-compressed output file.
+
 ** Bug fixes
 
   gzip -k -v no longer reports that files are replaced.

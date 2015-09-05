@@ -140,6 +140,7 @@ EXTERN(uch, window);         /* Sliding window and suffix table (unlzw) */
 extern unsigned insize; /* valid bytes in inbuf */
 extern unsigned inptr;  /* index of next byte to be processed in inbuf */
 extern unsigned outcnt; /* bytes in output buffer */
+extern int rsync;  /* deflate into rsyncable chunks */
 
 extern off_t bytes_in;   /* number of input bytes */
 extern off_t bytes_out;  /* number of output bytes */
@@ -287,7 +288,7 @@ extern off_t deflate (void);
         /* in trees.c */
 extern void ct_init     (ush *attr, int *method);
 extern int  ct_tally    (int dist, int lc);
-extern off_t flush_block (char *buf, ulg stored_len, int eof);
+extern off_t flush_block (char *buf, ulg stored_len, int pad, int eof);
 
         /* in bits.c */
 extern void     bi_init    (file_t zipfile);

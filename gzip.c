@@ -220,6 +220,7 @@ static int dfd = -1;       /* output directory file descriptor */
 unsigned insize;           /* valid bytes in inbuf */
 unsigned inptr;            /* index of next byte to be processed in inbuf */
 unsigned outcnt;           /* bytes in output buffer */
+int rsync = 0;             /* make ryncable chunks */
 
 static int handled_sig[] =
   {
@@ -248,6 +249,7 @@ static int handled_sig[] =
 enum
 {
   PRESUME_INPUT_TTY_OPTION = CHAR_MAX + 1,
+  RSYNCABLE_OPTION,
   SYNCHRONOUS_OPTION,
 
   /* A value greater than all valid long options, used as a flag to
@@ -288,7 +290,7 @@ static const struct option longopts[] =
     {"best",       0, 0, '9'}, /* compress better */
     {"lzw",        0, 0, 'Z'}, /* make output compatible with old compress */
     {"bits",       1, 0, 'b'}, /* max number of bits per code (implies -Z) */
-
+    {"rsyncable",  0, 0, RSYNCABLE_OPTION}, /* make rsync-friendly archive */
     { 0, 0, 0, 0 }
 };
 
@@ -373,6 +375,7 @@ local void help()
  "  -Z, --lzw         produce output compatible with old compress",
  "  -b, --bits=BITS   max number of bits per code (implies -Z)",
 #endif
+ "      --rsyncable   Make rsync-friendly archive",
  "",
  "With no FILE, or when FILE is -, read standard input.",
  "",
@@ -554,6 +557,10 @@ int main (int argc, char **argv)
 #else
             recursive = 1;
 #endif
+            break;
+
+        case RSYNCABLE_OPTION:
+            rsync = 1;
             break;
         case 'S':
 #ifdef NO_MULTIPLE_DOTS

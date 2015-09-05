@@ -80,6 +80,7 @@
 #include "tailor.h"
 #include "gzip.h"
 #include "lzw.h" /* just for consistency checking */
+#include "verify.h"
 
 /* ===========================================================================
  * Configuration parameters
@@ -130,6 +131,14 @@
 #  define TOO_FAR 4096
 #endif
 /* Matches of length 3 are discarded if their distance exceeds TOO_FAR */
+
+#ifndef RSYNC_WIN
+#  define RSYNC_WIN 4096
+#endif
+verify(RSYNC_WIN < MAX_DIST);
+
+#define RSYNC_SUM_MATCH(sum) ((sum) % RSYNC_WIN == 0)
+/* Whether window sum matches magic value */
 
 /* ===========================================================================
  * Local data used by the "longest match" routines.
@@ -212,6 +221,8 @@ local int compr_level;
 unsigned good_match;
 /* Use a faster search when the previous match is longer than this */
 
+local ulg rsync_sum;  /* rolling sum of rsync window */
+local ulg rsync_chunk_end; /* next rsync sequence point */
 
 /* Values for max_lazy_match, good_match and max_chain_length, depending on
  * the desired pack level (0..9). The values given below have been tuned to
@@ -313,6 +324,10 @@ void lm_init (pack_level, flags)
     memzero((char*)head, HASH_SIZE*sizeof(*head));
 #endif
     /* prev will be initialized on the fly */
+
+    /* rsync params */
+    rsync_chunk_end = 0xFFFFFFFFUL;
+    rsync_sum = 0;
 
     /* Set the default configuration parameters:
      */
@@ -550,6 +565,8 @@ local void fill_window()
         memcpy((char*)window, (char*)window+WSIZE, (unsigned)WSIZE);
         match_start -= WSIZE;
         strstart    -= WSIZE; /* we now have strstart >= MAX_DIST: */
+        if (rsync_chunk_end != 0xFFFFFFFFUL)
+            rsync_chunk_end -= WSIZE;
 
         block_start -= (long) WSIZE;
 
@@ -579,13 +596,47 @@ local void fill_window()
     }
 }
 
+/* With an initial offset of START, advance rsync's rolling checksum
+   by NUM bytes.  */
+local void rsync_roll(unsigned int start, unsigned int num)
+{
+    unsigned i;
+
+    if (start < RSYNC_WIN) {
+        /* before window fills. */
+        for (i = start; i < RSYNC_WIN; i++) {
+            if (i == start + num)
+                return;
+            rsync_sum += (ulg)window[i];
+        }
+        num -= (RSYNC_WIN - start);
+        start = RSYNC_WIN;
+    }
+
+    /* buffer after window full */
+    for (i = start; i < start+num; i++) {
+        /* New character in */
+        rsync_sum += (ulg)window[i];
+        /* Old character out */
+        rsync_sum -= (ulg)window[i - RSYNC_WIN];
+        if (rsync_chunk_end == 0xFFFFFFFFUL && RSYNC_SUM_MATCH(rsync_sum))
+            rsync_chunk_end = i;
+    }
+}
+
+/* ===========================================================================
+ * Set rsync_chunk_end if window sum matches magic value.
+ */
+#define RSYNC_ROLL(s, n) \
+   do { if (rsync) rsync_roll((s), (n)); } while(0)
+
 /* ===========================================================================
  * Flush the current block, with given end-of-file flag.
  * IN assertion: strstart is set to the end of the current match.
  */
 #define FLUSH_BLOCK(eof) \
    flush_block(block_start >= 0L ? (char*)&window[(unsigned)block_start] : \
-                (char*)NULL, (long)strstart - block_start, (eof))
+                (char*)NULL, (long)strstart - block_start, flush-1, (eof))
 
 /* ===========================================================================
  * Processes a new input file and return its compressed length. This
@@ -596,7 +647,7 @@ local void fill_window()
 local off_t deflate_fast()
 {
     IPos hash_head; /* head of the hash chain */
-    int flush;      /* set if current block must be flushed */
+    int flush = 0;  /* set if current block must be flushed, 2=>and padded  */
     unsigned match_length = 0;  /* length of best match */
 
     prev_length = MIN_MATCH-1;
@@ -626,6 +677,7 @@ local off_t deflate_fast()
 
             lookahead -= match_length;
 
+            RSYNC_ROLL(strstart, match_length);
             /* Insert new strings in the hash table only if the match length
              * is not too large. This saves time but degrades compression.
              */
@@ -654,8 +706,13 @@ local off_t deflate_fast()
             /* No match, output a literal byte */
             Tracevv((stderr,"%c",window[strstart]));
             flush = ct_tally (0, window[strstart]);
+            RSYNC_ROLL(strstart, 1);
             lookahead--;
             strstart++;
+        }
+        if (rsync && strstart > rsync_chunk_end) {
+            rsync_chunk_end = 0xFFFFFFFFUL;
+            flush = 2;
         }
         if (flush) FLUSH_BLOCK(0), block_start = strstart;
 
@@ -679,7 +736,7 @@ off_t deflate()
 {
     IPos hash_head;          /* head of hash chain */
     IPos prev_match;         /* previous match */
-    int flush;               /* set if current block must be flushed */
+    int flush = 0;           /* set if current block must be flushed */
     int match_available = 0; /* set if previous match exists */
     register unsigned match_length = MIN_MATCH-1; /* length of best match */
 
@@ -730,6 +787,7 @@ off_t deflate()
              */
             lookahead -= prev_length-1;
             prev_length -= 2;
+            RSYNC_ROLL(strstart, prev_length+1);
             do {
                 strstart++;
                 INSERT_STRING(strstart, hash_head);
@@ -742,24 +800,40 @@ off_t deflate()
             match_available = 0;
             match_length = MIN_MATCH-1;
             strstart++;
-            if (flush) FLUSH_BLOCK(0), block_start = strstart;
 
+            if (rsync && strstart > rsync_chunk_end) {
+                rsync_chunk_end = 0xFFFFFFFFUL;
+                flush = 2;
+            }
+            if (flush) FLUSH_BLOCK(0), block_start = strstart;
         } else if (match_available) {
             /* If there was no match at the previous position, output a
              * single literal. If there was a match but the current match
              * is longer, truncate the previous match to a single literal.
              */
             Tracevv((stderr,"%c",window[strstart-1]));
-            if (ct_tally (0, window[strstart-1])) {
-                FLUSH_BLOCK(0), block_start = strstart;
+            flush = ct_tally (0, window[strstart-1]);
+            if (rsync && strstart > rsync_chunk_end) {
+                rsync_chunk_end = 0xFFFFFFFFUL;
+                flush = 2;
             }
+            if (flush) FLUSH_BLOCK(0), block_start = strstart;
+            RSYNC_ROLL(strstart, 1);
             strstart++;
             lookahead--;
         } else {
             /* There is no previous match to compare with, wait for
              * the next step to decide.
              */
+            if (rsync && strstart > rsync_chunk_end) {
+                /* Reset huffman tree */
+                rsync_chunk_end = 0xFFFFFFFFUL;
+                flush = 2;
+                FLUSH_BLOCK(0), block_start = strstart;
+            }
+
             match_available = 1;
+            RSYNC_ROLL(strstart, 1);
             strstart++;
             lookahead--;
         }

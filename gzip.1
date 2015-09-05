@@ -328,6 +328,11 @@ indicates the slowest compression method (best compression).
 The default compression level is
 .BR \-6
 (that is, biased towards high compression at expense of speed).
+.TP
+.B \-\-rsyncable
+When you synchronize a compressed file between two computers, this option allows rsync to transfer only files that were changed in the archive instead of the entire archive.
+Normally, after a change is made to any file in the archive, the compression algorithm can generate a new version of the archive that does not match the previous version of the archive. In this case, rsync transfers the entire new version of the archive to the remote computer.
+With this option, rsync can transfer only the changed files as well as a small amount of metadata that is required to update the archive structure in the area that was changed.
 .SH "ADVANCED USAGE"
 Multiple compressed files can be concatenated. In this case,
 .I gunzip
