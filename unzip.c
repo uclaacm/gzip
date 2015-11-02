@@ -143,7 +143,7 @@ int unzip(in, out)
 
         if (n != LG(inbuf + LOCSIZ) - (decrypt ? RAND_HEAD_LEN : 0)) {
 
-            fprintf(stderr, "len %ld, siz %ld\n", n, LG(inbuf + LOCSIZ));
+            fprintf(stderr, "len %lu, siz %lu\n", n, LG(inbuf + LOCSIZ));
             gzip_error ("invalid compressed data--length mismatch");
         }
         while (n--) {

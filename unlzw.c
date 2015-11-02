@@ -123,7 +123,7 @@ int unlzw(in, out)
     block_mode = maxbits & BLOCK_MODE;
     if ((maxbits & LZW_RESERVED) != 0) {
         WARN((stderr, "\n%s: %s: warning, unknown flags 0x%x\n",
-              program_name, ifname, maxbits & LZW_RESERVED));
+              program_name, ifname, (unsigned int) maxbits & LZW_RESERVED));
     }
     maxbits &= BIT_MASK;
     maxmaxcode = MAXCODE(maxbits);
