@@ -926,8 +926,17 @@ local void treat_file(iname)
 
     if (!to_stdout)
       {
-
         copy_stat (&istat);
+
+        /* Transfer output data to the output file's storage device.
+           Otherwise, if the system crashed now the user might lose
+           both input and output data.  See: Pillai TS et al.  All
+           file systems are not created equal: on the complexity of
+           crafting crash-consistent applications. OSDI'14. 2014:433-48.
+           https://www.usenix.org/conference/osdi14/technical-sessions/presentation/pillai  */
+        if (!keep && fsync (ofd) != 0 && errno != EINVAL)
+          write_error ();
+
         if (close (ofd) != 0)
           write_error ();
 

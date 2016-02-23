@@ -4,6 +4,10 @@ GNU gzip NEWS                                    -*- outline -*-
 
 ** Changes in behavior
 
+  When acting in-place, gzip now fsyncs the output before closing it.
+  This is slower, but on many file systems it is safer if the system
+  is about to crash.
+
   The GZIP environment variable is now obsolescent; gzip now warns if
   it is used, and rejects attempts to use dangerous options or operands.
   You can use an alias or script instead.
