@@ -634,7 +634,7 @@ int main (int argc, char **argv)
     /* And get to work */
     if (file_count != 0) {
         if (to_stdout && !test && !list && (!decompress || !ascii)) {
-            SET_BINARY_MODE(fileno(stdout));
+            SET_BINARY_MODE (STDOUT_FILENO);
         }
         while (optind < argc) {
             treat_file(argv[optind++]);
@@ -675,7 +675,7 @@ local void treat_stdin()
 {
     if (!force && !list
         && (presume_input_tty
-            || isatty(fileno((FILE *)(decompress ? stdin : stdout))))) {
+            || isatty (decompress ? STDIN_FILENO : STDOUT_FILENO))) {
         /* Do not send compressed data to the terminal or read it from
          * the terminal. We get here when user invoked the program
          * without parameters, so be helpful. According to the GNU standards:
@@ -701,16 +701,16 @@ local void treat_stdin()
     }
 
     if (decompress || !ascii) {
-        SET_BINARY_MODE(fileno(stdin));
+      SET_BINARY_MODE (STDIN_FILENO);
     }
     if (!test && !list && (!decompress || !ascii)) {
-        SET_BINARY_MODE(fileno(stdout));
+      SET_BINARY_MODE (STDOUT_FILENO);
     }
     strcpy(ifname, "stdin");
     strcpy(ofname, "stdout");
 
     /* Get the file's time stamp and size.  */
-    if (fstat (fileno (stdin), &istat) != 0)
+    if (fstat (STDIN_FILENO, &istat) != 0)
       {
         progerror ("standard input");
         do_exit (ERROR);
@@ -728,7 +728,7 @@ local void treat_stdin()
     clear_bufs(); /* clear input and output buffers */
     to_stdout = 1;
     part_nb = 0;
-    ifd = fileno(stdin);
+    ifd = STDIN_FILENO;
 
     if (decompress) {
         method = get_method(ifd);
@@ -744,7 +744,8 @@ local void treat_stdin()
     /* Actually do the compression/decompression. Loop over zipped members.
      */
     for (;;) {
-        if ((*work)(fileno(stdin), fileno(stdout)) != OK) return;
+        if (work (STDIN_FILENO, STDOUT_FILENO) != OK)
+          return;
 
         if (input_eof ())
           break;
@@ -931,7 +932,7 @@ local void treat_file(iname)
      * a new ofname and save the original name in the compressed file.
      */
     if (to_stdout) {
-        ofd = fileno(stdout);
+        ofd = STDOUT_FILENO;
         /* Keep remove_ofname_fd negative.  */
     } else {
         if (create_outfile() != OK) return;
@@ -1630,7 +1631,7 @@ local int get_method(in)
             inptr--;
         last_member = 1;
         if (imagic0 != EOF) {
-            write_buf(fileno(stdout), magic, 1);
+            write_buf (STDOUT_FILENO, magic, 1);
             bytes_out++;
         }
     }
@@ -1844,7 +1845,7 @@ local int check_ofname()
     if (!force) {
         int ok = 0;
         fprintf (stderr, "%s: %s already exists;", program_name, ofname);
-        if (foreground && (presume_input_tty || isatty(fileno(stdin)))) {
+        if (foreground && (presume_input_tty || isatty (STDIN_FILENO))) {
             fprintf(stderr, " do you wish to overwrite (y or n)? ");
             fflush(stderr);
             ok = yesno();
