@@ -23,9 +23,6 @@
 #include "tailor.h"
 #include "gzip.h"
 
-#include <unistd.h>
-#include <fcntl.h>
-
 local ulg crc;       /* crc on uncompressed file data */
 off_t header_bytes;   /* number of bytes in gzip header */
 

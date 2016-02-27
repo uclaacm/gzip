@@ -56,7 +56,6 @@
 #  define NO_MULTIPLE_DOTS
 #  define MAX_EXT_CHARS 3
 #  define Z_SUFFIX "z"
-#  define PROTO
 #  define STDC_HEADERS
 #  define NO_SIZE_CHECK
 #  define UNLINK_READONLY_BUG
@@ -81,7 +80,6 @@
 #    define Z_SUFFIX "z"
 #    define casemap(c) tolow(c)
 #  endif
-#  define PROTO
 #  define STDC_HEADERS
 #  define UNLINK_READONLY_BUG
 #  include <io.h>
@@ -114,7 +112,6 @@
 #  define PATH_SEP2 '\\'
 #  define PATH_SEP3 ':'
 #  define MAX_PATH_LEN  260
-#  define PROTO
 #  define STDC_HEADERS
 #  define SET_BINARY_MODE(fd) setmode(fd, O_BINARY)
 #  define UNLINK_READONLY_BUG
@@ -179,7 +176,6 @@
 #    define HAVE_CHOWN
 #    define HAVE_LSTAT
 #  else /* SASC */
-#    define NO_STDIN_FSTAT
 #    define HAVE_SYS_DIR_H
 #    include <fcntl.h> /* for read() and write() */
 #    define direct dirent
@@ -199,19 +195,6 @@
 #    define MAX_EXT_CHARS 3
 #    define Z_SUFFIX "z"
 #    define casemap(c) tolow(c) /* Force file names to lower case */
-#  endif
-#endif
-
-#ifdef MACOS
-#  define PATH_SEP ':'
-#  define DYN_ALLOC
-#  define PROTO
-#  define NO_STDIN_FSTAT
-#  define chmod(file, mode) (0)
-#  define OPEN(name, flags, mode) open(name, flags)
-#  define OS_CODE  0x07
-#  ifdef MPW
-#    define isatty(fd) ((fd) <= 2)
 #  endif
 #endif
 
@@ -275,8 +258,4 @@
 
 #ifndef SET_BINARY_MODE
 #  define SET_BINARY_MODE(fd)
-#endif
-
-#ifndef OPEN
-#  define OPEN(name, flags, mode) open_safer (name, flags, mode)
 #endif

@@ -32,6 +32,7 @@
 /fcntl-safer.m4
 /fcntl.m4
 /fcntl_h.m4
+/fdatasync.m4
 /fdopendir.m4
 /fflush.m4
 /filenamecat.m4
@@ -48,6 +49,8 @@
 /fseeko.m4
 /fseterr.m4
 /fstat.m4
+/fstatat.m4
+/fsync.m4
 /ftell.m4
 /ftello.m4
 /getcwd.m4
@@ -109,6 +112,7 @@
 /quotearg.m4
 /readdir.m4
 /realloc.m4
+/rmdir.m4
 /save-cwd.m4
 /savedir.m4
 /signbit.m4
@@ -136,6 +140,8 @@
 /timespec.m4
 /unistd-safer.m4
 /unistd_h.m4
+/unlink.m4
+/unlinkat.m4
 /utimbuf.m4
 /utimens.m4
 /utimes.m4
@@ -150,4 +156,3 @@
 /xalloc.m4
 /xsize.m4
 /yesno.m4
-/fsync.m4

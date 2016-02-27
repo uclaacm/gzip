@@ -59,6 +59,7 @@ static char const *const license_msg[] = {
 #include <sys/types.h>
 #include <signal.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <sys/stat.h>
 #include <errno.h>
 
@@ -70,7 +71,8 @@ static char const *const license_msg[] = {
 #include "revision.h"
 #include "timespec.h"
 
-#include "fcntl-safer.h"
+#include "dirname.h"
+#include "fcntl--.h"
 #include "getopt.h"
 #include "ignore-value.h"
 #include "stat-time.h"
@@ -79,7 +81,6 @@ static char const *const license_msg[] = {
 
                 /* configuration */
 
-#include <fcntl.h>
 #include <limits.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -96,8 +97,6 @@ static char const *const license_msg[] = {
 #ifndef NO_UTIME
 #  include <utimens.h>
 #endif
-
-#define RW_USER (S_IRUSR | S_IWUSR)  /* creation mode for open() */
 
 #ifndef MAX_PATH_LEN
 #  define MAX_PATH_LEN   1024 /* max pathname length */
@@ -205,9 +204,11 @@ static off_t total_in;      /* input bytes for all files */
 static off_t total_out;	    /* output bytes for all files */
 char ifname[MAX_PATH_LEN]; /* input file name */
 char ofname[MAX_PATH_LEN]; /* output file name */
+static char dfname[MAX_PATH_LEN]; /* name of dir containing output file */
 static struct stat istat;         /* status for input file */
 int  ifd;                  /* input file descriptor */
 int  ofd;                  /* output file descriptor */
+static int dfd = -1;       /* output directory file descriptor */
 unsigned insize;           /* valid bytes in inbuf */
 unsigned inptr;            /* index of next byte to be processed in inbuf */
 unsigned outcnt;           /* bytes in output buffer */
@@ -769,6 +770,48 @@ local void treat_stdin()
     }
 }
 
+static char const dot = '.';
+
+/* True if the cached directory for calls to openat etc. is DIR, with
+   length DIRLEN.  DIR need not be null-terminated.  DIRLEN must be
+   less than MAX_PATH_LEN.  */
+static bool
+atdir_eq (char const *dir, ptrdiff_t dirlen)
+{
+  if (dirlen == 0)
+    dir = &dot, dirlen = 1;
+  return memcmp (dfname, dir, dirlen) == 0 && !dfname[dirlen];
+}
+
+/* Set the directory used for calls to openat etc. to be the directory
+   DIR, with length DIRLEN.  DIR need not be null-terminated.
+   DIRLEN must be less than MAX_PATH_LEN.  Return a file descriptor for
+   the directory, or -1 if one could not be obtained.  */
+static int
+atdir_set (char const *dir, ptrdiff_t dirlen)
+{
+  /* Don't bother opening directories on older systems that
+     lack openat and unlinkat.  It's not worth the porting hassle.  */
+  #if HAVE_OPENAT && HAVE_UNLINKAT
+    enum { try_opening_directories = true };
+  #else
+    enum { try_opening_directories = false };
+  #endif
+
+  if (try_opening_directories && ! atdir_eq (dir, dirlen))
+    {
+      if (0 <= dfd)
+        close (dfd);
+      if (dirlen == 0)
+        dir = &dot, dirlen = 1;
+      memcpy (dfname, dir, dirlen);
+      dfname[dirlen] = '\0';
+      dfd = open (dfname, O_SEARCH | O_DIRECTORY);
+    }
+
+  return dfd;
+}
+
 /* ========================================================================
  * Compress or decompress the given file
  */
@@ -928,26 +971,30 @@ local void treat_file(iname)
       {
         copy_stat (&istat);
 
-        /* Transfer output data to the output file's storage device.
+        /* If KEEP, transfer output data to the output file's storage device.
            Otherwise, if the system crashed now the user might lose
            both input and output data.  See: Pillai TS et al.  All
            file systems are not created equal: on the complexity of
            crafting crash-consistent applications. OSDI'14. 2014:433-48.
            https://www.usenix.org/conference/osdi14/technical-sessions/presentation/pillai  */
-        if (!keep && fsync (ofd) != 0 && errno != EINVAL)
-          write_error ();
-
-        if (close (ofd) != 0)
+        if ((!keep
+             && ((0 <= dfd && fdatasync (dfd) != 0 && errno != EINVAL)
+                 || (fsync (ofd) != 0 && errno != EINVAL)))
+            || close (ofd) != 0)
           write_error ();
 
         if (!keep)
           {
             sigset_t oldset;
             int unlink_errno;
+            char *ifbase = last_component (ifname);
+            int ufd = atdir_eq (ifname, ifbase - ifname) ? dfd : -1;
+            int res;
 
             sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
             remove_ofname_fd = -1;
-            unlink_errno = xunlink (ifname) == 0 ? 0 : errno;
+            res = ufd < 0 ? xunlink (ifname) : unlinkat (ufd, ifbase, 0);
+            unlink_errno = res == 0 ? 0 : errno;
             sigprocmask (SIG_SETMASK, &oldset, NULL);
 
             if (unlink_errno)
@@ -998,6 +1045,19 @@ local int create_outfile()
   int name_shortened = 0;
   int flags = (O_WRONLY | O_CREAT | O_EXCL
                | (ascii && decompress ? 0 : O_BINARY));
+  char const *base = ofname;
+  int atfd = AT_FDCWD;
+
+  if (!keep)
+    {
+      char const *b = last_component (ofname);
+      int f = atdir_set (ofname, b - ofname);
+      if (0 <= f)
+        {
+          base = b;
+          atfd = f;
+        }
+    }
 
   for (;;)
     {
@@ -1005,7 +1065,7 @@ local int create_outfile()
       sigset_t oldset;
 
       sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
-      remove_ofname_fd = ofd = OPEN (ofname, flags, RW_USER);
+      remove_ofname_fd = ofd = openat (atfd, base, flags, S_IRUSR | S_IWUSR);
       open_errno = errno;
       sigprocmask (SIG_SETMASK, &oldset, NULL);
 
@@ -1115,13 +1175,15 @@ local char *get_suffix(name)
 }
 
 
-/* Open file NAME with the given flags and mode and store its status
+/* Open file NAME with the given flags and store its status
    into *ST.  Return a file descriptor to the newly opened file, or -1
    (setting errno) on failure.  */
 static int
-open_and_stat (char *name, int flags, mode_t mode, struct stat *st)
+open_and_stat (char *name, int flags, struct stat *st)
 {
   int fd;
+  int atfd = AT_FDCWD;
+  char const *base = name;
 
   /* Refuse to follow symbolic links unless -c or -f.  */
   if (!to_stdout && !force)
@@ -1142,7 +1204,18 @@ open_and_stat (char *name, int flags, mode_t mode, struct stat *st)
         }
     }
 
-  fd = OPEN (name, flags, mode);
+  if (!keep)
+    {
+      char const *b = last_component (name);
+      int f = atdir_set (name, b - name);
+      if (0 <= f)
+        {
+          base = b;
+          atfd = f;
+        }
+    }
+
+  fd = openat (atfd, base, flags);
   if (0 <= fd && fstat (fd, st) != 0)
     {
       int e = errno;
@@ -1186,7 +1259,7 @@ open_input_file (iname, sbuf)
     strcpy(ifname, iname);
 
     /* If input file exists, return OK. */
-    fd = open_and_stat (ifname, open_flags, RW_USER, sbuf);
+    fd = open_and_stat (ifname, open_flags, sbuf);
     if (0 <= fd)
       return fd;
 
@@ -1227,7 +1300,7 @@ open_input_file (iname, sbuf)
         if (sizeof ifname <= ilen + strlen (s))
           goto name_too_long;
         strcat(ifname, s);
-        fd = open_and_stat (ifname, open_flags, RW_USER, sbuf);
+        fd = open_and_stat (ifname, open_flags, sbuf);
         if (0 <= fd)
           return fd;
         if (errno != ENOENT)

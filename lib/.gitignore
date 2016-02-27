@@ -5,6 +5,7 @@
 /alloca.in.h
 /asnprintf.c
 /assure.h
+/at-func.c
 /basename-lgpl.c
 /c-ctype.c
 /c-ctype.h
@@ -59,6 +60,7 @@
 /fd-hook.c
 /fd-hook.h
 /fd-safer.c
+/fdatasync.c
 /fdopendir.c
 /fflush.c
 /filename.h
@@ -84,6 +86,8 @@
 /fseterr.c
 /fseterr.h
 /fstat.c
+/fstatat.c
+/fsync.c
 /ftell.c
 /ftello.c
 /getcwd-lgpl.c
@@ -132,6 +136,7 @@
 /openat-die.c
 /openat-priv.h
 /openat-proc.c
+/openat-safer.c
 /openat.c
 /openat.h
 /opendir-safer.c
@@ -157,6 +162,7 @@
 /ref-add.sin
 /ref-del.sed
 /ref-del.sin
+/rmdir.c
 /save-cwd.c
 /save-cwd.h
 /savedir.c
@@ -169,6 +175,7 @@
 /stat-time.c
 /stat-time.h
 /stat.c
+/statat.c
 /stdbool.h
 /stdbool.in.h
 /stddef.h
@@ -205,6 +212,8 @@
 /unistd.c
 /unistd.h
 /unistd.in.h
+/unlink.c
+/unlinkat.c
 /unused-parameter.h
 /utimens.c
 /utimens.h
@@ -225,4 +234,3 @@
 /xsize.h
 /yesno.c
 /yesno.h
-/fsync.c
