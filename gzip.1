@@ -296,6 +296,12 @@ are transferred to other systems.
 When decompressing, add .suf to the beginning of the list of
 suffixes to try, when deriving an output file name from an input file name.
 .TP
+.B --synchronous
+Use synchronous output.  With this option,
+.I gzip
+is less likely to lose data during a system crash, but it can be
+considerably slower.
+.TP
 .B \-t --test
 Test. Check the compressed file integrity.
 .TP

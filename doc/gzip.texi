@@ -204,6 +204,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -q, --quiet       suppress all warnings
   -r, --recursive   operate recursively on directories
   -S, --suffix=SUF  use suffix SUF on compressed files
+      --synchronous synchronous output (safer if system crashes, but slower)
   -t, --test        test compressed file integrity
   -v, --verbose     verbose mode
   -V, --version     display version number
@@ -373,6 +374,16 @@ gunzip -S "" *        (*.* for MSDOS)
 
 Previous versions of gzip used the @samp{.z} suffix.  This was changed to
 avoid a conflict with @command{pack}.
+
+@item --synchronous
+Use synchronous output, by transferring output data to the output
+file's storage device when the file system supports this.  Because
+file system data can be cached, without this option if the system
+crashes around the time a command like @samp{gzip FOO} is run the user
+might lose both @file{FOO} and @file{FOO.gz}; this is the default with
+@command{gzip}, just as it is the default with most applications that
+move data.  When this option is used, @command{gzip} is safer but can
+be considerably slower.
 
 @item --test
 @itemx -t

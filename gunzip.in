@@ -45,6 +45,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -q, --quiet       suppress all warnings
   -r, --recursive   operate recursively on directories
   -S, --suffix=SUF  use suffix SUF on compressed files
+      --synchronous synchronous output (safer if system crashes, but slower)
   -t, --test        test compressed file integrity
   -v, --verbose     verbose mode
       --help        display this help and exit

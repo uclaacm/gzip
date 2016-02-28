@@ -159,6 +159,14 @@ DECLARE(uch, window, 2L*WSIZE);
    is deliberately not documented, and only for testing.  */
 static bool presume_input_tty;
 
+/* If true, transfer output data to the output file's storage device
+   when supported.  Otherwise, if the system crashes around the time
+   gzip is run, the user might lose both input and output data.  See:
+   Pillai TS et al.  All file systems are not created equal: on the
+   complexity of crafting crash-consistent applications. OSDI'14. 2014:433-48.
+   https://www.usenix.org/conference/osdi14/technical-sessions/presentation/pillai */
+static bool synchronous;
+
 static int ascii = 0;        /* convert end-of-lines to local OS conventions */
        int to_stdout = 0;    /* output to stdout (-c) */
 static int decompress = 0;   /* decompress (-d) */
@@ -240,6 +248,7 @@ static int handled_sig[] =
 enum
 {
   PRESUME_INPUT_TTY_OPTION = CHAR_MAX + 1,
+  SYNCHRONOUS_OPTION,
 
   /* A value greater than all valid long options, used as a flag to
      distinguish options derived from the GZIP environment variable.  */
@@ -268,6 +277,7 @@ static const struct option longopts[] =
     {"-presume-input-tty", no_argument, NULL, PRESUME_INPUT_TTY_OPTION},
     {"quiet",      0, 0, 'q'}, /* quiet mode */
     {"silent",     0, 0, 'q'}, /* quiet mode */
+    {"synchronous",0, 0, SYNCHRONOUS_OPTION},
     {"recursive",  0, 0, 'r'}, /* recurse through directories */
     {"suffix",     1, 0, 'S'}, /* use given suffix instead of .gz */
     {"test",       0, 0, 't'}, /* test compressed file integrity */
@@ -353,6 +363,7 @@ local void help()
  "  -r, --recursive   operate recursively on directories",
 #endif
  "  -S, --suffix=SUF  use suffix SUF on compressed files",
+ "      --synchronous synchronous output (safer if system crashes, but slower)",
  "  -t, --test        test compressed file integrity",
  "  -v, --verbose     verbose mode",
  "  -V, --version     display version number",
@@ -551,6 +562,9 @@ int main (int argc, char **argv)
             z_len = strlen(optarg);
             z_suffix = optarg;
             break;
+        case SYNCHRONOUS_OPTION:
+            synchronous = true;
+            break;
         case 't':
             test = decompress = to_stdout = 1;
             break;
@@ -645,6 +659,12 @@ int main (int argc, char **argv)
     if (list && !quiet && file_count > 1) {
         do_list(-1, -1); /* print totals */
     }
+    if (to_stdout
+        && ((synchronous
+             && (fdatasync (STDOUT_FILENO) != 0 && errno != EINVAL))
+            || close (STDOUT_FILENO) != 0)
+        && errno != EBADF)
+      write_error ();
     do_exit(exit_code);
     return exit_code; /* just to avoid lint warning */
 }
@@ -972,13 +992,7 @@ local void treat_file(iname)
       {
         copy_stat (&istat);
 
-        /* If KEEP, transfer output data to the output file's storage device.
-           Otherwise, if the system crashed now the user might lose
-           both input and output data.  See: Pillai TS et al.  All
-           file systems are not created equal: on the complexity of
-           crafting crash-consistent applications. OSDI'14. 2014:433-48.
-           https://www.usenix.org/conference/osdi14/technical-sessions/presentation/pillai  */
-        if ((!keep
+        if ((synchronous
              && ((0 <= dfd && fdatasync (dfd) != 0 && errno != EINVAL)
                  || (fsync (ofd) != 0 && errno != EINVAL)))
             || close (ofd) != 0)
