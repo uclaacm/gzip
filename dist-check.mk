@@ -188,6 +188,7 @@ my-distcheck: $(DIST_ARCHIVES) $(local-check)
 	)
 	(cd $(t) && mv $(distdir) $(distdir).old	\
 	  && $(amtar_extract_) - ) < $(preferred_tarball_)
+	find $(t)/$(distdir).old $(t)/$(distdir) -name .deps | xargs rmdir
 	diff -ur $(t)/$(distdir).old $(t)/$(distdir)
 	-rm -rf $(t)
 	rmdir $(tmpdir)/$(PACKAGE) $(tmpdir)
