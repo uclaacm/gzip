@@ -54,41 +54,44 @@ built_programs = \
   zmore		\
   znew
 
-TESTS_ENVIRONMENT =				\
-  tmp__=$$TMPDIR; test -d "$$tmp__" || tmp__=.;	\
-  TMPDIR=$$tmp__; export TMPDIR;		\
-  shell_or_perl_() {				\
-    if grep '^\#!/usr/bin/perl' "$$1" > /dev/null; then			\
-      if $(PERL) -e 'use warnings' > /dev/null 2>&1; then		\
-	grep '^\#!/usr/bin/perl -T' "$$1" > /dev/null && T_=T || T_=;	\
-        $(PERL) -w$$T_ -I$(srcdir) -MCoreutils				\
-	      -M"CuTmpdir qw($$f)" -- "$$1";	\
-      else					\
-	echo 1>&2 "$$tst: configure did not find a usable version of Perl," \
-	  "so skipping this test";		\
-	(exit 77);				\
-      fi;					\
-    else					\
-      $(SHELL) "$$1";				\
-    fi;						\
-  };						\
-  LC_ALL=C; export LC_ALL;						\
-  VERSION=$(VERSION); export VERSION;					\
-  abs_top_builddir='$(abs_top_builddir)'; export abs_top_builddir;	\
-  abs_top_srcdir='$(abs_top_srcdir)'; export abs_top_srcdir;		\
-  abs_srcdir='$(abs_srcdir)'; export abs_srcdir;			\
-  built_programs='$(built_programs)'; export built_programs;		\
-  srcdir='$(srcdir)'; export srcdir;					\
-  top_srcdir='$(top_srcdir)'; export top_srcdir;			\
-  CC='$(CC)'; export CC;						\
-  GREP='$(GREP)'; export GREP;						\
-  GZIP_TEST_NAME=`echo $$tst|sed 's,^\./,,;s,/,-,g'`; export GZIP_TEST_NAME; \
-  MAKE=$(MAKE); export MAKE;						\
-  PACKAGE_BUGREPORT='$(PACKAGE_BUGREPORT)'; export PACKAGE_BUGREPORT;	\
-  PACKAGE_VERSION=$(PACKAGE_VERSION); export PACKAGE_VERSION;		\
-  PERL='$(PERL)'; export PERL;						\
-  SHELL='$(SHELL)'; export SHELL;					\
-  PATH='$(abs_top_builddir)$(PATH_SEPARATOR)'"$$PATH"; export PATH;	\
-  9>&2
+TESTS_ENVIRONMENT =					\
+  tmp__=$$TMPDIR; test -d "$$tmp__" || tmp__=.;		\
+  TMPDIR=$$tmp__; export TMPDIR;			\
+							\
+  if test -n "$$BASH_VERSION" || (eval "export v=x") 2>/dev/null; then \
+    export_with_values () { export "$$@"; };		\
+  else							\
+    export_with_values ()				\
+    {							\
+      sed_extract_var='s/=.*//';			\
+      sed_quote_value="s/'/'\\\\''/g;s/=\\(.*\\)/='\\1'/";\
+      for arg in "$$@"; do				\
+        var=`echo "$$arg" | sed "$$sed_extract_var"`;	\
+        arg=`echo "$$arg" | sed "$$sed_quote_value"`;	\
+        eval "$$arg";					\
+        export "$$var";					\
+      done;						\
+    };							\
+  fi;							\
+							\
+  export_with_values					\
+  LC_ALL=C						\
+  VERSION=$(VERSION)					\
+  abs_top_builddir='$(abs_top_builddir)'		\
+  abs_top_srcdir='$(abs_top_srcdir)'			\
+  abs_srcdir='$(abs_srcdir)'				\
+  built_programs='$(built_programs)'			\
+  srcdir='$(srcdir)'					\
+  top_srcdir='$(top_srcdir)'				\
+  CC='$(CC)'						\
+  GREP='$(GREP)'					\
+  GZIP_TEST_NAME=`echo $$tst|sed 's,^\./,,;s,/,-,g'`	\
+  MAKE=$(MAKE)						\
+  PACKAGE_BUGREPORT='$(PACKAGE_BUGREPORT)'		\
+  PACKAGE_VERSION=$(PACKAGE_VERSION)			\
+  PERL='$(PERL)'					\
+  SHELL='$(SHELL)'					\
+  PATH='$(abs_top_builddir)$(PATH_SEPARATOR)'"$$PATH"	\
+  ; 9>&2
 
 VERBOSE = yes
