@@ -203,13 +203,12 @@ do
       sed_script="s|^|$i:|"
 
       # Fail if grep or sed fails.
-      if r=$(
-           exec 4>&1
-           (eval "$grep" 4>&-; echo $? >&4) 3>&- | sed "$sed_script" >&3 4>&-
-         ) || { r=$?; test $r -lt 2 && r=2; :; }; then
-        test 256 -le $r && r=$(expr 128 + $r % 128)
-        exit $r
-      fi
+      r=$(
+        exec 4>&1
+        (eval "$grep" 4>&-; echo $? >&4) 3>&- | sed "$sed_script" >&3 4>&-
+      ) || { r=$?; test $r -lt 2 && r=2; }
+      test 256 -le $r && r=$(expr 128 + $r % 128)
+      exit $r
     fi >&3 5>&-
   )
   r=$?
