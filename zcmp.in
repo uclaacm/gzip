@@ -17,12 +17,6 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-bindir=@bindir@
-case $1 in
---__bindir) bindir=${2?}; shift; shift;;
-esac
-PATH=$bindir:$PATH
-
 version="zcmp (gzip) @VERSION@
 Copyright (C) 2010 Free Software Foundation, Inc.
 This is free software.  You may redistribute copies of it under the terms of
@@ -48,4 +42,4 @@ case $1 in
 --version) echo "$version" || st=2; exit $st;;
 esac
 
-exec zdiff --__bindir "$bindir" --__cmp "$@"
+exec zdiff --__cmp "$@"

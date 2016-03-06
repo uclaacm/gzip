@@ -82,7 +82,6 @@ SUFFIXES = .in
 .in:
 	$(AM_V_GEN)sed \
 		-e 's|/bin/sh|$(SHELL)|g' \
-		-e 's|[@]bindir@|'\''$(bindir)'\''|g' \
 		-e 's|[@]GREP@|$(GREP)|g' \
 		-e 's|[@]VERSION@|$(VERSION)|g' \
 		$(srcdir)/$@.in >$@-t \
@@ -108,17 +107,18 @@ gen-ChangeLog:
 FILES_TO_CHECK = $(bin_SCRIPTS) \
   $(top_srcdir)/ChangeLog $(top_srcdir)/configure $(top_srcdir)/gzip.c
 check-local: $(FILES_TO_CHECK) $(bin_PROGRAMS) gzip.doc.gz
-	$(AM_V_GEN){ test '$(srcdir)' != . \
-		       || ./zdiff --__bindir . -c gzip.doc.gz; }
-	$(AM_V_at)./zdiff --__bindir . -c $(srcdir)/gzip.doc $(srcdir)/gzip.doc
-	$(AM_V_at)./zdiff --__bindir . $(srcdir)/gzip.doc gzip.doc.gz
-	$(AM_V_at)./zdiff --__bindir . -c - $(srcdir)/gzip.doc <gzip.doc.gz
-	$(AM_V_at)./zdiff --__bindir . -c gzip.doc.gz gzip.doc.gz
-	$(AM_V_at)./zgrep --__bindir . -iV >/dev/null
-	$(AM_V_at)for opt in --rsyncable '' -1 -9; do	\
+	$(AM_V_GEN)PATH=.:$$PATH; { test '$(srcdir)' != . \
+		       || zdiff -c gzip.doc.gz; }
+	$(AM_V_at)PATH=.:$$PATH; zdiff -c $(srcdir)/gzip.doc $(srcdir)/gzip.doc
+	$(AM_V_at)PATH=.:$$PATH; zdiff $(srcdir)/gzip.doc gzip.doc.gz
+	$(AM_V_at)PATH=.:$$PATH; zdiff -c - $(srcdir)/gzip.doc <gzip.doc.gz
+	$(AM_V_at)PATH=.:$$PATH; zdiff -c gzip.doc.gz gzip.doc.gz
+	$(AM_V_at)PATH=.:$$PATH; zgrep -iV >/dev/null
+	$(AM_V_at)PATH=.:$$PATH;			\
+	for opt in --rsyncable '' -1 -9; do		\
           for file in $(FILES_TO_CHECK); do		\
-            ./gzip $$opt -c -- "$$file"			\
-              | ./gzip -d | cmp - "$$file" || exit 1;	\
+            gzip $$opt -c -- "$$file"			\
+              | gzip -d | cmp - "$$file" || exit 1;	\
           done;						\
 	done
 

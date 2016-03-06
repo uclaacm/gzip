@@ -16,12 +16,6 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-bindir=@bindir@
-case $1 in
---__bindir) bindir=${2?}; shift; shift;;
-esac
-PATH=$bindir:$PATH; export PATH
-
 version="zless (gzip) @VERSION@
 Copyright (C) 2007, 2011-2016 Free Software Foundation, Inc.
 This is free software.  You may redistribute copies of it under the terms of

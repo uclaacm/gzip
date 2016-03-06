@@ -8,6 +8,12 @@ GNU gzip NEWS                                    -*- outline -*-
   it is used, and rejects attempts to use dangerous options or operands.
   You can use an alias or script instead.
 
+  Installed programs like 'zgrep' now use the PATH environment variable
+  as usual to find subsidiary programs like 'gzip' and 'grep'.
+  Previously they prepended the installation directory to the PATH,
+  which sometimes caused 'make check' to test the wrong gzip executable.
+  [bug introduced in gzip-1.3.13]
+
 ** New features
 
   gzip now accepts the --synchronous option, which causes it to use
