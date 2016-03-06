@@ -203,6 +203,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -N, --name        save or restore the original name and time stamp
   -q, --quiet       suppress all warnings
   -r, --recursive   operate recursively on directories
+      --rsyncable   make rsync-friendly archive
   -S, --suffix=SUF  use suffix SUF on compressed files
       --synchronous synchronous output (safer if system crashes, but slower)
   -t, --test        test compressed file integrity

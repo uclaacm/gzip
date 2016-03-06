@@ -364,6 +364,7 @@ local void help()
 #if ! NO_DIR
  "  -r, --recursive   operate recursively on directories",
 #endif
+ "      --rsyncable   make rsync-friendly archive",
  "  -S, --suffix=SUF  use suffix SUF on compressed files",
  "      --synchronous synchronous output (safer if system crashes, but slower)",
  "  -t, --test        test compressed file integrity",
@@ -375,7 +376,6 @@ local void help()
  "  -Z, --lzw         produce output compatible with old compress",
  "  -b, --bits=BITS   max number of bits per code (implies -Z)",
 #endif
- "      --rsyncable   Make rsync-friendly archive",
  "",
  "With no FILE, or when FILE is -, read standard input.",
  "",
