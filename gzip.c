@@ -1762,12 +1762,13 @@ local void do_list(ifd, method)
 
     if (verbose)
       {
+        static char const month_abbr[][4]
+          = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
         struct tm *tm = localtime (&time_stamp.tv_sec);
         printf ("%5s %08lx ", methods[method], crc);
         if (tm)
-          printf ("%s%3d %02d:%02d ",
-                  ("Jan\0Feb\0Mar\0Apr\0May\0Jun\0Jul\0Aug\0Sep\0Oct\0Nov\0Dec"
-                   + 4 * tm->tm_mon),
+          printf ("%s%3d %02d:%02d ", month_abbr[tm->tm_mon],
                   tm->tm_mday, tm->tm_hour, tm->tm_min);
         else
           printf ("??? ?? ??:?? ");
