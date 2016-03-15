@@ -21,15 +21,13 @@
 #include <config.h>
 #include <ctype.h>
 #include <errno.h>
-
-#include "tailor.h"
-
 #include <limits.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <errno.h>
 
+#include "tailor.h"
 #include "gzip.h"
 #include <xalloc.h>
 

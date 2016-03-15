@@ -116,10 +116,10 @@
  */
 
 #include <config.h>
-#include "tailor.h"
 
 #include <stdlib.h>
 
+#include "tailor.h"
 #include "gzip.h"
 #define slide window
 

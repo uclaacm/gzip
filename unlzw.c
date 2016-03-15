@@ -8,11 +8,11 @@
  */
 
 #include <config.h>
-#include "tailor.h"
 
 #include <unistd.h>
 #include <fcntl.h>
 
+#include "tailor.h"
 #include "gzip.h"
 #include "lzw.h"
 
