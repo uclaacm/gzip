@@ -55,6 +55,7 @@ files_with_matches=0
 files_without_matches=0
 no_filename=0
 with_filename=0
+pattmp=
 
 while test $# -ne 0; do
   option=$1
@@ -113,13 +114,34 @@ while test $# -ne 0; do
     # The pattern is coming from a file rather than the command-line.
     # If the file is actually stdin then we need to do a little
     # magic, since we use stdin to pass the gzip output to grep.
-    # Turn the -f option into an -e option by copying the file's
-    # contents into OPTARG.
-    case $optarg in
-    (" '-'" | " '/dev/stdin'" | " '/dev/fd/0'")
-      option=-e
-      optarg=" '"$(sed "$escape") || exit 2;;
-    esac
+    # Similarly if it is not a regular file, since it might be read repeatedly.
+    # In either of these two cases, copy the pattern into a temporary file,
+    # and use that file instead.  The pattern might contain null bytes,
+    # so we cannot simply switch to -e here.
+    if case $optarg in
+       (" '-'" | " '/dev/stdin'" | " '/dev/fd/0'")
+         :;;
+       (*)
+         eval "test ! -f$optarg";;
+       esac
+    then
+      if test -n "$pattmp"; then
+        eval "cat --$optarg" >>"$pattmp" || exit 2
+        continue
+      fi
+      trap '
+        test -n "$pattmp" && rm -f "$pattmp"
+        (exit 2); exit 2
+      ' HUP INT PIPE TERM 0
+      if type mktemp >/dev/null 2>&1; then
+        pattmp=$(mktemp -t -- "zgrep.XXXXXX") || exit 2
+      else
+        set -C
+        pattmp=${TMPDIR-/tmp}/zgrep.$$
+      fi
+      eval "cat --$optarg" >"$pattmp" || exit 2
+      optarg=' "$pattmp"'
+    fi
     have_pat=1;;
   (--h | --he | --hel | --help)
     echo "$usage" || exit 2
@@ -231,6 +253,15 @@ do
   # Exit immediately on a serious error.
   test 126 -le $res && break
 done
+
+if test -n "$pattmp"; then
+  rm -f "$pattmp" || {
+    r=$?
+    test $r -lt 2 && r=2
+    test $res -lt $r && res=$r
+  }
+  trap - HUP INT PIPE TERM 0
+fi
 
 test 128 -le $res && kill -$(expr $res % 128) $$
 exit $res

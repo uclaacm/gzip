@@ -35,6 +35,10 @@ GNU gzip NEWS                                    -*- outline -*-
   gzip -k -v no longer reports that files are replaced.
   [bug present since the beginning]
 
+  zgrep -f A B C no longer reads A more than once if A is not a regular file.
+  This better supports invocations like 'zgrep -f <(COMMAND) B C' in Bash.
+  [bug introduced in gzip-1.2]
+
 
 * Noteworthy changes in release 1.6 (2013-06-09) [stable]
 
