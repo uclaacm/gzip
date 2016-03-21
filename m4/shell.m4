@@ -35,7 +35,7 @@ AC_DEFUN([AC_PROG_SHELL],
         test "$(expr 3 + 4)" -eq 7 || exit
       '
       # Solaris 11 /bin/sh (AT&T Research) 93u 2011-02-08 has a file
-      # descriptor bug that breaks zgrep is are hard to test for
+      # descriptor bug that breaks zgrep and is hard to test for
       # directly.  At some point $(...) is reading a pipe from the
       # subshell, but the pipe is also open in the parent shell, so
       # the read deadlocks.  Prefer some other shell if available.
