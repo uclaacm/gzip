@@ -34,13 +34,21 @@ AC_DEFUN([AC_PROG_SHELL],
         # Test that $(...) works.
         test "$(expr 3 + 4)" -eq 7 || exit
       '
+      # Solaris 11 /bin/sh (AT&T Research) 93u 2011-02-08 has a file
+      # descriptor bug that breaks zgrep is are hard to test for
+      # directly.  At some point $(...) is reading a pipe from the
+      # subshell, but the pipe is also open in the parent shell, so
+      # the read deadlocks.  Prefer some other shell if available.
+      ac_maybe_solaris_sh_bug='test "${.sh.version}"'
+
       ac_cv_path_shell=no
 
       case $SHELL in
       /*)
         rm -f conftest.c
         if ("$SHELL" -c "$ac_command") 2>/dev/null; then
-          ac_cv_path_shell=$SHELL
+          "$SHELL" -c "$ac_maybe_solaris_sh_bug" 2>/dev/null ||
+            ac_cv_path_shell=$SHELL
         fi
       esac
 
@@ -52,6 +60,7 @@ AC_DEFUN([AC_PROG_SHELL],
         # PATH.  Also, loop through PATH first and then through
         # shells, since less-"nice" shells in /bin and /usr/bin are
         # more likely to be installed than "nicer" shells elsewhere.
+        ac_break_if_good_shell=:
         as_save_IFS=$IFS; IFS=:
         for as_dir in /bin /usr/bin $PATH
         do
@@ -61,13 +70,17 @@ AC_DEFUN([AC_PROG_SHELL],
             for ac_base in sh bash ksh sh5; do
               rm -f conftest.c
               if ("$as_dir/$ac_base" -c "$ac_command") 2>/dev/null; then
-                ac_cv_path_shell=$as_dir/$ac_base
-                break
+                if "$as_dir/$ac_base" -c "$ac_maybe_solaris_sh_bug" 2>/dev/null
+                then
+                  test "$ac_cv_path_shell" = no
+                else
+                  ac_break_if_good_shell=break
+                  :
+                fi && ac_cv_path_shell=$as_dir/$ac_base
+                $ac_break_if_good_shell
               fi
             done
-            case $ac_cv_path_shell in
-            /*) break
-            esac
+            $ac_break_if_good_shell
           esac
         done
         rm -f conftest.c
@@ -77,5 +90,8 @@ AC_DEFUN([AC_PROG_SHELL],
    if test "$SHELL" = no; then
      SHELL=/bin/sh
      AC_MSG_WARN([using $SHELL, even though it does not conform to POSIX])
+   fi
+   if "$SHELL" -c "$ac_maybe_solaris_sh_bug" 2>/dev/null; then
+     AC_MSG_WARN([using $SHELL, even though it may have file descriptor bugs])
    fi
    AC_SUBST(SHELL)])
