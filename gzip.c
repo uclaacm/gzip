@@ -560,6 +560,7 @@ int main (int argc, char **argv)
             break;
 
         case RSYNCABLE_OPTION:
+        case RSYNCABLE_OPTION + ENV_OPTION:
             rsync = 1;
             break;
         case 'S':
