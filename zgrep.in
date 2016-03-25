@@ -134,7 +134,7 @@ while test $# -ne 0; do
         (exit 2); exit 2
       ' HUP INT PIPE TERM 0
       if type mktemp >/dev/null 2>&1; then
-        pattmp=$(mktemp -t -- "zgrep.XXXXXX") || exit 2
+        pattmp=$(mktemp) || exit 2
       else
         set -C
         pattmp=${TMPDIR-/tmp}/zgrep.$$

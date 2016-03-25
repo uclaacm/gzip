@@ -119,7 +119,7 @@ for i do
     mktemp_status=$?
   fi
   if test $mktemp_status -eq 0; then
-    tmp=`TMPDIR=$dir mktemp -t gzexeXXXXXX`
+    tmp=`TMPDIR=$dir mktemp`
   else
     tmp=$dir/gzexe$$
   fi && { cp -p "$file" "$tmp" 2>/dev/null || cp "$file" "$tmp"; } || {
@@ -157,7 +157,7 @@ trap 'res=$?
 ' 0 1 2 3 5 10 13 15
 
 if type mktemp >/dev/null 2>&1; then
-  gztmpdir=`mktemp -dt`
+  gztmpdir=`mktemp -d`
 else
   gztmpdir=/tmp/gztmp$$; mkdir $gztmpdir
 fi || { (exit 127); exit 127; }
