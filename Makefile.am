@@ -111,11 +111,11 @@ FILES_TO_CHECK = $(bin_SCRIPTS) \
   $(top_srcdir)/ChangeLog $(top_srcdir)/configure $(top_srcdir)/gzip.c
 check-local: $(FILES_TO_CHECK) $(bin_PROGRAMS) gzip.doc.gz
 	$(AM_V_GEN)$(new_path); { test '$(srcdir)' != . \
-				    || zdiff -c gzip.doc.gz; }
-	$(AM_V_at)$(new_path); zdiff -c $(srcdir)/gzip.doc $(srcdir)/gzip.doc
+				    || zdiff gzip.doc.gz; }
+	$(AM_V_at)$(new_path); zdiff $(srcdir)/gzip.doc $(srcdir)/gzip.doc
 	$(AM_V_at)$(new_path); zdiff $(srcdir)/gzip.doc gzip.doc.gz
-	$(AM_V_at)$(new_path); zdiff -c - $(srcdir)/gzip.doc <gzip.doc.gz
-	$(AM_V_at)$(new_path); zdiff -c gzip.doc.gz gzip.doc.gz
+	$(AM_V_at)$(new_path); zdiff - $(srcdir)/gzip.doc <gzip.doc.gz
+	$(AM_V_at)$(new_path); zdiff gzip.doc.gz gzip.doc.gz
 	$(AM_V_at)$(new_path); zgrep -iV >/dev/null
 	$(AM_V_at)$(new_path);				\
 	for opt in --rsyncable '' -1 -9; do		\
