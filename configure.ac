@@ -204,8 +204,8 @@ AC_OBJEXT
 AC_CACHE_CHECK([for an assembler syntax supported by this package],
   [gzip_cv_assembler],
   [gzip_cv_assembler=no
-   case " $DEFS " in
-   *' NO_ASM '*) ;;
+   case $DEFS in
+   *NO_ASM*) ;;
    *)
      if cp $srcdir/lib/match.c _match.S &&
         eval "$CPP $CPPFLAGS $ASCPPFLAGS _match.S > _match.i" &&
