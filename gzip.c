@@ -63,7 +63,6 @@ static char const *const license_msg[] = {
 #include <sys/stat.h>
 #include <errno.h>
 
-#include "closein.h"
 #include "tailor.h"
 #include "gzip.h"
 #include "intprops.h"
@@ -206,6 +205,8 @@ static int volatile exiting_signal;
 /* If nonnegative, close this file descriptor and unlink ofname on error.  */
 static int volatile remove_ofname_fd = -1;
 
+static bool stdin_was_read;
+
 off_t bytes_in;             /* number of input bytes */
 off_t bytes_out;            /* number of output bytes */
 static off_t total_in;      /* input bytes for all files */
@@ -317,6 +318,7 @@ local void install_signal_handlers (void);
 local void remove_output_file (void);
 local RETSIGTYPE abort_gzip_signal (int);
 local void do_exit      (int exitcode) ATTRIBUTE_NORETURN;
+static void finish_out (void);
       int main          (int argc, char **argv);
 static int (*work) (int infile, int outfile) = zip; /* function to call */
 
@@ -427,8 +429,6 @@ int main (int argc, char **argv)
     program_name = gzip_base_name (argv[0]);
     proglen = strlen (program_name);
 
-    atexit (close_stdin);
-
     /* Suppress .exe for MSDOS, OS/2 and VMS: */
     if (4 < proglen && strequ (program_name + proglen - 4, ".exe"))
       program_name[proglen - 4] = '\0';
@@ -527,13 +527,13 @@ int main (int argc, char **argv)
         case 'f':
             force++; break;
         case 'h': case 'H':
-            help(); do_exit(OK); break;
+            help (); finish_out (); break;
         case 'k':
             keep = 1; break;
         case 'l':
             list = decompress = to_stdout = 1; break;
         case 'L':
-            license(); do_exit(OK); break;
+            license (); finish_out (); break;
         case 'm': /* undocumented, may change later */
             no_time = 1; break;
         case 'M': /* undocumented, may change later */
@@ -580,7 +580,7 @@ int main (int argc, char **argv)
         case 'v' + ENV_OPTION:
             verbose++; quiet = 0; break;
         case 'V':
-            version(); do_exit(OK); break;
+            version (); finish_out (); break;
         case 'Z':
 #ifdef LZW
             do_lzw = 1; break;
@@ -664,6 +664,11 @@ int main (int argc, char **argv)
     } else {  /* Standard input */
         treat_stdin();
     }
+    if (stdin_was_read && close (STDIN_FILENO) != 0)
+      {
+        strcpy (ifname, "stdin");
+        read_error ();
+      }
     if (list)
       {
         /* Output any totals, and check for output errors.  */
@@ -672,8 +677,11 @@ int main (int argc, char **argv)
         if (fflush (stdout) != 0)
           write_error ();
       }
-    if (to_stdout && synchronous && fdatasync (STDOUT_FILENO) != 0
-        && errno != EINVAL && errno != EBADF)
+    if (to_stdout
+        && ((synchronous
+             && fdatasync (STDOUT_FILENO) != 0 && errno != EINVAL)
+            || close (STDOUT_FILENO) != 0)
+        && errno != EBADF)
       write_error ();
     do_exit(exit_code);
     return exit_code; /* just to avoid lint warning */
@@ -759,6 +767,7 @@ local void treat_stdin()
     to_stdout = 1;
     part_nb = 0;
     ifd = STDIN_FILENO;
+    stdin_was_read = true;
 
     if (decompress) {
         method = get_method(ifd);
@@ -2091,6 +2100,14 @@ local void do_exit(exitcode)
     FREE(tab_prefix1);
 #endif
     exit(exitcode);
+}
+
+static void
+finish_out (void)
+{
+  if (fclose (stdout) != 0)
+    write_error ();
+  do_exit (OK);
 }
 
 /* ========================================================================
