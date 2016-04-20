@@ -20,6 +20,7 @@ TESTS =					\
   help-version				\
   hufts					\
   keep					\
+  list					\
   memcpy-abuse				\
   mixed					\
   null-suffix-clobber			\

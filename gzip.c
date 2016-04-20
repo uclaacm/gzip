@@ -664,14 +664,16 @@ int main (int argc, char **argv)
     } else {  /* Standard input */
         treat_stdin();
     }
-    if (list && !quiet && file_count > 1) {
-        do_list(-1, -1); /* print totals */
-    }
-    if (to_stdout
-        && ((synchronous
-             && (fdatasync (STDOUT_FILENO) != 0 && errno != EINVAL))
-            || close (STDOUT_FILENO) != 0)
-        && errno != EBADF)
+    if (list)
+      {
+        /* Output any totals, and check for output errors.  */
+        if (!quiet && 1 < file_count)
+          do_list (-1, -1);
+        if (fflush (stdout) != 0)
+          write_error ();
+      }
+    if (to_stdout && synchronous && fdatasync (STDOUT_FILENO) != 0
+        && errno != EINVAL && errno != EBADF)
       write_error ();
     do_exit(exit_code);
     return exit_code; /* just to avoid lint warning */

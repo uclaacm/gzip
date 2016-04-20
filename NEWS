@@ -4,6 +4,9 @@ GNU gzip NEWS                                    -*- outline -*-
 
 ** Bug fixes
 
+  gzip -l no longer falsely reports a write error when writing to a pipe.
+  [bug introduced in gzip-1.7]
+
   Port to Oracle Solaris Studio 12 on x86-64.
   [bug present since at least gzip-1.2.4]
 
