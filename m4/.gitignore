@@ -5,13 +5,8 @@
 /calloc.m4
 /chdir-long.m4
 /clock_time.m4
-/close-stream.m4
 /close.m4
 /closedir.m4
-/closein.m4
-/closeout.m4
-/codeset.m4
-/configmake.m4
 /dirent-safer.m4
 /dirent_h.m4
 /dirfd.m4
@@ -37,11 +32,9 @@
 /fflush.m4
 /filenamecat.m4
 /float_h.m4
-/fpending.m4
 /fpieee.m4
 /fprintf-posix.m4
 /fpurge.m4
-/freadahead.m4
 /freading.m4
 /frexp.m4
 /frexpl.m4
@@ -58,7 +51,6 @@
 /getopt.m4
 /gettime.m4
 /gettimeofday.m4
-/glibc21.m4
 /gnu-make.m4
 /gnulib-cache.m4
 /gnulib-common.m4
@@ -76,10 +68,6 @@
 /lib-ld.m4
 /lib-link.m4
 /lib-prefix.m4
-/localcharset.m4
-/locale-fr.m4
-/locale-ja.m4
-/locale-zh.m4
 /lock.m4
 /longlong.m4
 /lseek.m4
@@ -87,9 +75,6 @@
 /malloc.m4
 /manywarnings.m4
 /math_h.m4
-/mbrtowc.m4
-/mbsinit.m4
-/mbstate_t.m4
 /memchr.m4
 /mempcpy.m4
 /memrchr.m4
@@ -109,7 +94,6 @@
 /printf-frexpl.m4
 /printf-posix-rpl.m4
 /printf.m4
-/quotearg.m4
 /readdir.m4
 /realloc.m4
 /rmdir.m4
@@ -151,7 +135,6 @@
 /warnings.m4
 /wchar_h.m4
 /wchar_t.m4
-/wctype_h.m4
 /wint_t.m4
 /xalloc.m4
 /xsize.m4
