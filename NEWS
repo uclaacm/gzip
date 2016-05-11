@@ -2,6 +2,11 @@ GNU gzip NEWS                                    -*- outline -*-
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** Bug fixes
+
+  Support for VMS and Amiga has been removed.  It was not working anyway,
+  and it reportedly caused file name glitches on MS-Windowsish platforms.
+
 
 * Noteworthy changes in release 1.8 (2016-04-26) [stable]
 

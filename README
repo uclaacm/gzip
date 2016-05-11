@@ -63,23 +63,9 @@ provided as example (not installed by default since it relies on perl).
 
 gzip is free software, you can redistribute it and/or modify it under
 the terms of the GNU General Public License, a copy of which is
-provided under the name COPYING. The latest version of gzip are always
-available from ftp://ftp.gnu.org/gnu/gzip or in any of the gnu
+provided under the name COPYING. The latest version of gzip is always
+available from ftp://ftp.gnu.org/gnu/gzip or in any of the GNU
 mirror sites.
-
-- sources in gzip-*.tar (or .shar or .tar.gz).
-- MSDOS lha self-extracting exe in gzip-msdos-*.exe. Once extracted,
-  copy gzip.exe to gunzip.exe and zcat.exe, or use "gzip -d" to decompress.
-  gzip386.exe runs much faster but only on 386 and above; it was compiled with
-  djgpp 1.10 available in directory omnigate.clarkson.edu:/pub/msdos/djgpp.
-
-A VMS executable is in ftp://ftp.spc.edu/[.macro32.savesets]gzip-1-*.zip
-(use [.macro32]unzip.exe to extract). A PRIMOS executable is available
-in ftp://ftp.lysator.liu.se/pub/primos/run/gzip.run.
-
-Some ftp servers can automatically make a tar.Z from a tar file. If
-you are getting gzip for the first time, you can ask for a tar.Z file
-instead of the much larger tar file.
 
 Many thanks to those who provided me with bug reports and feedback.
 See the files THANKS and ChangeLog for more details.

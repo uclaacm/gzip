@@ -50,13 +50,10 @@
 #      define HAVE_SYS_UTIME_H
 #    endif
 #  endif
-#  define PATH_SEP2 '\\'
-#  define PATH_SEP3 ':'
 #  define MAX_PATH_LEN  128
 #  define NO_MULTIPLE_DOTS
 #  define MAX_EXT_CHARS 3
 #  define Z_SUFFIX "z"
-#  define STDC_HEADERS
 #  define NO_SIZE_CHECK
 #  define UNLINK_READONLY_BUG
 #  define casemap(c) tolow(c) /* Force file names to lower case */
@@ -71,8 +68,6 @@
 #endif
 
 #ifdef OS2
-#  define PATH_SEP2 '\\'
-#  define PATH_SEP3 ':'
 #  define MAX_PATH_LEN  260
 #  ifdef OS2FAT
 #    define NO_MULTIPLE_DOTS
@@ -80,7 +75,6 @@
 #    define Z_SUFFIX "z"
 #    define casemap(c) tolow(c)
 #  endif
-#  define STDC_HEADERS
 #  define UNLINK_READONLY_BUG
 #  include <io.h>
 #  define OS_CODE  0x06
@@ -107,12 +101,9 @@
 #  endif
 #endif
 
-#ifdef WIN32 /* Windows NT */
+#if defined WIN32 || defined _WIN32
 #  define HAVE_SYS_UTIME_H
-#  define PATH_SEP2 '\\'
-#  define PATH_SEP3 ':'
 #  define MAX_PATH_LEN  260
-#  define STDC_HEADERS
 #  define SET_BINARY_MODE(fd) setmode(fd, O_BINARY)
 #  define UNLINK_READONLY_BUG
 #  include <io.h>
@@ -147,49 +138,10 @@
 #  define fcfree(ptr) free(ptr)
 #endif
 
-#if defined(VAXC) || defined(VMS)
-#  define PATH_SEP ']'
-#  define PATH_SEP2 ':'
-#  define SUFFIX_SEP ';'
-#  define NO_MULTIPLE_DOTS
-#  define NO_SIZE_CHECK
-#  define Z_SUFFIX "-gz"
-#  define RECORD_IO 1
-#  define casemap(c) tolow(c)
-#  define OS_CODE  0x02
-#  define OPTIONS_VAR "GZIP_OPT"
-#  define STDC_HEADERS
-#  define EXPAND(argc,argv) vms_expand_args(&argc,&argv);
-#  include <file.h>
-#  define unlink delete
-#  ifdef VAXC
-#    include <unixio.h>
-#  endif
-#endif
-
-#ifdef AMIGA
-#  define PATH_SEP2 ':'
-#  define STDC_HEADERS
-#  define OS_CODE  0x01
-#  define ASMV
-#  ifdef __GNUC__
-#    define HAVE_CHOWN
-#    define HAVE_LSTAT
-#  else /* SASC */
-#    define HAVE_SYS_DIR_H
-#    include <fcntl.h> /* for read() and write() */
-#    define direct dirent
-     extern void _expand_args(int *argc, char ***argv);
-#    define EXPAND(argc,argv) _expand_args(&argc,&argv);
-#  endif
-#endif
-
 #if defined(ATARI) || defined(atarist)
 #  define ASMV
 #  define OS_CODE  0x05
 #  ifdef TOSFS
-#    define PATH_SEP2 '\\'
-#    define PATH_SEP3 ':'
 #    define MAX_PATH_LEN  128
 #    define NO_MULTIPLE_DOTS
 #    define MAX_EXT_CHARS 3
@@ -211,10 +163,6 @@
 
 #ifndef OS_CODE
 #  define OS_CODE  0x03  /* assume Unix */
-#endif
-
-#ifndef PATH_SEP
-#  define PATH_SEP '/'
 #endif
 
 #ifndef casemap
@@ -250,10 +198,6 @@
 
 #ifndef EXPAND
 #  define EXPAND(argc,argv)
-#endif
-
-#ifndef RECORD_IO
-#  define RECORD_IO 0
 #endif
 
 #ifndef SET_BINARY_MODE

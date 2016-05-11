@@ -31,8 +31,6 @@ each file is replaced by one with the extension
 .BR "\&.gz" ,
 while keeping the same ownership modes, access and modification times.
 (The default extension is
-.B "\-gz"
-for VMS,
 .B "z"
 for MSDOS, OS/2 FAT, Windows NT FAT and Atari.)
 If no files are specified, or if a file name is "-", the standard input is
@@ -403,9 +401,6 @@ containing the following:
       #! /bin/sh
       export PATH=/usr/bin
       exec gzip \-9 "$@"
-
-On VMS, the name of the obsolescent environment variable is GZIP_OPT, to
-avoid a conflict with the symbol set for invocation of the program.
 .SH "SEE ALSO"
 znew(1), zcmp(1), zmore(1), zforce(1), gzexe(1), zip(1), unzip(1), compress(1)
 .PP

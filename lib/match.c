@@ -231,7 +231,7 @@ maxmatch:
 #  define predec(An)		-(An)
 #  define postinc(An)		(An)+
 
-#else /* default style (Sun 3, NeXT, Amiga, Atari) */
+#else /* default style (Sun 3, NeXT, Atari) */
 
 #  define GLOBAL(symbol)	.globl	symbol
 #  define TEXT			.text

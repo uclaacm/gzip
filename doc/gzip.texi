@@ -83,7 +83,7 @@ Free Documentation License''.
 @command{gzip} reduces the size of the named files using Lempel--Ziv coding
 (LZ77).  Whenever possible, each file is replaced by one with the
 extension @samp{.gz}, while keeping the same ownership modes, access and
-modification times.  (The default extension is @samp{-gz} for @abbr{VMS},
+modification times.  (The default extension is
 @samp{z} for @abbr{MSDOS}, @abbr{OS/2} @abbr{FAT} and Atari.)
 If no files are specified or
 if a file name is @file{-}, the standard input is compressed to the standard
@@ -506,10 +506,6 @@ You can use an alias or script instead.  For example, if
 export PATH=/usr/bin
 exec gzip -9 "$@@"
 @end example
-
-On @abbr{VMS}, the name of the obsolescent environment variable is
-@env{GZIP_OPT}, to avoid a conflict with the symbol set for invocation
-of the program.
 
 @node Tapes
 @chapter Using @command{gzip} on tapes

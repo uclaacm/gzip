@@ -80,8 +80,8 @@ int zip(in, out)
     (void)deflate();
 
 #ifndef NO_SIZE_CHECK
-  /* Check input size (but not in VMS -- variable record lengths mess it up)
-   * and not on MSDOS -- diet in TSR mode reports an incorrect file size)
+  /* Check input size
+   * (but not on MSDOS -- diet in TSR mode reports an incorrect file size)
    */
     if (ifile_size != -1L && bytes_in != ifile_size) {
         fprintf(stderr, "%s: %s: file size changed while zipping\n",

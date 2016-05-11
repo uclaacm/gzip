@@ -29,6 +29,7 @@
 
 #include "tailor.h"
 #include "gzip.h"
+#include <dirname.h>
 #include <xalloc.h>
 
 #ifndef CHAR_BIT
@@ -299,18 +300,7 @@ char *
 gzip_base_name (fname)
     char *fname;
 {
-    char *p;
-
-    if ((p = strrchr(fname, PATH_SEP))  != NULL) fname = p+1;
-#ifdef PATH_SEP2
-    if ((p = strrchr(fname, PATH_SEP2)) != NULL) fname = p+1;
-#endif
-#ifdef PATH_SEP3
-    if ((p = strrchr(fname, PATH_SEP3)) != NULL) fname = p+1;
-#endif
-#ifdef SUFFIX_SEP
-    if ((p = strrchr(fname, SUFFIX_SEP)) != NULL) *p = '\0';
-#endif
+    fname = last_component (fname);
     if (casemap('A') == 'a') strlwr(fname);
     return fname;
 }

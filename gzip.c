@@ -43,7 +43,7 @@ static char const *const license_msg[] = {
  *     or stdout with -c option or if stdin used as input.
  * If the output file name had to be truncated, the original name is kept
  * in the compressed file.
- * On MSDOS, file.tmp -> file.tmz. On VMS, file.tmp -> file.tmp-gz.
+ * On MSDOS, file.tmp -> file.tmz.
  *
  * Using gz on MSDOS would create too many file name conflicts. For
  * example, foo.txt -> foo.tgz (.tgz must be reserved as shorthand for
@@ -71,6 +71,7 @@ static char const *const license_msg[] = {
 #include "timespec.h"
 
 #include "dirname.h"
+#include "dosname.h"
 #include "fcntl--.h"
 #include "getopt.h"
 #include "ignore-value.h"
@@ -429,7 +430,7 @@ int main (int argc, char **argv)
     program_name = gzip_base_name (argv[0]);
     proglen = strlen (program_name);
 
-    /* Suppress .exe for MSDOS, OS/2 and VMS: */
+    /* Suppress .exe for MSDOS and OS/2: */
     if (4 < proglen && strequ (program_name + proglen - 4, ".exe"))
       program_name[proglen - 4] = '\0';
 
@@ -447,7 +448,7 @@ int main (int argc, char **argv)
      * gzip even if it is invoked under the name gunzip or zcat.
      *
      * Systems which do not support links can still use -d or -dc.
-     * Ignore an .exe extension for MSDOS, OS/2 and VMS.
+     * Ignore an .exe extension for MSDOS and OS/2.
      */
     if (strncmp (program_name, "un",  2) == 0     /* ungzip, uncompress */
         || strncmp (program_name, "gun", 3) == 0) /* gunzip */
@@ -1149,8 +1150,6 @@ local int create_outfile()
  * also accepted suffixes. For Unix, we do not want to accept any
  * .??z suffix as indicating a compressed file; some people use .xyz
  * to denote volume data.
- *   On systems allowing multiple versions of the same file (such as VMS),
- * this function removes any version suffix in the given name.
  */
 local char *get_suffix(name)
     char *name;
@@ -1182,13 +1181,6 @@ local char *get_suffix(name)
                    : 0] = z_suffix;
     suf = known_suffixes + suffix_of_builtin;
 
-#ifdef SUFFIX_SEP
-    /* strip a version number from the file name */
-    {
-        char *v = strrchr(name, SUFFIX_SEP);
-        if (v != NULL) *v = '\0';
-    }
-#endif
     nlen = strlen(name);
     if (nlen <= MAX_SUFFIX+2) {
         strcpy(suffix, name);
@@ -1199,7 +1191,7 @@ local char *get_suffix(name)
     slen = strlen(suffix);
     do {
        int s = strlen(*suf);
-       if (slen > s && suffix[slen-s-1] != PATH_SEP
+       if (slen > s && ! ISSLASH (suffix[slen - s - 1])
            && strequ(suffix + slen - s, *suf)) {
            return name+nlen-s;
        }
@@ -1226,7 +1218,7 @@ open_and_stat (char *name, int flags, struct stat *st)
         flags |= O_NOFOLLOW;
       else
         {
-#if HAVE_LSTAT || defined lstat
+#ifdef S_ISLNK
           if (lstat (name, st) != 0)
             return -1;
           else if (S_ISLNK (st->st_mode))
@@ -1301,9 +1293,7 @@ open_input_file (iname, sbuf)
         progerror(ifname);
         return -1;
     }
-    /* file.ext doesn't exist, try adding a suffix (after removing any
-     * version number for VMS).
-     */
+    /* File.ext doesn't exist.  Try adding a suffix.  */
     s = get_suffix(ifname);
     if (s != NULL) {
         progerror(ifname); /* ifname already has z suffix and does not exist */
@@ -1510,7 +1500,7 @@ local int get_method(in)
     method = -1;                 /* unknown yet */
     part_nb++;                   /* number of parts in gzip file */
     header_bytes = 0;
-    last_member = RECORD_IO;
+    last_member = 0;
     /* assume multiple members in gzip file except for record oriented I/O */
 
     if (memcmp(magic, GZIP_MAGIC, 2) == 0
@@ -1753,7 +1743,7 @@ local void do_list(ifd, method)
     bytes_out = -1L;
     bytes_in = ifile_size;
 
-    if (!RECORD_IO && method == DEFLATED && !last_member) {
+    if (method == DEFLATED && !last_member) {
         /* Get the crc and uncompressed size for gzip'ed (not zip'ed) files.
          * If the lseek fails, we could use read() to get to the end, but
          * --list is used to get quick results.
@@ -1845,8 +1835,7 @@ local void shorten_name(name)
      * 1234.678.012.gz -> 123.678.012.gz
      */
     do {
-        p = strrchr(name, PATH_SEP);
-        p = p ? p+1 : name;
+        p = last_component (name);
         while (*p) {
             plen = strcspn(p, PART_SEP);
             p += plen;
@@ -2013,16 +2002,8 @@ local void treat_dir (fd, dir)
           continue;
         if (len + entrylen < MAX_PATH_LEN - 2) {
             strcpy(nbuf,dir);
-            if (len != 0 /* dir = "" means current dir on Amiga */
-#ifdef PATH_SEP2
-                && dir[len-1] != PATH_SEP2
-#endif
-#ifdef PATH_SEP3
-                && dir[len-1] != PATH_SEP3
-#endif
-            ) {
-                nbuf[len++] = PATH_SEP;
-            }
+            if (*last_component (nbuf) && !ISSLASH (nbuf[len - 1]))
+              nbuf[len++] = '/';
             strcpy (nbuf + len, entry);
             treat_file(nbuf);
         } else {
