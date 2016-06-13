@@ -139,7 +139,6 @@
 #endif
 
 #if defined(ATARI) || defined(atarist)
-#  define ASMV
 #  define OS_CODE  0x05
 #  ifdef TOSFS
 #    define MAX_PATH_LEN  128
