@@ -62,8 +62,8 @@ sc_prohibit_emacs__indent_tabs_mode__setting:
 
 sc_gzip_copyright_check:
 	@require='Copyright \(C\) '$$(date +%Y)' Free'			\
-	in_files=$(srcdir)/gzip.c					\
-	halt='out of date copyright in $(v_etc_file); update it'	\
+	in_vc_files=$(srcdir)/gzip.c					\
+	halt="out of date copyright in $$in_files; update it"		\
 	  $(_sc_search_regexp)
 
 include $(srcdir)/dist-check.mk
