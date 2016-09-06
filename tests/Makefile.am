@@ -25,6 +25,7 @@ TESTS =					\
   mixed					\
   null-suffix-clobber			\
   stdin					\
+  timestamp				\
   trailing-nul				\
   unpack-invalid			\
   z-suffix				\

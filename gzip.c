@@ -1537,8 +1537,15 @@ local int get_method(in)
         stamp |= ((ulg)get_byte()) << 24;
         if (stamp != 0 && !no_time)
           {
-            time_stamp.tv_sec = stamp;
-            time_stamp.tv_nsec = 0;
+            if (stamp <= TYPE_MAXIMUM (time_t))
+              {
+                time_stamp.tv_sec = stamp;
+                time_stamp.tv_nsec = 0;
+              }
+            else
+              WARN ((stderr,
+                     "%s: %s: MTIME %lu out of range for this platform\n",
+                     program_name, ifname, stamp));
           }
 
         magic[8] = get_byte ();  /* Ignore extra flags.  */

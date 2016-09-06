@@ -54,9 +54,15 @@ int zip(in, out)
         flags |= ORIG_NAME;
     }
     put_byte(flags);         /* general flags */
-    stamp = (0 <= time_stamp.tv_sec && time_stamp.tv_sec <= 0xffffffff
-             ? (ulg) time_stamp.tv_sec
-             : (ulg) 0);
+    if (0 < time_stamp.tv_sec && time_stamp.tv_sec <= 0xffffffff)
+      stamp = time_stamp.tv_sec;
+    else
+      {
+        /* It's intended that time stamp 0 generates this warning,
+           since gzip format reserves 0 for something else.  */
+        warning ("file time stamp out of range for gzip format");
+        stamp = 0;
+      }
     put_long (stamp);
 
     /* Write deflated file to zip file */

@@ -4,6 +4,12 @@ GNU gzip NEWS                                    -*- outline -*-
 
 ** Bug fixes
 
+  gzip now warns about file time stamps out of gzip range, or out of
+  time_t range, instead of silently continuing, sometimes with
+  undefined behavior.  This affects time stamps before 1970 or after
+  2106, and time stamps after 2038 on 32-bit platforms.
+  [bug present since the beginning]
+
   Support for VMS and Amiga has been removed.  It was not working anyway,
   and it reportedly caused file name glitches on MS-Windowsish platforms.
 
