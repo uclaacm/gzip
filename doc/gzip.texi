@@ -104,7 +104,7 @@ the compressed file.  These are used when decompressing the file with the
 truncated or when the time stamp was not preserved after a file
 transfer.  However, due to limitations in the current @command{gzip} file
 format, fractional seconds are discarded.  Also, time stamps must fall
-within the range 1970-01-01 00:00:00 through 2106-02-07 06:28:15
+within the range 1970-01-01 00:00:01 through 2106-02-07 06:28:15
 @abbr{UTC}, and hosts whose operating systems use 32-bit time
 stamps are further restricted to time stamps no later than 2038-01-19
 03:14:07 @abbr{UTC}.  The upper bounds assume the typical case
