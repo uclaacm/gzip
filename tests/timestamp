@@ -29,7 +29,7 @@ for time in 190101010000 196912312359.59 197001010000 210602070628.16; do
      gzip in
      test $? = 2 || fail=1
   fi
-  rm -f in in.gz
+  rm -f in.gz in
 done
 
 # Test that time stamps in range for gzip do not generate warnings.
@@ -37,7 +37,7 @@ for time in 197001010000.01 203801190314.07 203801190314.08 210602070628.15; do
   if touch -t $time in; then
      gzip in || fail=1
   fi
-  rm -f in in.gz
+  rm -f in.gz in
 done
 
 # On platforms that fail to support time stamps within gzip's range,
