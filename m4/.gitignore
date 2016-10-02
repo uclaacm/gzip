@@ -139,3 +139,5 @@
 /xalloc.m4
 /xsize.m4
 /yesno.m4
+/getprogname.m4
+/limits-h.m4

@@ -205,3 +205,6 @@
 /xsize.h
 /yesno.c
 /yesno.h
+/getprogname.c
+/getprogname.h
+/limits.in.h
