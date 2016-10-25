@@ -96,6 +96,7 @@
 /isnanl.c
 /itold.c
 /libgzip.a
+/limits.h
 /lseek.c
 /lstat.c
 /malloc.c
