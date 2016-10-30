@@ -23,8 +23,7 @@ printf '\n...: invalid compressed data--format violated\n' > exp \
   || framework_failure_
 
 fail=0
-gzip -dc "$abs_srcdir/hufts-segv.gz" > out 2> err
-test $? = 1 || fail=1
+returns_ 1 gzip -dc "$abs_srcdir/hufts-segv.gz" > out 2> err || fail=1
 
 compare /dev/null out || fail=1
 

@@ -26,8 +26,7 @@ export TZ
 # test that gzip warns when converting them to gzip format.
 for time in 190101010000 196912312359.59 197001010000 210602070628.16; do
   if touch -t $time in; then
-     gzip in
-     test $? = 2 || fail=1
+     returns_ 2 gzip in || fail=1
   fi
   rm -f in.gz in
 done
@@ -45,8 +44,7 @@ done
 touch -t 210602070628.15 in || {
   printf '\037\213\10\0\377\377\377\377\0\377\3\0\0\0\0\0\0\0\0\0' >y2106.gz ||
     framework_failure_
-  gzip -Nlv <y2106.gz
-  test $? = 2 || fail=1
+  returns_ 2 gzip -Nlv <y2106.gz || fail=1
 }
 
 # Ensure that --no-name does not provoke a time stamp warning.
