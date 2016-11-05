@@ -54,7 +54,9 @@ int zip(in, out)
         flags |= ORIG_NAME;
     }
     put_byte(flags);         /* general flags */
-    if (0 < time_stamp.tv_sec && time_stamp.tv_sec <= 0xffffffff)
+    if (time_stamp.tv_nsec < 0)
+      stamp = 0;
+    else if (0 < time_stamp.tv_sec && time_stamp.tv_sec <= 0xffffffff)
       stamp = time_stamp.tv_sec;
     else
       {

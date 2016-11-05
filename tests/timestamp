@@ -49,4 +49,7 @@ touch -t 210602070628.15 in || {
   test $? = 2 || fail=1
 }
 
+# Ensure that --no-name does not provoke a time stamp warning.
+: | gzip --no-name > k || fail=1
+
 Exit $fail
