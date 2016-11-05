@@ -285,7 +285,6 @@ static const struct option longopts[] =
     {"recursive",  0, 0, 'r'}, /* recurse through directories */
     {"suffix",     1, 0, 'S'}, /* use given suffix instead of .gz */
     {"test",       0, 0, 't'}, /* test compressed file integrity */
-    {"no-time",    0, 0, 'T'}, /* don't save or restore the time stamp */
     {"verbose",    0, 0, 'v'}, /* verbose mode */
     {"version",    0, 0, 'V'}, /* display version number */
     {"fast",       0, 0, '1'}, /* compress faster */
@@ -358,7 +357,7 @@ local void help()
  "  -l, --list        list compressed file contents",
  "  -L, --license     display software license",
 #ifdef UNDOCUMENTED
- "  -m, --no-time     do not save or restore the original modification time",
+ "  -m                do not save or restore the original modification time",
  "  -M, --time        save or restore the original modification time",
 #endif
  "  -n, --no-name     do not save or restore the original name and time stamp",
@@ -1462,7 +1461,7 @@ discard_input_bytes (nbytes, flags)
  * original name was given and to_stdout is not set.
  * Return the compression method, -1 for error, -2 for warning.
  * Set inptr to the offset of the next byte to be processed.
- * Updates time_stamp if there is one and --no-time is not used.
+ * Updates time_stamp if there is one and neither -m nor -n is used.
  * This function may be called repeatedly for an input file consisting
  * of several contiguous gzip'ed members.
  * IN assertions: there is at least one remaining compressed member.
