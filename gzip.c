@@ -189,11 +189,16 @@ static int foreground = 0;   /* set if program run in foreground */
        int save_orig_name;   /* set if original name must be saved */
 static int last_member;      /* set for .zip and .Z files */
 static int part_nb;          /* number of parts in .gz file */
-       struct timespec time_stamp; /* original time stamp (modification time) */
        off_t ifile_size;      /* input file size, -1 for devices (debug only) */
 static char *env;            /* contents of GZIP env variable */
 static char const *z_suffix; /* default suffix (can be set with --suffix) */
 static size_t z_len;         /* strlen(z_suffix) */
+
+/* The original time stamp (modification time).  Its tv_nsec component
+   is negative if the original time is unknown or is out of time_t
+   range; the latter can happen on hosts with 32-bit signed time_t
+   because the gzip format's MTIME is 32-bit unsigned.  */
+struct timespec time_stamp;
 
 /* The set of signals that are caught.  */
 static sigset_t caught_signals;
@@ -1534,17 +1539,10 @@ local int get_method(in)
         stamp |= ((ulg)get_byte()) << 8;
         stamp |= ((ulg)get_byte()) << 16;
         stamp |= ((ulg)get_byte()) << 24;
-        if (stamp != 0 && !no_time)
+        if (!no_time && 0 < stamp && stamp <= TYPE_MAXIMUM (time_t))
           {
-            if (stamp <= TYPE_MAXIMUM (time_t))
-              {
-                time_stamp.tv_sec = stamp;
-                time_stamp.tv_nsec = 0;
-              }
-            else
-              WARN ((stderr,
-                     "%s: %s: MTIME %lu out of range for this platform\n",
-                     program_name, ifname, stamp));
+            time_stamp.tv_sec = stamp;
+            time_stamp.tv_nsec = 0;
           }
 
         magic[8] = get_byte ();  /* Ignore extra flags.  */
@@ -1773,7 +1771,9 @@ local void do_list(ifd, method)
         static char const month_abbr[][4]
           = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-        struct tm *tm = localtime (&time_stamp.tv_sec);
+        struct tm *tm = (time_stamp.tv_nsec < 0
+                         ? NULL
+                         : localtime (&time_stamp.tv_sec));
         printf ("%5s %08lx ", methods[method], crc);
         if (tm)
           printf ("%s%3d %02d:%02d ", month_abbr[tm->tm_mon],
@@ -1919,21 +1919,23 @@ local void copy_stat(ifstat)
     int r;
 
 #ifndef NO_UTIME
+    bool restoring;
     struct timespec timespec[2];
     timespec[0] = get_stat_atime (ifstat);
     timespec[1] = get_stat_mtime (ifstat);
+    restoring = (decompress && 0 <= time_stamp.tv_nsec
+                 && ! (timespec[1].tv_sec == time_stamp.tv_sec
+                       && timespec[1].tv_nsec == time_stamp.tv_nsec));
+    if (restoring)
+      timespec[1] = time_stamp;
 
-    if (decompress && 0 <= time_stamp.tv_nsec
-        && ! (timespec[1].tv_sec == time_stamp.tv_sec
-              && timespec[1].tv_nsec == time_stamp.tv_nsec))
+    if (fdutimens (ofd, ofname, timespec) == 0)
       {
-        timespec[1] = time_stamp;
-        if (verbose > 1) {
+        if (restoring && 1 < verbose) {
             fprintf(stderr, "%s: time stamp restored\n", ofname);
         }
       }
-
-    if (fdutimens (ofd, ofname, timespec) != 0)
+    else
       {
         int e = errno;
         WARN ((stderr, "%s: ", program_name));
