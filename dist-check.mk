@@ -177,7 +177,7 @@ my-distcheck: $(DIST_ARCHIVES) $(local-check)
 	mkdir -p $(t)
 	$(amtar_extract_) $(preferred_tarball_) -C $(t)
 	(set -e; cd $(t)/$(distdir);			\
-	  ./configure --quiet --enable-gcc-warnings --disable-nls; \
+	  ./configure --quiet --enable-gcc-warnings; \
 	  $(MAKE) AM_MAKEFLAGS='$(null_AM_MAKEFLAGS)';	\
 	  $(MAKE) dvi;					\
 	  $(install-transform-check);			\
