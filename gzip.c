@@ -194,7 +194,7 @@ static char *env;            /* contents of GZIP env variable */
 static char const *z_suffix; /* default suffix (can be set with --suffix) */
 static size_t z_len;         /* strlen(z_suffix) */
 
-/* The original time stamp (modification time).  Its tv_nsec component
+/* The original timestamp (modification time).  Its tv_nsec component
    is negative if the original time is unknown or is out of time_t
    range; the latter can happen on hosts with 32-bit signed time_t
    because the gzip format's MTIME is 32-bit unsigned.  */
@@ -365,8 +365,8 @@ local void help()
  "  -m                do not save or restore the original modification time",
  "  -M, --time        save or restore the original modification time",
 #endif
- "  -n, --no-name     do not save or restore the original name and time stamp",
- "  -N, --name        save or restore the original name and time stamp",
+ "  -n, --no-name     do not save or restore the original name and timestamp",
+ "  -N, --name        save or restore the original name and timestamp",
  "  -q, --quiet       suppress all warnings",
 #if ! NO_DIR
  "  -r, --recursive   operate recursively on directories",
@@ -752,7 +752,7 @@ local void treat_stdin()
     strcpy(ifname, "stdin");
     strcpy(ofname, "stdout");
 
-    /* Get the file's time stamp and size.  */
+    /* Get the file's timestamp and size.  */
     if (fstat (STDIN_FILENO, &istat) != 0)
       {
         progerror ("standard input");
@@ -1479,7 +1479,7 @@ local int get_method(in)
     uch magic[10]; /* magic header */
     int imagic0;   /* first magic byte or EOF */
     int imagic1;   /* like magic[1], but can represent EOF */
-    ulg stamp;     /* time stamp */
+    ulg stamp;     /* timestamp */
 
     /* If --force and --stdout, zcat == cat, so do not complain about
      * premature end of file: use try_byte instead of get_byte.
@@ -1932,7 +1932,7 @@ local void copy_stat(ifstat)
     if (fdutimens (ofd, ofname, timespec) == 0)
       {
         if (restoring && 1 < verbose) {
-            fprintf(stderr, "%s: time stamp restored\n", ofname);
+            fprintf(stderr, "%s: timestamp restored\n", ofname);
         }
       }
     else

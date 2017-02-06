@@ -22,7 +22,7 @@
 TZ=UTC0
 export TZ
 
-# On platforms supporting time stamps outside gzip's range,
+# On platforms supporting timestamps outside gzip's range,
 # test that gzip warns when converting them to gzip format.
 for time in 190101010000 196912312359.59 197001010000 210602070628.16; do
   if touch -t $time in; then
@@ -31,7 +31,7 @@ for time in 190101010000 196912312359.59 197001010000 210602070628.16; do
   rm -f in.gz in
 done
 
-# Test that time stamps in range for gzip do not generate warnings.
+# Test that timestamps in range for gzip do not generate warnings.
 for time in 197001010000.01 203801190314.07 203801190314.08 210602070628.15; do
   if touch -t $time in; then
      gzip in || fail=1
@@ -39,7 +39,7 @@ for time in 197001010000.01 203801190314.07 203801190314.08 210602070628.15; do
   rm -f in.gz in
 done
 
-# On platforms that fail to support time stamps within gzip's range,
+# On platforms that fail to support timestamps within gzip's range,
 # test that gzip warns when converting them from gzip format.
 touch -t 210602070628.15 in || {
   printf '\037\213\10\0\377\377\377\377\0\377\3\0\0\0\0\0\0\0\0\0' >y2106.gz ||
@@ -47,7 +47,7 @@ touch -t 210602070628.15 in || {
   returns_ 2 gzip -Nlv <y2106.gz || fail=1
 }
 
-# Ensure that --no-name does not provoke a time stamp warning.
+# Ensure that --no-name does not provoke a timestamp warning.
 : | gzip --no-name > k || fail=1
 
 Exit $fail

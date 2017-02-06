@@ -141,3 +141,4 @@
 /yesno.m4
 /getprogname.m4
 /limits-h.m4
+/pthread_rwlock_rdlock.m4

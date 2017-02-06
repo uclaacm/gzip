@@ -97,10 +97,10 @@ input size or the available size on the output media. If input does
 not come from a regular disk file, the file modification time is set
 to the time at which compression started.
 
-The time stamp is useful mainly when one gzip file is transferred over
+The timestamp is useful mainly when one gzip file is transferred over
 a network. In this case it would not help to keep ownership
 attributes. In the local case, the ownership attributes are preserved
-by gzip when compressing/decompressing the file. A time stamp of zero
+by gzip when compressing/decompressing the file. A timestamp of zero
 is ignored.
 
 Bit 0 in the flags is only an optional indication, which can be set by

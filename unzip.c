@@ -96,7 +96,7 @@ int check_zipfile(in)
     ext_header = (h[LOCFLG] & EXTFLG) != 0;
     pkzip = 1;
 
-    /* Get ofname and time stamp from local header (to be done) */
+    /* Get ofname and timestamp from local header (to be done) */
     return OK;
 }
 

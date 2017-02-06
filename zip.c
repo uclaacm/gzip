@@ -60,9 +60,9 @@ int zip(in, out)
       stamp = time_stamp.tv_sec;
     else
       {
-        /* It's intended that time stamp 0 generates this warning,
+        /* It's intended that timestamp 0 generates this warning,
            since gzip format reserves 0 for something else.  */
-        warning ("file time stamp out of range for gzip format");
+        warning ("file timestamp out of range for gzip format");
         stamp = 0;
       }
     put_long (stamp);

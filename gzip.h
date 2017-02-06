@@ -152,7 +152,7 @@ extern char ifname[];   /* input file name or "stdin" */
 extern char ofname[];   /* output file name or "stdout" */
 extern char *program_name;  /* program name */
 
-extern struct timespec time_stamp; /* original time stamp (modification time) */
+extern struct timespec time_stamp; /* original timestamp (modification time) */
 extern off_t ifile_size; /* input file size, -1 for devices (debug only) */
 
 typedef int file_t;     /* Do not use stdio */

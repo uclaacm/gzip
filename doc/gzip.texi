@@ -98,15 +98,15 @@ For example, if file names are limited to 14 characters, gzip.msdos.exe
 is compressed to gzi.msd.exe.gz.  Names are not truncated on systems
 which do not have a limit on file name length.
 
-By default, @command{gzip} keeps the original file name and time stamp in
+By default, @command{gzip} keeps the original file name and timestamp in
 the compressed file.  These are used when decompressing the file with the
 @option{-N} option.  This is useful when the compressed file name was
-truncated or when the time stamp was not preserved after a file
+truncated or when the timestamp was not preserved after a file
 transfer.  However, due to limitations in the current @command{gzip} file
-format, fractional seconds are discarded.  Also, time stamps must fall
+format, fractional seconds are discarded.  Also, timestamps must fall
 within the range 1970-01-01 00:00:01 through 2106-02-07 06:28:15
-@abbr{UTC}, and hosts whose operating systems use 32-bit time
-stamps are further restricted to time stamps no later than 2038-01-19
+@abbr{UTC}, and hosts whose operating systems use 32-bit timestamps
+are further restricted to timestamps no later than 2038-01-19
 03:14:07 @abbr{UTC}.  The upper bounds assume the typical case
 where leap seconds are ignored.
 
@@ -168,7 +168,7 @@ larger than the original.  The worst case expansion is a few bytes for
 the @command{gzip} file header, plus 5 bytes every 32K block, or an expansion
 ratio of 0.015% for large files.  Note that the actual number of used
 disk blocks almost never increases.  @command{gzip} normally preserves the mode,
-ownership and time stamps of files when compressing or decompressing.
+ownership and timestamps of files when compressing or decompressing.
 
 The @command{gzip} file format is specified in P. Deutsch, GZIP file
 format specification version 4.3,
@@ -199,8 +199,8 @@ Mandatory arguments to long options are mandatory for short options too.
   -k, --keep        keep (don't delete) input files
   -l, --list        list compressed file contents
   -L, --license     display software license
-  -n, --no-name     do not save or restore the original name and time stamp
-  -N, --name        save or restore the original name and time stamp
+  -n, --no-name     do not save or restore the original name and timestamp
+  -N, --name        save or restore the original name and timestamp
   -q, --quiet       suppress all warnings
   -r, --recursive   operate recursively on directories
       --rsyncable   make rsync-friendly archive
@@ -309,7 +309,7 @@ displayed:
 @example
 method: compression method (deflate,compress,lzh,pack)
 crc: the 32-bit CRC of the uncompressed data
-date & time: time stamp for the uncompressed file
+date & time: timestamp for the uncompressed file
 @end example
 
 The @abbr{CRC} is given as ffffffff for a file not in gzip format.
@@ -334,20 +334,20 @@ Display the @command{gzip} license then quit.
 
 @item --no-name
 @itemx -n
-When compressing, do not save the original file name and time stamp by
+When compressing, do not save the original file name and timestamp by
 default.  (The original name is always saved if the name had to be
 truncated.)  When decompressing, do not restore the original file name
 if present (remove only the @command{gzip}
 suffix from the compressed file name) and do not restore the original
-time stamp if present (copy it from the compressed file).  This option
+timestamp if present (copy it from the compressed file).  This option
 is the default when decompressing.
 
 @item --name
 @itemx -N
-When compressing, always save the original file name and time stamp; this
+When compressing, always save the original file name and timestamp; this
 is the default.  When decompressing, restore the original file name and
-time stamp if present.  This option is useful on systems which have
-a limit on file name length or when the time stamp has been lost after
+timestamp if present.  This option is useful on systems which have
+a limit on file name length or when the timestamp has been lost after
 a file transfer.
 
 @item --quiet

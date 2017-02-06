@@ -1,5 +1,5 @@
 #! /usr/local/bin/perl
-# Set the time stamp of a gzip'ed file from that stored in the file.
+# Set the timestamp of a gzip'ed file from that stored in the file.
 # usage: ztouch files...
 
 foreach $file (@ARGV) {

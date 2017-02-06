@@ -34,8 +34,8 @@ Mandatory arguments to long options are mandatory for short options too.
   -f, --force       force overwrite of output file and compress links
   -k, --keep        keep (don't delete) input files
   -l, --list        list compressed file contents
-  -n, --no-name     do not save or restore the original name and time stamp
-  -N, --name        save or restore the original name and time stamp
+  -n, --no-name     do not save or restore the original name and timestamp
+  -N, --name        save or restore the original name and timestamp
   -q, --quiet       suppress all warnings
   -r, --recursive   operate recursively on directories
   -S, --suffix=SUF  use suffix SUF on compressed files

@@ -56,7 +56,7 @@ keeps the original file name and timestamp in the compressed file. These
 are used when decompressing the file with the
 .B \-N
 option. This is useful when the compressed file name was truncated or
-when the time stamp was not preserved after a file transfer.
+when the timestamp was not preserved after a file transfer.
 .PP
 Compressed files can be restored to their original form using
 .I gzip -d
@@ -238,7 +238,7 @@ displayed:
 
     method: compression method
     crc: the 32-bit CRC of the uncompressed data
-    date & time: time stamp for the uncompressed file
+    date & time: timestamp for the uncompressed file
 
 The compression methods currently supported are deflate, compress, lzh
 (SCO compress -H) and pack.  The crc is given as ffffffff for a file
@@ -257,20 +257,20 @@ Display the
 license and quit.
 .TP
 .B \-n --no-name
-When compressing, do not save the original file name and time stamp by
+When compressing, do not save the original file name and timestamp by
 default. (The original name is always saved if the name had to be
 truncated.) When decompressing, do not restore the original file name
 if present (remove only the
 .I gzip
 suffix from the compressed file name) and do not restore the original
-time stamp if present (copy it from the compressed file). This option
+timestamp if present (copy it from the compressed file). This option
 is the default when decompressing.
 .TP
 .B \-N --name
-When compressing, always save the original file name and time stamp; this
+When compressing, always save the original file name and timestamp; this
 is the default. When decompressing, restore the original file name and
-time stamp if present. This option is useful on systems which have
-a limit on file name length or when the time stamp has been lost after
+timestamp if present. This option is useful on systems which have
+a limit on file name length or when the timestamp has been lost after
 a file transfer.
 .TP
 .B \-q --quiet

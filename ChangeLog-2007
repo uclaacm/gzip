@@ -234,7 +234,7 @@
 	(treat_file): Do not report an error with setuid, setgid,
 	sticky, or non-regular, non-directory files if to_stdout.
 	Allow 'force' to override the caution about sticky files.
-	Use the same form for time stamps that treat_stdin uses.
+	Use the same form for timestamps that treat_stdin uses.
 
 	* zdiff.in: Fix typo that broke most usages.  Problem reported by
 	Jari Aalto in <http://bugs.debian.org/404114>.  While we're at it,
@@ -463,7 +463,7 @@
 2006-12-01  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* doc/gzip.texi (Overview): Mention limits of gzip format's
-	time stamps.  Also, gzip doesn't always preserve time stamps.
+	timestamps.  Also, gzip doesn't always preserve timestamps.
 
 	* gzip.c (abort_gzip_signal): Don't call abort () as a "safeguard",
 	since it actually causes a core dump.  Problem reported by
@@ -605,7 +605,7 @@
 	On usage errors, suggest --help without outputting all the help.
 	(main, do_list): Remove unnecessary casts.
 	(treat_stdin, treat_file, get_method, copy_stat):
-	Support sub-second time stamp resolution.
+	Support sub-second timestamp resolution.
 	(treat_file, copy_istat): Close some race conditions if files are
 	renamed as we read or write them.
 	(treat_file): Do not attempt to reset the access times of
@@ -616,8 +616,8 @@
 	(make_ofname): Don't use WARN, as it affects exit status.
 	(get_method): When the original file name was truncated,
 	restore from its base name, not from its full name.
-	(do_list): Avoid undefined behavior with out-of-range time stamps.
-	ctime, for example, cannot be invoked on arbitrary time stamps safely,
+	(do_list): Avoid undefined behavior with out-of-range timestamps.
+	ctime, for example, cannot be invoked on arbitrary timestamps safely,
 	since it might overrun an internal buffer.  Do not assume that
 	localtime succeeds.
 	(copy_stat): Do not remove input file; that's now the caller's
@@ -647,8 +647,8 @@
 	All uses changed.
 	(xalloc_die): New function.
 	(xmalloc): Remove; no longer needed.
-	* zip.c (zip): Watch for time stamp overflow; the old code
-	mishandled negative time stamps.
+	* zip.c (zip): Watch for timestamp overflow; the old code
+	mishandled negative timestamps.
 
 	* gzexe.in: Add support for --help, --version, --.
 	Don't call basename or sed if we can avoid it.
@@ -1228,7 +1228,7 @@ Wed Aug 18 09:34:23 1993  Jean-loup Gailly  (jloup@chorus.fr)
 	Check also the correctness of the first byte of an .Z file.
 	Return non zero status for an invalid option.
         Remove "NEWFILES" from os2/gzip.def for Borland C++ on OS/2.
-	Remove "time stamp restored" message (just obey the -N request).
+	Remove "timestamp restored" message (just obey the -N request).
 
 Thu Jun 24 10:27:57 1993  Jean-loup Gailly  (jloup@chorus.fr)
 
@@ -1376,8 +1376,8 @@ Fri May 28 11:40:01 1993  Jean-loup Gailly  (jloup@chorus.fr)
 	 Do not use the variable name 'overhead' which is reserved on Lynx!
 	 One BULL compiler does not like *p++ in inflate.c => *p, p++.
 	 Use casts on free and memcmp to avoid warnings.
-         Remove the "off by more than one minute" time stamp kludge, but
-           document how to avoid saving the time stamp on pipes if desired.
+         Remove the "off by more than one minute" timestamp kludge, but
+           document how to avoid saving the timestamp on pipes if desired.
 	 Include crypt.h in inflate.c (one system predefines the CRYPT symbol).
 	 Add links to gunzip and (g)zcat in the default make rule.
          Create installation directories if they do not exist.
@@ -1422,7 +1422,7 @@ Thu Mar 18 18:56:43 1993  Jean-loup Gailly  (jloup@chorus.fr)
 	  Fix acgeneral.m4 AC_COMPILE_CHECK to avoid warnings.
 	  Don't use alloca.c with gcc. (One NeXT user did not have alloca.h).
 	  Change all error messages according to GNU standards.
-	  Restore time stamp only if off by more than one minute.
+	  Restore timestamp only if off by more than one minute.
 	  Allow installation of zcat as gzcat.
 	  Suppress help message  and send compressed data to the terminal when
 	    gzip is invoked without parameters and without redirection.
@@ -1550,7 +1550,7 @@ Fri Feb  10 09:45:49 1993  Jean-loup Gailly  (jloup@chorus.fr)
 	  Fix unlzw.c to make DYN_ALLOC and MAXSEG_64K independent options.
 	  Allow INBUFSIZ to be >= 32K in unlzw (don't use sign of rsize)
 	  Generate tar file in old format to avoid problems with old systems.
-	  Preserve time stamp in znew -P if touch -r works.
+	  Preserve timestamp in znew -P if touch -r works.
 	  Use ${PAGER-more} instead of ${PAGER:-more} in zmore.
 	  Do not use unsigned instead of mode_t.
 	  Better error message for trailing garbage in .z file; ignore this
@@ -1652,7 +1652,7 @@ Mon Jan  5 10:16:24 1993  Jean-loup Gailly  (jloup@chorus.fr)
 	* Beta version 0.7
 	  Use "make check" instead of "make test".
 	  Do not rely on dirname in znew.
-	  Keep time stamp and pass options to gzip in znew.
+	  Keep timestamp and pass options to gzip in znew.
 	  Rename .l files back to .1 to avoid conflict with lex
 	  Do not create .z.z files with gzip -r.
 	  Use nice_match in match.asm
@@ -1679,7 +1679,7 @@ Tue Dec 30 20:00:19 1992  Jean-loup Gailly  (jloup@chorus.fr)
 	  Display "untested" instead of "OK" for gzip -t foo.Z
 	  With -t, skip stdin in .Z format
 	  Allow multiple compressed members in an input file.
-	  Ignore a zero time stamp.
+	  Ignore a zero timestamp.
 	  Made znew safer.
 
 Tue Dec 29 10:00:19 1992   Noah Friedman  (friedman@gnu.ai.mit.edu)
