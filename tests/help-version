@@ -155,7 +155,7 @@ dd_setup () { args=status=noxfer; }
 
 zdiff_setup () { args="$args $zin $zin2"; }
 zcmp_setup () { zdiff_setup; }
-zcat_setup () { args="$args $zin"; }
+zcat_setup () { TERM=dumb; export TERM; args="$args $zin"; }
 gunzip_setup () { zcat_setup; }
 zmore_setup () { zcat_setup; }
 zless_setup () { zcat_setup; }
