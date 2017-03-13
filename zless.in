@@ -47,7 +47,7 @@ if test "${LESSMETACHARS+set}" != set; then
   export LESSMETACHARS
 fi
 
-less_version=`less -V` || exit
+less_version=`less -V 2>/dev/null`
 case $less_version in
 less' '45[1-9]* | \
 less' '4[6-9][0-9]* | \
