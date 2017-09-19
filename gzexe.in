@@ -45,7 +45,8 @@ There is NO WARRANTY, to the extent permitted by law.
 Written by Jean-loup Gailly.'
 
 usage="Usage: $0 [OPTION] FILE...
-Rename each FILE with a compressed version of itself, renaming FILE to FILE~.
+Replace each executable FILE with a compressed version of itself.
+Make a backup FILE~ of the old version of FILE.
 
   -d             Decompress each FILE instead of compressing it.
       --help     display this help and exit
