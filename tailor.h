@@ -202,3 +202,11 @@
 #ifndef SET_BINARY_MODE
 #  define SET_BINARY_MODE(fd)
 #endif
+
+#ifndef FALLTHROUGH
+# if __GNUC__ < 7
+#  define FALLTHROUGH ((void) 0)
+# else
+#  define FALLTHROUGH __attribute__ ((__fallthrough__))
+# endif
+#endif

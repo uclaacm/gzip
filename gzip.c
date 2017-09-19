@@ -599,7 +599,7 @@ int main (int argc, char **argv)
         case '4' + ENV_OPTION:  case '5' + ENV_OPTION:  case '6' + ENV_OPTION:
         case '7' + ENV_OPTION:  case '8' + ENV_OPTION:  case '9' + ENV_OPTION:
             optc -= ENV_OPTION;
-            /* Fall through.  */
+            FALLTHROUGH;
         case '1':  case '2':  case '3':  case '4':
         case '5':  case '6':  case '7':  case '8':  case '9':
             level = optc - '0';
