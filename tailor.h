@@ -45,7 +45,6 @@
 #    define MAXSEG_64K
 #    ifdef __TURBOC__
 #      define off_t long
-#      define HAVE_UTIME_H
 #    else /* MSC */
 #      define HAVE_SYS_UTIME_H
 #    endif
@@ -89,9 +88,6 @@
 #    define HAVE_SYS_UTIME_H
 #    define EXPAND(argc,argv) \
        {_response(&argc, &argv); _wildcard(&argc, &argv);}
-#  endif
-#  ifdef __BORLANDC__
-#    define HAVE_UTIME_H
 #  endif
 #  ifdef __ZTC__
 #    define NO_DIR 1
