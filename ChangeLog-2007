@@ -6,7 +6,7 @@
 	* gzip.c (handled_sig): Move out of install_signal_handlers, and
 	move previous to all uses of SIGPIPE, to fix a bug encountered when
 	porting to mingw32.  Reported by Robert Millan in
-	<http://lists.gnu.org/archive/html/bug-gzip/2007-11/msg00007.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2007-11/msg00007.html>.
 
 2007-10-04  Paul Eggert  <eggert@cs.ucla.edu>
 
@@ -15,7 +15,7 @@
 	* Makefile.am (gzip.doc.gz, check-local): Depend on $(bin_PROGRAMS).
 	(gzip.doc.gz): Use our gzip, not the system-installed one.
 	Problem reported by Chris Staub in
-	<http://lists.gnu.org/archive/html/bug-gzip/2007-10/msg00000.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2007-10/msg00000.html>.
 
 2007-07-03  Paul Eggert  <eggert@cs.ucla.edu>
 
@@ -32,14 +32,14 @@
 2007-06-04  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* gzip.c (get_method): Fix typo: "a a" -> "a" in diagnostic.  Reported
-	by Justin Pryzby in Debian bug 426965 <http://bugs.debian.org/426965>.
+	by Justin Pryzby in Debian bug 426965 <https://bugs.debian.org/426965>.
 
 2007-05-07  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* NEWS: 'gzip -f foo.gz' now works instead of complaining.
 	* gzip.c (make_ofname): Implement this.
 	Problem reported by Sven Hartrumpf in
-	<http://lists.gnu.org/archive/html/bug-gzip/2007-05/msg00003.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2007-05/msg00003.html>.
 
 	* NEWS, gzip.1: Document that case is ignored when looking at file name
 	extensions.
@@ -51,7 +51,7 @@
 	consistency with other substitutions.
 	(check-local): Use --__bindir . rather than setting GZIP_BINDIR=.,
 	to allay security concerns voiced by Joerg Lehners in
-	<http://lists.gnu.org/archive/html/bug-gzip/2007-04/msg00003.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2007-04/msg00003.html>.
 	* gunzip.in, gzexe.in, zcat.in, zcmp.in, zdiff.in, zegrep.in, zfgrep.in:
 	* zforce.in, zgrep.in, zless.in, zmore.in, znew.in:
 	Support --__bindir rather than GZIP_BINDIR.
@@ -59,13 +59,13 @@
 	* gunzip.in, zcat.in, zcmp.in: Support --help and --version
 	directly, to avoid some confusion in help and version output.
 	Problem reported by Eric Blake in
-	<http://lists.gnu.org/archive/html/bug-gzip/2007-04/msg00006.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2007-04/msg00006.html>.
 
 2007-04-28  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* m4/shell.m4 (AC_PROG_SHELL): Check for old-fashioned shells that
 	don't allow "(" in front of case labels.  Problem reported by midair
-	in <http://lists.gnu.org/archive/html/bug-gzip/2007-04/msg00004.html>.
+	in <https://lists.gnu.org/archive/html/bug-gzip/2007-04/msg00004.html>.
 	Also, check for buggy shells that require ";;" before "esac".
 
 2007-04-13  Paul Eggert  <eggert@cs.ucla.edu>
@@ -113,7 +113,7 @@
 
 	* README (WARNING): Reword to avoid mention of no-longer-existing
 	section in INSTALL file.  Problem reported by Paul Townsend in
-	<http://lists.gnu.org/archive/html/bug-gzip/2007-03/msg00000.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2007-03/msg00000.html>.
 
 2007-02-11  Paul Eggert  <eggert@cs.ucla.edu>
 
@@ -126,7 +126,7 @@
 	* zdiff.in: Don't use '((' in a shell script, as it's not portable
 	to some ksh implementations, e.g., Solaris 10 ksh M-11/16/88i.
 	Problem reported by Nelson H. F. Beebe in
-	<http://lists.gnu.org/archive/html/bug-gzip/2007-02/msg00005.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2007-02/msg00005.html>.
 
 2007-02-05  Paul Eggert  <eggert@cs.ucla.edu>
 
@@ -171,21 +171,21 @@
 
 	* m4/shell.m4 (AC_PROG_SHELL): Test that $(...) works.
 	Problem reported for SGI IRIX 6 by Nelson H. F. Beebe in
-	<http://lists.gnu.org/archive/html/bug-gzip/2007-01/msg00007.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2007-01/msg00007.html>.
 
 2007-01-04  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* zdiff.in (cmp0): New var.
 	Rewrite test for /dev/fd/3 to detect bugs in Solaris 8
 	/bin/bash 2.03.  Problem reported by Nelson H. F. Beebe in
-	<http://lists.gnu.org/archive/html/bug-gzip/2007-01/msg00001.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2007-01/msg00001.html>.
 	Avoid "for file; do", which doesn't work with Solaris 8 /bin/sh.
 
 2007-01-03  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* zdiff.in: Test /dev//fd/3, not /dev/fd/3, to work around a problem
 	with Tru64 4.0F ksh M-11/16/88f reported by Thomas Koutcher in
-	<http://lists.gnu.org/archive/html/bug-gzip/2007-01/msg00000.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2007-01/msg00000.html>.
 
 2006-12-30  Paul Eggert  <eggert@cs.ucla.edu>
 
@@ -200,11 +200,11 @@
 
 	* zless.in: Work around a bug in less 394 and earlier; it
 	mishandles $%=~ in file names.  Problem reported by
-	Sami Liedes in <http://bugs.debian.org/383358>.
+	Sami Liedes in <https://bugs.debian.org/383358>.
 
 	* doc/gzip.texi: Swap order of dircategory entries, to pacify
 	Debian install-info 1.10.28.  This should fix
-	<http://bugs.debian.org/404048>.
+	<https://bugs.debian.org/404048>.
 
 	* zgrep.in (version): Fix bug: $grep wasn't evaluated.
 
@@ -215,7 +215,7 @@
 
 2006-12-26  Paul Eggert  <eggert@cs.ucla.edu>
 
-	Fix Debian bug 367673 <http://bugs.debian.org/367673> plus several
+	Fix Debian bug 367673 <https://bugs.debian.org/367673> plus several
 	other bugs discovered in the neighborhood.
 	* NEWS: gzip -q now exits with status 2 (not 1) on SIGPIPE.
 	zgrep has many bugs fixed with argument handling, special characters,
@@ -226,7 +226,7 @@
 2006-12-23  Paul Eggert  <eggert@cs.ucla.edu>
 
 	* NEWS: Fix bug reported by Martin Mares in
-	<http://bugs.debian.org/177942>.
+	<https://bugs.debian.org/177942>.
 	* gzip.c (treat_stdin): Remove NO_STDIN_FSTAT and NO_PIPE_TIMESTAMP
 	stuff.  It didn't work (led to syntax errors) and was confusing.
 	Report an error if stdin cannot be statted even if !list && no_time.
@@ -237,7 +237,7 @@
 	Use the same form for timestamps that treat_stdin uses.
 
 	* zdiff.in: Fix typo that broke most usages.  Problem reported by
-	Jari Aalto in <http://bugs.debian.org/404114>.  While we're at it,
+	Jari Aalto in <https://bugs.debian.org/404114>.  While we're at it,
 	fix a bunch of other problems.  Handle "-" better.  Send
 	diagnostics to stderr, not stdout.  Use expr rather than echo |
 	sed, to handle special characters better.  Report a diagnostic in
@@ -254,7 +254,7 @@
 
 	* zdiff.1: Mention that these programs currently understand only
 	formats that gzip does.  Problem reported by Jari Aalto in
-	<http://bugs.debian.org/404099>.
+	<https://bugs.debian.org/404099>.
 
 2006-12-20  Paul Eggert  <eggert@cs.ucla.edu>
 
@@ -338,12 +338,12 @@
 	* znew.in: Likewise.
 
 	Fix problems in porting to NSK reported by Matthew Woehlke in
-	<http://lists.gnu.org/archive/html/bug-gzip/2006-12/msg00025.html> and
-	<http://lists.gnu.org/archive/html/bug-gzip/2006-12/msg00027.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2006-12/msg00025.html> and
+	<https://lists.gnu.org/archive/html/bug-gzip/2006-12/msg00027.html>.
 	* gzip.h: Include <limits.h>, for SSIZE_MAX.
 	(INBUFSIZE): Don't make it any larger than SSIZE_MAX.
 	Problem reported by Matthew Woehlke in
-	<http://lists.gnu.org/archive/html/bug-gzip/2006-11/msg00013.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2006-11/msg00013.html>.
 	* gzip.c: Don't include <limits.h>, as gzip.h now does this.
 	* util.c: Likewise.
 	* gzip.c (main): Set exiting_signal before installing signal handlers.
@@ -368,7 +368,7 @@
 	* configure.ac (for assembler): Set ASFLAGS_config to
 	-Wa,--noexecstack if this seems advisable on this platform.
 	Problem reported by Mike Frysinger in
-	<http://lists.gnu.org/archive/html/bug-gzip/2006-12/msg00018.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2006-12/msg00018.html>.
 	* lib/Makefile.am (match.$(OBJEXT)): Use ASFLAGS_config.
 
 2006-12-07  Paul Eggert  <eggert@cs.ucla.edu>
@@ -378,7 +378,7 @@
 
 	* deflate.c (deflate_fast, deflate): Avoid core dump.  Problem
 	originally reported by Jochen Friedrich and trivial patch supplied
-	by Anthony Towns; see <http://bugs.debian.org/184057>.
+	by Anthony Towns; see <https://bugs.debian.org/184057>.
 
 2006-12-06  Paul Eggert  <eggert@cs.ucla.edu>
 
@@ -434,7 +434,7 @@
 
 	Port to Tandem NSK/OSS, which lacks fchdir.  Problem reported by
 	Matthew Woehlke in
-	<http://lists.gnu.org/archive/html/bug-gzip/2006-11/msg00013.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2006-11/msg00013.html>.
 	* bootstrap.conf (gnulib_modules): Remove openat, as it pulls in
 	fchdir.
 	* configure.ac: Check for fdopendir.
@@ -478,7 +478,7 @@
 	* gzexe.in: Sweep the code and fix some bugs.
 	My, what sharp teeth you have, gzexe!
 	The straw that broke this camel's back was Matthew Burgess's bug report
-	<http://lists.gnu.org/archive/html/bug-gzip/2006-11/msg00012.html>.
+	<https://lists.gnu.org/archive/html/bug-gzip/2006-11/msg00012.html>.
 
 	(IFS): Set it to the standard value, both here and in the
 	script gzexe generates.

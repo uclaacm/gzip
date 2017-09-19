@@ -9,10 +9,10 @@ Only the sources are installed in the CVS repository (to ease the
 maintenance, merges etc.), therefore you will have to get the latest
 stable versions of the maintainer tools we depend upon, including:
 
-- Automake <http://www.gnu.org/software/automake/>
-- Autoconf <http://www.gnu.org/software/autoconf/>
-- Tar <http://www.gnu.org/software/tar/>
-- Wget <http://www.gnu.org/software/wget/>
+- Automake <https://www.gnu.org/software/automake/>
+- Autoconf <https://www.gnu.org/software/autoconf/>
+- Tar <https://www.gnu.org/software/tar/>
+- Wget <https://www.gnu.org/software/wget/>
 
 Valgrind <http://valgrind.org/> is also highly recommended, if
 Valgrind supports your architecture.

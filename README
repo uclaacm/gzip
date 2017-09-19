@@ -1,6 +1,6 @@
 This is the file README for the gzip distribution.
 
-The GNU gzip home page is http://www.gnu.org/software/gzip.
+The GNU gzip home page is https://www.gnu.org/software/gzip.
 
 gzip (GNU zip) is a compression utility designed to be a replacement
 for 'compress'. Its main advantages over compress are much better
@@ -64,7 +64,7 @@ provided as example (not installed by default since it relies on perl).
 gzip is free software, you can redistribute it and/or modify it under
 the terms of the GNU General Public License, a copy of which is
 provided under the name COPYING. The latest version of gzip is always
-available from ftp://ftp.gnu.org/gnu/gzip or in any of the GNU
+available from https://ftp.gnu.org/gnu/gzip or in any of the GNU
 mirror sites.
 
 Many thanks to those who provided me with bug reports and feedback.
