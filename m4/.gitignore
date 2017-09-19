@@ -14,6 +14,7 @@
 /double-slash-root.m4
 /dup.m4
 /dup2.m4
+/eealloc.m4
 /errno_h.m4
 /error.m4
 /exponentd.m4
@@ -49,6 +50,7 @@
 /getcwd.m4
 /getdtablesize.m4
 /getopt.m4
+/getprogname.m4
 /gettime.m4
 /gettimeofday.m4
 /gnu-make.m4
@@ -68,11 +70,15 @@
 /lib-ld.m4
 /lib-link.m4
 /lib-prefix.m4
+/limits-h.m4
+/localtime-buffer.m4
 /lock.m4
 /longlong.m4
 /lseek.m4
 /lstat.m4
 /malloc.m4
+/malloca.m4
+/manywarnings-c++.m4
 /manywarnings.m4
 /math_h.m4
 /memchr.m4
@@ -85,6 +91,7 @@
 /multiarch.m4
 /nocrash.m4
 /off_t.m4
+/open-cloexec.m4
 /open.m4
 /openat.m4
 /opendir.m4
@@ -94,6 +101,7 @@
 /printf-frexpl.m4
 /printf-posix-rpl.m4
 /printf.m4
+/pthread_rwlock_rdlock.m4
 /readdir.m4
 /realloc.m4
 /rmdir.m4
@@ -126,7 +134,8 @@
 /unistd_h.m4
 /unlink.m4
 /unlinkat.m4
-/utimbuf.m4
+/utime.m4
+/utime_h.m4
 /utimens.m4
 /utimes.m4
 /vasnprintf.m4
@@ -139,6 +148,3 @@
 /xalloc.m4
 /xsize.m4
 /yesno.m4
-/getprogname.m4
-/limits-h.m4
-/pthread_rwlock_rdlock.m4
