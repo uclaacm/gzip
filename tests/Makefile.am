@@ -28,6 +28,7 @@ TESTS =					\
   timestamp				\
   trailing-nul				\
   unpack-invalid			\
+  unpack-valid				\
   z-suffix				\
   zdiff					\
   zgrep-f				\

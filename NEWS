@@ -4,6 +4,9 @@ GNU gzip NEWS                                    -*- outline -*-
 
 ** Bug fixes
 
+  When decompressing data in 'pack' format, gzip no longer mishandles
+  leading zeros in the end-of-block code.  [bug introduced in gzip-1.6]
+
   When converting timestamps to gzip file format (32-bit unsigned) or
   to time_t format (system-dependent), gzip now ignores out-of-range
   values instead of shoehorning them into the destination format,

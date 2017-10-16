@@ -186,6 +186,9 @@ local void build_tree()
         /* Restore nodes to be parents+leaves: */
         nodes += leaves[len];
     }
+    if ((nodes >> 1) != 1)
+      gzip_error ("too few leaves in Huffman tree");
+
     /* Construct the prefix table, from shortest leaves to longest ones.
      * The shortest code is all ones, so we start at the end of the table.
      */
@@ -250,10 +253,8 @@ int unpack(in, out)
               }
         }
         /* At this point, peek is the next complete code, of len bits */
-        if (peek == eob)
+        if (peek == eob && len == max_len)
           break; /* End of file.  */
-        if (eob < peek)
-          gzip_error ("invalid compressed data--code out of range");
         put_ubyte(literal[peek+lit_base[len]]);
         Tracev((stderr,"%02d %04x %c\n", len, peek,
                 literal[peek+lit_base[len]]));
