@@ -148,3 +148,4 @@
 /xalloc.m4
 /xsize.m4
 /yesno.m4
+/host-cpu-c-abi.m4
