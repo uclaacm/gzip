@@ -77,6 +77,7 @@ static char const *const license_msg[] = {
 #include "ignore-value.h"
 #include "stat-time.h"
 #include "version.h"
+#include "xalloc.h"
 #include "yesno.h"
 
                 /* configuration */
@@ -1180,9 +1181,12 @@ local char *get_suffix(name)
             break;
           }
       }
+
+    char *z_lower = xstrdup(z_suffix);
+    strlwr(z_lower);
     known_suffixes[suffix_of_builtin
                    ? sizeof known_suffixes / sizeof *known_suffixes - 2
-                   : 0] = z_suffix;
+                   : 0] = z_lower;
     suf = known_suffixes + suffix_of_builtin;
 
     nlen = strlen(name);
@@ -1193,15 +1197,18 @@ local char *get_suffix(name)
     }
     strlwr(suffix);
     slen = strlen(suffix);
+    char *match = NULL;
     do {
        int s = strlen(*suf);
        if (slen > s && ! ISSLASH (suffix[slen - s - 1])
            && strequ(suffix + slen - s, *suf)) {
-           return name+nlen-s;
+           match = name+nlen-s;
+           break;
        }
     } while (*++suf != NULL);
+    free(z_lower);
 
-    return NULL;
+    return match;
 }
 
 

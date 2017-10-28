@@ -4,6 +4,12 @@ GNU gzip NEWS                                    -*- outline -*-
 
 ** Bug fixes
 
+  gzip -d -S SUFFIX file.SUFFIX would fail for any upper-case byte in SUFFIX.
+  E.g., before, this command would fail:
+    $ :|gzip > kT && gzip -d -S T kT
+    gzip: kT: unknown suffix -- ignored
+  [bug present since the beginning]
+
   When decompressing data in 'pack' format, gzip no longer mishandles
   leading zeros in the end-of-block code.  [bug introduced in gzip-1.6]
 

@@ -29,6 +29,7 @@ TESTS =					\
   trailing-nul				\
   unpack-invalid			\
   unpack-valid				\
+  upper-suffix				\
   z-suffix				\
   zdiff					\
   zgrep-f				\
