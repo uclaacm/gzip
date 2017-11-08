@@ -195,10 +195,12 @@ static char *env;            /* contents of GZIP env variable */
 static char const *z_suffix; /* default suffix (can be set with --suffix) */
 static size_t z_len;         /* strlen(z_suffix) */
 
-/* The original timestamp (modification time).  Its tv_nsec component
-   is negative if the original time is unknown or is out of time_t
-   range; the latter can happen on hosts with 32-bit signed time_t
-   because the gzip format's MTIME is 32-bit unsigned.  */
+/* The original timestamp (modification time).  If the original is
+   unknown, TIME_STAMP.tv_nsec is negative.  If the original is
+   greater than struct timespec range, TIME_STAMP is the maximal
+   struct timespec value; this can happen on hosts with 32-bit signed
+   time_t because the gzip format's MTIME is 32-bit unsigned.
+   The original cannot be less than struct timespec range.  */
 struct timespec time_stamp;
 
 /* The set of signals that are caught.  */
@@ -1546,10 +1548,21 @@ local int get_method(in)
         stamp |= ((ulg)get_byte()) << 8;
         stamp |= ((ulg)get_byte()) << 16;
         stamp |= ((ulg)get_byte()) << 24;
-        if (!no_time && 0 < stamp && stamp <= TYPE_MAXIMUM (time_t))
+        if (stamp != 0 && !no_time)
           {
-            time_stamp.tv_sec = stamp;
-            time_stamp.tv_nsec = 0;
+            if (stamp <= TYPE_MAXIMUM (time_t))
+              {
+                time_stamp.tv_sec = stamp;
+                time_stamp.tv_nsec = 0;
+              }
+            else
+              {
+                WARN ((stderr,
+                       "%s: %s: MTIME %lu out of range for this platform\n",
+                       program_name, ifname, stamp));
+                time_stamp.tv_sec = TYPE_MAXIMUM (time_t);
+                time_stamp.tv_nsec = TIMESPEC_RESOLUTION - 1;
+              }
           }
 
         magic[8] = get_byte ();  /* Ignore extra flags.  */
@@ -1778,9 +1791,7 @@ local void do_list(ifd, method)
         static char const month_abbr[][4]
           = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-        struct tm *tm = (time_stamp.tv_nsec < 0
-                         ? NULL
-                         : localtime (&time_stamp.tv_sec));
+        struct tm *tm = localtime (&time_stamp.tv_sec);
         printf ("%5s %08lx ", methods[method], crc);
         if (tm)
           printf ("%s%3d %02d:%02d ", month_abbr[tm->tm_mon],

@@ -13,10 +13,14 @@ GNU gzip NEWS                                    -*- outline -*-
   When decompressing data in 'pack' format, gzip no longer mishandles
   leading zeros in the end-of-block code.  [bug introduced in gzip-1.6]
 
-  When converting timestamps to gzip file format (32-bit unsigned) or
-  to time_t format (system-dependent), gzip now ignores out-of-range
-  values instead of shoehorning them into the destination format,
-  sometimes with undefined behavior.  This affects timestamps before
+  When converting from system-dependent time_t format to the 32-bit
+  unsigned MTIME format used in gzip files, if a timestamp does not
+  fit gzip now substitutes zero instead of the timestamp's low-order
+  32 bits, as per Internet RFC 1952.  When converting from MTIME to
+  time_t format, if a timestamp does not fit gzip now warns and
+  substitutes the nearest in-range value instead of crashing or
+  silently substituting an implementation-defined value (typically,
+  the timestamp's low-order bits).  This affects timestamps before
   1970 and after 2106, and timestamps after 2038 on platforms with
   32-bit signed time_t.  [bug present since the beginning]
 
