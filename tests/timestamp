@@ -21,31 +21,58 @@
 
 TZ=UTC0
 export TZ
+oldIFS=$IFS
 
 # On platforms supporting timestamps outside gzip's range,
 # test that gzip warns when converting them to gzip format.
-for time in 190101010000 196912312359.59 197001010000 210602070628.16; do
+for time_date in \
+    '190101010000~Jan  1  1901' \
+    '196912312359.59~Dec 31  1969' \
+    '197001010000~Jan  1  1970' \
+    '210602070628.16~Feb  7  2106'
+do
+  IFS='~'
+  set $time_date
+  time=$1
+  date=$2
+  IFS=$oldIFS
   if touch -t $time in; then
-     returns_ 2 gzip in || fail=1
+    ls_l=$(ls -l in)
+    case $ls_l in
+      *"$date"*) returns_ 2 gzip in || fail=1;;
+    esac
   fi
   rm -f in.gz in
 done
 
 # Test that timestamps in range for gzip do not generate warnings.
-for time in 197001010000.01 203801190314.07 203801190314.08 210602070628.15; do
+for time_date in \
+    '197001010000.01~Jan  1  1970' \
+    '203801190314.07~Jan 19  2038' \
+    '203801190314.08~Jan 19  2038' \
+    '210602070628.15~Feb  7  2106'
+do
+  IFS='~'
+  set $time_date
+  time=$1
+  date=$2
+  IFS=$oldIFS
   if touch -t $time in; then
-     gzip in || fail=1
+    ls_l=$(ls -l in)
+    case $ls_l in
+      *"$date"*) gzip in || fail=1;;
+    esac
   fi
   rm -f in.gz in
 done
 
-# On platforms that fail to support timestamps within gzip's range,
-# test that gzip warns when converting them from gzip format.
-touch -t 210602070628.15 in || {
-  printf '\037\213\10\0\377\377\377\377\0\377\3\0\0\0\0\0\0\0\0\0' >y2106.gz ||
-    framework_failure_
-  returns_ 2 gzip -Nlv <y2106.gz || fail=1
-}
+# Test that gzip succeeds when converting timestamps from gzip format,
+# or warns that the timestamp is out of time_t range.
+printf '\037\213\10\0\377\377\377\377\0\377\3\0\0\0\0\0\0\0\0\0' >y2106.gz ||
+  framework_failure_
+gzip -Nlv <y2106.gz
+status=$?
+test $status -eq 0 || test $status -eq 2 || fail=1
 
 # Ensure that --no-name does not provoke a timestamp warning.
 : | gzip --no-name > k || fail=1
