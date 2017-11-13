@@ -36,10 +36,9 @@ If a FILE is '-' or missing, read standard input.
 
 Report bugs to <bug-gzip@gnu.org>."
 
-st=0
 case $1 in
---help)    echo "$usage" || st=2; exit $st;;
---version) echo "$version" || st=2; exit $st;;
+--help)    printf '%s\n' "$usage"   || exit 2; exit;;
+--version) printf '%s\n' "$version" || exit 2; exit;;
 esac
 
 exec zdiff --__cmp "$@"

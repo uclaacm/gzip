@@ -50,8 +50,8 @@ escape='
 
 while :; do
   case $1 in
-  --h*) printf '%s\n' "$usage" || exit 2; exit;;
-  --v*) echo "$version" || exit 2; exit;;
+  --h*) printf '%s\n' "$usage"   || exit 2; exit;;
+  --v*) printf '%s\n' "$version" || exit 2; exit;;
   --) shift; break;;
   -*\'*) cmp="$cmp '"`printf '%sX\n' "$1" | sed "$escape"`;;
   -?*) cmp="$cmp '$1'";;
@@ -78,7 +78,7 @@ if test $# -eq 1; then
       (gzip -cd -- "$1" 4>&-; echo $? >&4) 3>&- | eval "$cmp" - '"$FILE"' >&3
     );;
   *)
-    echo >&2 "$0: $1: unknown compressed file extension"
+    printf >&2 '%s\n' "$0: $1: unknown compressed file extension"
     exit 2;;
   esac
 elif test $# -eq 2; then
@@ -152,7 +152,8 @@ elif test $# -eq 2; then
                 esac;;
         esac
 else
-        echo >&2 "$0: invalid number of operands; try \`$0 --help' for help"
+        printf >&2 '%s\n' \
+          "$0: invalid number of operands; try \`$0 --help' for help"
         exit 2
 fi
 

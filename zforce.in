@@ -38,20 +38,20 @@ not compress them twice.
 Report bugs to <bug-gzip@gnu.org>."
 
 if test $# = 0; then
-  echo >&2 "$0: invalid number of operands; try \`$0 --help' for help"
+  printf >&2 '%s\n' "$0: invalid number of operands; try \`$0 --help' for help"
   exit 1
 fi
 
 res=0
 for i do
   case "$i" in
-  --h*) exec echo "$usage";;
-  --v*) exec echo "$version";;
+  --h*) printf '%s\n' "$usage"  ; exit;;
+  --v*) printf '%s\n' "$version"; exit;;
   *[-.]z | *[-.]gz | *.t[ag]z) continue;;
   esac
 
   if test ! -f "$i" ; then
-    echo zforce: $i not a file
+    printf '%s\n' "zforce: $i not a file"
     res=1
     continue
   fi
@@ -60,7 +60,7 @@ for i do
 
     new="$i.gz"
     if mv "$i" "$new"; then
-      echo $i -- replaced with $new
+      printf '%s\n' "$i -- replaced with $new"
     else
       res=$?
     fi

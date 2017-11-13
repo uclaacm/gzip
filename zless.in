@@ -32,8 +32,8 @@ Options are the same as for 'less'.
 Report bugs to <bug-gzip@gnu.org>."
 
 case $1 in
---help)    exec echo "$usage";;
---version) exec echo "$version";;
+--help)    printf '%s\n' "$usage"  ; exit;;
+--version) printf '%s\n' "$version"; exit;;
 esac
 
 if test "${LESSMETACHARS+set}" != set; then

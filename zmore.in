@@ -31,8 +31,8 @@ Like 'more', but operate on the uncompressed contents of any compressed FILEs.
 Report bugs to <bug-gzip@gnu.org>."
 
 case $1 in
-  --h*) exec printf '%s\n' "$usage";;
-  --v*) exec printf '%s\n' "$version";;
+  --h*) printf '%s\n' "$usage"  ; exit;;
+  --v*) printf '%s\n' "$version"; exit;;
   --) shift;;
   -?*) printf >&2 '%s\n' "$0: $1: unknown option; try '$0 --help' for help"
        exit 1;;

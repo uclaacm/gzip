@@ -50,8 +50,8 @@ With no FILE, or when FILE is -, read standard input.
 Report bugs to <bug-gzip@gnu.org>."
 
 case $1 in
---help)    exec echo "$usage";;
---version) exec echo "$version";;
+--help)    printf '%s\n' "$usage"   || exit 1; exit;;
+--version) printf '%s\n' "$version" || exit 1; exit;;
 esac
 
 exec gzip -d "$@"

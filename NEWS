@@ -24,6 +24,11 @@ GNU gzip NEWS                                    -*- outline -*-
   1970 and after 2106, and timestamps after 2038 on platforms with
   32-bit signed time_t.  [bug present since the beginning]
 
+  Commands implemented via shell scripts are now more consistent about
+  failure status.  For example, 'gunzip --help >/dev/full' now
+  consistently exits with status 1 (error), instead of with status 2
+  (warning) on some platforms.  [bug present since the beginning]
+
   Support for VMS and Amiga has been removed.  It was not working anyway,
   and it reportedly caused file name glitches on MS-Windowsish platforms.
 
