@@ -60,8 +60,8 @@ ext=.gz
 for arg
 do
   case "$arg" in
-  --help)      printf '%s\n' "$usage"  ; exit;;
-  --version)   printf '%s\n' "$version"; exit;;
+  --help)      printf '%s\n' "$usage"   || exit 1; exit;;
+  --version)   printf '%s\n' "$version" || exit 1; exit;;
   -*)     opt="$opt $arg"; shift;;
    *)     break;;
   esac
