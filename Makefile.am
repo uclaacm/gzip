@@ -80,12 +80,13 @@ gzip.doc.gz: gzip.doc $(bin_PROGRAMS)
 
 SUFFIXES = .in
 .in:
-	$(AM_V_GEN)sed \
+	$(AM_V_GEN)rm -f $@-t $@ \
+          && sed \
 		-e 's|/bin/sh|$(SHELL)|g' \
 		-e 's|[@]GREP@|$(GREP)|g' \
 		-e 's|[@]VERSION@|$(VERSION)|g' \
 		$(srcdir)/$@.in >$@-t \
-	  && chmod a+x $@-t \
+	  && chmod a=rx $@-t \
 	  && mv $@-t $@
 
 # Arrange so that .tarball-version appears only in the distribution
