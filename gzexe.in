@@ -213,7 +213,7 @@ EOF
     printf >&2 '%s\n' "$0: $tmp: cannot chmod"
     continue
   }
-  ln -f "$file" "$file~" || {
+  ln -f "$file" "$file~" 2>/dev/null || mv -f "$file" "$file~" || {
     res=$?
     printf >&2 '%s\n' "$0: cannot backup $i as $i~"
     continue
