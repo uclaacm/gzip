@@ -213,7 +213,10 @@ EOF
     printf >&2 '%s\n' "$0: $tmp: cannot chmod"
     continue
   }
-  ln -f "$file" "$file~" 2>/dev/null || mv -f "$file" "$file~" || {
+  ln -f "$file" "$file~" 2>/dev/null || {
+    # Hard links may not work.  Fall back on rm+cp so that $file always exists.
+    rm -f "$file~" && cp -p "$file" "$file~"
+  } || {
     res=$?
     printf >&2 '%s\n' "$0: cannot backup $i as $i~"
     continue
