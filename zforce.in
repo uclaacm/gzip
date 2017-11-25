@@ -45,8 +45,8 @@ fi
 res=0
 for i do
   case "$i" in
-  --h*) printf '%s\n' "$usage"  ; exit;;
-  --v*) printf '%s\n' "$version"; exit;;
+  --h*) printf '%s\n' "$usage"   || exit 1; exit;;
+  --v*) printf '%s\n' "$version" || exit 1; exit;;
   *[-.]z | *[-.]gz | *.t[ag]z) continue;;
   esac
 
@@ -59,11 +59,7 @@ for i do
   if gzip -lv < "$i" 2>/dev/null | grep '^defl' > /dev/null; then
 
     new="$i.gz"
-    if mv "$i" "$new"; then
-      printf '%s\n' "$i -- replaced with $new"
-    else
-      res=$?
-    fi
+    mv "$i" "$new" && printf '%s\n' "$i -- replaced with $new" || res=1
   fi
 done
 exit $res
