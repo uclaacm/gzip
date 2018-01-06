@@ -119,10 +119,14 @@ for i do
     type mktemp >/dev/null 2>&1
     mktemp_status=$?
   fi
+  case $dir in
+    */) ;;
+    *) dir=$dir/;;
+  esac
   if test $mktemp_status -eq 0; then
-    tmp=`TMPDIR=$dir mktemp`
+    tmp=`mktemp "${dir}gzexeXXXXXXXXX"`
   else
-    tmp=$dir/gzexe$$
+    tmp=${dir}gzexe$$
   fi && { cp -p "$file" "$tmp" 2>/dev/null || cp "$file" "$tmp"; } || {
     res=$?
     printf >&2 '%s\n' "$0: cannot copy $file"
@@ -157,10 +161,15 @@ trap 'res=$?
   (exit $res); exit $res
 ' 0 1 2 3 5 10 13 15
 
+case $TMPDIR in
+  / | /*/) ;;
+  /*) TMPDIR=$TMPDIR/;;
+  *) TMPDIR=/tmp/;;
+esac
 if type mktemp >/dev/null 2>&1; then
-  gztmpdir=`mktemp -d`
+  gztmpdir=`mktemp -d "${TMPDIR}gztmpXXXXXXXXX"`
 else
-  gztmpdir=/tmp/gztmp$$; mkdir $gztmpdir
+  gztmpdir=${TMPDIR}gztmp$$; mkdir $gztmpdir
 fi || { (exit 127); exit 127; }
 
 gztmp=$gztmpdir/$0

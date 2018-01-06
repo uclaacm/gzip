@@ -133,11 +133,16 @@ while test $# -ne 0; do
         test -n "$pattmp" && rm -f "$pattmp"
         (exit 2); exit 2
       ' HUP INT PIPE TERM 0
+      case $TMPDIR in
+        / | /*/) ;;
+        /*) TMPDIR=$TMPDIR/;;
+        *) TMPDIR=/tmp/;;
+      esac
       if type mktemp >/dev/null 2>&1; then
-        pattmp=$(mktemp) || exit 2
+        pattmp=$(mktemp "${TMPDIR}zgrepXXXXXXXXX") || exit 2
       else
         set -C
-        pattmp=${TMPDIR-/tmp}/zgrep.$$
+        pattmp=${TMPDIR}zgrep$$
       fi
       eval "cat --$optarg" >"$pattmp" || exit 2
       optarg=' "$pattmp"'

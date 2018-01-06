@@ -116,12 +116,17 @@ elif test $# -eq 2; then
                           test -n "$tmp" && rm -f "$tmp"
                           (exit 2); exit 2
                         ' HUP INT PIPE TERM 0
+                        case $TMPDIR in
+                          / | /*/) ;;
+                          /*) TMPDIR=$TMPDIR/;;
+                          *) TMPDIR=/tmp/;;
+                        esac
                         if type mktemp >/dev/null 2>&1; then
-                          tmp=`mktemp` || exit 2
+                          tmp=`mktemp "${TMPDIR}zdiffXXXXXXXXX"` ||
+                            exit 2
                         else
-                          F=`expr "/$2" : '.*/\(.*\)[-.][zZtga]*$'` || F=$prog
                           set -C
-                          tmp=${TMPDIR-/tmp}/$F.$$
+                          tmp=${TMPDIR}zdiff$$
                         fi
                         gzip -cdfq -- "$2" > "$tmp" || exit 2
                         gzip_status=$(
