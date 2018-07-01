@@ -177,6 +177,7 @@ if test "$gl_gcc_warnings" = yes; then
   # Remove the following and save the result in GNULIB_WARN_CFLAGS.
   nw=
   nw="$nw -Wstrict-overflow"
+  nw="$nw -Wformat-truncation=2"
   nw="$nw -Wuninitialized"
   nw="$nw -Wunused-macros"
   nw="$nw -Wmissing-prototypes"
