@@ -1914,17 +1914,20 @@ local int check_ofname()
    the file and NAME its name.  Change it to user UID and to group GID.
    If UID or GID is -1, though, do not change the corresponding user
    or group.  */
+#ifdef NO_CHOWN
+/* The types uid_t and gid_t do not exist on mingw, so don't assume them.  */
+# define do_chown(fd, name, uid, gid) ((void) 0)
+#else
 static void
 do_chown (int fd, char const *name, uid_t uid, gid_t gid)
 {
-#ifndef NO_CHOWN
 # if HAVE_FCHOWN
   ignore_value (fchown (fd, uid, gid));
 # else
   ignore_value (chown (name, uid, gid));
 # endif
-#endif
 }
+#endif
 
 /* ========================================================================
  * Copy modes, times, ownership from input file to output file.
