@@ -714,6 +714,25 @@ input_eof ()
   return 0;
 }
 
+static void
+get_input_size_and_time (void)
+{
+  ifile_size = -1;
+  time_stamp.tv_nsec = -1;
+
+  /* Record the input file's size and timestamp only if it is a
+     regular file.  Doing this for the timestamp helps to keep gzip's
+     output more reproducible when it is used as part of a
+     pipeline.  */
+
+  if (S_ISREG (istat.st_mode))
+    {
+      ifile_size = istat.st_size;
+      if (!no_time || list)
+        time_stamp = get_stat_mtime (&istat);
+    }
+}
+
 /* ========================================================================
  * Compress or decompress stdin
  */
@@ -761,15 +780,8 @@ local void treat_stdin()
         progerror ("standard input");
         do_exit (ERROR);
       }
-    ifile_size = S_ISREG (istat.st_mode) ? istat.st_size : -1;
-    time_stamp.tv_nsec = -1;
-    if (!no_time || list)
-      {
-        if (S_ISREG (istat.st_mode))
-          time_stamp = get_stat_mtime (&istat);
-        else
-          gettime (&time_stamp);
-      }
+
+    get_input_size_and_time ();
 
     clear_bufs(); /* clear input and output buffers */
     to_stdout = 1;
@@ -941,10 +953,7 @@ local void treat_file(iname)
           }
       }
 
-    ifile_size = S_ISREG (istat.st_mode) ? istat.st_size : -1;
-    time_stamp.tv_nsec = -1;
-    if (!no_time || list)
-      time_stamp = get_stat_mtime (&istat);
+    get_input_size_and_time ();
 
     /* Generate output file name. For -r and (-t or -l), skip files
      * without a valid gzip suffix (check done in make_ofname).

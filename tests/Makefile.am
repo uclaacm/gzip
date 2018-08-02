@@ -24,6 +24,7 @@ TESTS =					\
   memcpy-abuse				\
   mixed					\
   null-suffix-clobber			\
+  reproducible				\
   stdin					\
   timestamp				\
   trailing-nul				\

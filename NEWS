@@ -2,6 +2,15 @@ GNU gzip NEWS                                    -*- outline -*-
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** Changes in behavior
+
+  Compressed gzip output no longer contains the current time as a
+  timestamp when the input is not a regular file.  Instead, the output
+  contains a null (zero) timestamp.  This makes gzip's behavior more
+  reproducible when used as part of a pipeline.  (As a reminder, even
+  regular files will use null timestamps after the year 2106, due to a
+  limitation in the gzip format.)
+
 
 * Noteworthy changes in release 1.9 (2018-01-07) [stable]
 
