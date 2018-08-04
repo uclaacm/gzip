@@ -1923,7 +1923,7 @@ local int check_ofname()
    the file and NAME its name.  Change it to user UID and to group GID.
    If UID or GID is -1, though, do not change the corresponding user
    or group.  */
-#ifdef NO_CHOWN
+#if ! (HAVE_FCHOWN || HAVE_CHOWN)
 /* The types uid_t and gid_t do not exist on mingw, so don't assume them.  */
 # define do_chown(fd, name, uid, gid) ((void) 0)
 #else
