@@ -11,6 +11,12 @@ GNU gzip NEWS                                    -*- outline -*-
   regular files will use null timestamps after the year 2106, due to a
   limitation in the gzip format.)
 
+** Bug fixes
+
+  A few theoretical race conditions in signal handers have been fixed.
+  These bugs most likely do not happen on practical platforms.
+  [bugs present since the beginning]
+
 
 * Noteworthy changes in release 1.9 (2018-01-07) [stable]
 

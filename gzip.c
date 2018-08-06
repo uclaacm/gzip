@@ -119,17 +119,6 @@ static char const *const license_msg[] = {
 # define OFF_T_MAX TYPE_MAXIMUM (off_t)
 #endif
 
-/* Use SA_NOCLDSTOP as a proxy for whether the sigaction machinery is
-   present.  */
-#ifndef SA_NOCLDSTOP
-# define SA_NOCLDSTOP 0
-# define sigprocmask(how, set, oset) /* empty */
-# define sigset_t int
-# if ! HAVE_SIGINTERRUPT
-#  define siginterrupt(sig, flag) /* empty */
-# endif
-#endif
-
 #ifndef HAVE_WORKING_O_NOFOLLOW
 # define HAVE_WORKING_O_NOFOLLOW 0
 #endif
@@ -211,8 +200,10 @@ static sigset_t caught_signals;
    suppresses a "Broken Pipe" message with some shells.  */
 static int volatile exiting_signal;
 
-/* If nonnegative, close this file descriptor and unlink ofname on error.  */
+/* If nonnegative, close this file descriptor and unlink remove_ofname
+   on error.  */
 static int volatile remove_ofname_fd = -1;
+static char volatile remove_ofname[MAX_PATH_LEN];
 
 static bool stdin_was_read;
 
@@ -323,8 +314,8 @@ local void do_list      (int ifd, int method);
 local int  check_ofname (void);
 local void copy_stat    (struct stat *ifstat);
 local void install_signal_handlers (void);
-local void remove_output_file (void);
-local RETSIGTYPE abort_gzip_signal (int);
+static void remove_output_file (bool);
+static void abort_gzip_signal (int);
 local noreturn void do_exit (int exitcode);
 static void finish_out (void);
       int main          (int argc, char **argv);
@@ -1062,7 +1053,7 @@ local void treat_file(iname)
 
     if (method == -1) {
         if (!to_stdout)
-          remove_output_file ();
+          remove_output_file (false);
         return;
     }
 
@@ -1080,6 +1071,13 @@ local void treat_file(iname)
                   ofname);
         fprintf(stderr, "\n");
     }
+}
+
+static void
+volatile_strcpy (char volatile *dst, char const *src)
+{
+  while ((*dst++ = *src++))
+    continue;
 }
 
 /* ========================================================================
@@ -1114,6 +1112,8 @@ local int create_outfile()
     {
       int open_errno;
       sigset_t oldset;
+
+      volatile_strcpy (remove_ofname, ofname);
 
       sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
       remove_ofname_fd = ofd = openat (atfd, base, flags, S_IRUSR | S_IWUSR);
@@ -2061,8 +2061,6 @@ install_signal_handlers ()
 {
   int nsigs = sizeof handled_sig / sizeof handled_sig[0];
   int i;
-
-#if SA_NOCLDSTOP
   struct sigaction act;
 
   sigemptyset (&caught_signals);
@@ -2084,16 +2082,6 @@ install_signal_handlers ()
           foreground = 1;
         sigaction (handled_sig[i], &act, NULL);
       }
-#else
-  for (i = 0; i < nsigs; i++)
-    if (signal (handled_sig[i], SIG_IGN) != SIG_IGN)
-      {
-        if (i == 0)
-          foreground = 1;
-        signal (handled_sig[i], abort_gzip_signal);
-        siginterrupt (handled_sig[i], 1);
-      }
-#endif
 }
 
 /* ========================================================================
@@ -2133,12 +2121,13 @@ finish_out (void)
  * Close and unlink the output file.
  */
 static void
-remove_output_file ()
+remove_output_file (bool signals_already_blocked)
 {
   int fd;
   sigset_t oldset;
 
-  sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
+  if (!signals_already_blocked)
+    sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
   fd = remove_ofname_fd;
   if (0 <= fd)
     {
@@ -2146,29 +2135,27 @@ remove_output_file ()
       close (fd);
       xunlink (ofname);
     }
-  sigprocmask (SIG_SETMASK, &oldset, NULL);
+  if (!signals_already_blocked)
+    sigprocmask (SIG_SETMASK, &oldset, NULL);
 }
 
 /* ========================================================================
  * Error handler.
  */
 void
-abort_gzip ()
+abort_gzip (void)
 {
-   remove_output_file ();
+   remove_output_file (false);
    do_exit(ERROR);
 }
 
 /* ========================================================================
  * Signal handler.
  */
-static RETSIGTYPE
-abort_gzip_signal (sig)
-     int sig;
+static void
+abort_gzip_signal (int sig)
 {
-  if (! SA_NOCLDSTOP)
-    signal (sig, SIG_IGN);
-   remove_output_file ();
+   remove_output_file (true);
    if (sig == exiting_signal)
      _exit (WARNING);
    signal (sig, SIG_DFL);

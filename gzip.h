@@ -41,10 +41,6 @@
 #include <stdnoreturn.h>
 #define memzero(s, n) memset ((voidp)(s), 0, (n))
 
-#ifndef RETSIGTYPE
-#  define RETSIGTYPE void
-#endif
-
 #define local static
 
 typedef unsigned char  uch;

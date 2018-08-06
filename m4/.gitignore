@@ -58,6 +58,7 @@
 /gnulib-common.m4
 /gnulib-comp.m4
 /gnulib-tool.m4
+/host-cpu-c-abi.m4
 /include_next.m4
 /intmax_t.m4
 /inttypes_h.m4
@@ -102,11 +103,15 @@
 /printf-posix-rpl.m4
 /printf.m4
 /pthread_rwlock_rdlock.m4
+/raise.m4
 /readdir.m4
 /realloc.m4
 /rmdir.m4
 /save-cwd.m4
 /savedir.m4
+/sigaction.m4
+/signal_h.m4
+/signalblocking.m4
 /signbit.m4
 /size_max.m4
 /ssize_t.m4
@@ -118,6 +123,7 @@
 /stdint_h.m4
 /stdio_h.m4
 /stdlib_h.m4
+/stdnoreturn.m4
 /stpcpy.m4
 /strdup.m4
 /strerror.m4
@@ -147,7 +153,5 @@
 /wint_t.m4
 /xalloc.m4
 /xsize.m4
-/yesno.m4
-/host-cpu-c-abi.m4
 /year2038.m4
-/stdnoreturn.m4
+/yesno.m4
