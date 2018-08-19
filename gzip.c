@@ -2135,7 +2135,7 @@ remove_output_file (bool signals_already_blocked)
       remove_ofname_fd = -1;
       close (fd);
       volatile_strcpy (fname, remove_ofname);
-      xunlink (ofname);
+      xunlink (fname);
     }
   if (!signals_already_blocked)
     sigprocmask (SIG_SETMASK, &oldset, NULL);
