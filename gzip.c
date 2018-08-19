@@ -1074,7 +1074,7 @@ local void treat_file(iname)
 }
 
 static void
-volatile_strcpy (char volatile *dst, char const *src)
+volatile_strcpy (char volatile *dst, char const volatile *src)
 {
   while ((*dst++ = *src++))
     continue;
@@ -2131,8 +2131,10 @@ remove_output_file (bool signals_already_blocked)
   fd = remove_ofname_fd;
   if (0 <= fd)
     {
+      char fname[MAX_PATH_LEN];
       remove_ofname_fd = -1;
       close (fd);
+      volatile_strcpy (fname, remove_ofname);
       xunlink (ofname);
     }
   if (!signals_already_blocked)
