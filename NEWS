@@ -13,6 +13,9 @@ GNU gzip NEWS                                    -*- outline -*-
 
 ** Bug fixes
 
+  A use of uninitialized memory on some malformed inputs has been fixed.
+  [bug present since the beginning]
+
   A few theoretical race conditions in signal handers have been fixed.
   These bugs most likely do not happen on practical platforms.
   [bugs present since the beginning]

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Exercise a bug whereby an invalid input could make gzip -d misbehave.
+# Exercise bugs whereby invalid input could make gzip -d misbehave.
 
 # Copyright (C) 2009-2018 Free Software Foundation, Inc.
 
@@ -29,5 +29,12 @@ compare /dev/null out || fail=1
 
 sed 's/.*hufts-segv.gz: /...: /' err > k; mv k err || fail=1
 compare exp err || fail=1
+
+printf '\037\213\010\000\060\060\060\060\060\060\144\000\000\000' > bug33501 \
+  || framework_failure_
+printf '\ngzip: stdin: invalid compressed data--format violated\n' >exp33501 \
+  || framework_failure_
+returns_ 1 gzip -d <bug33501 >out33501 2> err33501 || fail=1
+compare exp33501 err33501 || fail=1
 
 Exit $fail

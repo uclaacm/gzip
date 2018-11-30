@@ -799,6 +799,12 @@ inflate_dynamic(void)
     NEEDBITS((unsigned)bl)
     j = (td = tl + ((unsigned)b & m))->b;
     DUMPBITS(j)
+    if (td->e == 99)
+      {
+        /* Invalid code.  */
+        huft_free (tl);
+        return 2;
+      }
     j = td->v.n;
     if (j < 16)                 /* length of code in bits (0..15) */
       ll[i++] = l = j;          /* save last length in l */
