@@ -897,7 +897,7 @@ off_t flush_block(buf, stored_len, pad, eof)
     if (static_lenb <= opt_lenb) opt_lenb = static_lenb;
 
     /* If compression failed and this is the first and last block,
-     * and if the zip file can be seeked (to rewrite the local header),
+     * and if we can seek through the zip file (to rewrite the local header),
      * the whole file is transformed into a stored file:
      */
 #ifdef FORCE_METHOD
