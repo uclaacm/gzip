@@ -1733,7 +1733,7 @@ local void do_list(ifd, method)
         "lzh  ",  /* 3 */
         "", "", "", "", /* 4 to 7 reserved */
         "defla"}; /* 8 */
-    int positive_off_t_width = INT_BUFSIZE_BOUND (off_t) - 2;
+    int positive_off_t_width = INT_STRLEN_BOUND (off_t) - 1;
 
     if (first_time && method >= 0) {
         first_time = 0;
