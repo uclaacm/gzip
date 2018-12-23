@@ -115,10 +115,6 @@ static char const *const license_msg[] = {
   off_t lseek (int fd, off_t offset, int whence);
 #endif
 
-#ifndef OFF_T_MAX
-# define OFF_T_MAX TYPE_MAXIMUM (off_t)
-#endif
-
 #ifndef HAVE_WORKING_O_NOFOLLOW
 # define HAVE_WORKING_O_NOFOLLOW 0
 #endif
@@ -1737,12 +1733,7 @@ local void do_list(ifd, method)
         "lzh  ",  /* 3 */
         "", "", "", "", /* 4 to 7 reserved */
         "defla"}; /* 8 */
-    int positive_off_t_width = 1;
-    off_t o;
-
-    for (o = OFF_T_MAX;  9 < o;  o /= 10) {
-        positive_off_t_width++;
-    }
+    int positive_off_t_width = INT_BUFSIZE_BOUND (off_t) - 2;
 
     if (first_time && method >= 0) {
         first_time = 0;
