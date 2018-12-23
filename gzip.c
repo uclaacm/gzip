@@ -679,7 +679,6 @@ int main (int argc, char **argv)
         && errno != EBADF)
       write_error ();
     do_exit(exit_code);
-    return exit_code; /* just to avoid lint warning */
 }
 
 /* Return nonzero when at end of file on input.  */

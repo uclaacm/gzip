@@ -124,7 +124,6 @@ int file_read(buf, size)
     if (len == 0) return (int)len;
     if (len == (unsigned)-1) {
         read_error();
-        return EOF;
     }
 
     crc = updcrc((uch*)buf, len);
