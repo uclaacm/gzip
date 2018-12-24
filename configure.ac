@@ -110,7 +110,6 @@ if test "$gl_gcc_warnings" = yes; then
   nw="$nw -Wsystem-headers"         # Don't let system headers trigger warnings
   nw="$nw -Wsign-conversion"        # Too many warnings for now
   nw="$nw -Wtraditional-conversion" # Too many warnings for now
-  nw="$nw -Wunreachable-code"       # Too many warnings for now
   nw="$nw -Wpadded"                 # Our structs are not padded
   nw="$nw -Wredundant-decls"        # openat.h declares e.g., mkdirat
   nw="$nw -Wlogical-op"             # any use of fwrite provokes this
