@@ -1,6 +1,6 @@
 /* gzip (GNU zip) -- compress files with zip algorithm and 'compress' interface
 
-   Copyright (C) 1999, 2001-2002, 2006-2007, 2009-2018 Free Software
+   Copyright (C) 1999, 2001-2002, 2006-2007, 2009-2019 Free Software
    Foundation, Inc.
    Copyright (C) 1992-1993 Jean-loup Gailly
 
