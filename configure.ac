@@ -59,6 +59,10 @@ gl_EARLY
 
 gl_INIT
 
+# Ensure VLAs are not used.
+# Note -Wvla is implicitly added by gl_MANYWARN_ALL_GCC
+AC_DEFINE([GNULIB_NO_VLA], [1], [Define to 1 to disable use of VLAs])
+
 AC_ARG_ENABLE([gcc-warnings],
   [AS_HELP_STRING([--enable-gcc-warnings],
      [turn on many GCC warnings (for developers; best with GNU make)])],
@@ -114,7 +118,6 @@ if test "$gl_gcc_warnings" = yes; then
   nw="$nw -Wredundant-decls"        # openat.h declares e.g., mkdirat
   nw="$nw -Wlogical-op"             # any use of fwrite provokes this
   nw="$nw -Wformat-nonliteral"      # who.c and pinky.c strftime uses
-  nw="$nw -Wvla"                    # warnings in gettext.h
   nw="$nw -Wnested-externs"         # use of XARGMATCH/verify_function__
   nw="$nw -Wswitch-enum"            # Too many warnings for now
   nw="$nw -Wswitch-default"         # Too many warnings for now
