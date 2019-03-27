@@ -145,7 +145,7 @@ for i do
   if test $decomp -eq 0; then
     (cat <<'EOF' &&
 #!/bin/sh
-skip=44
+skip=49
 
 tab='	'
 nl='
