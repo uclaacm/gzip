@@ -25,9 +25,8 @@
 
 off_t header_bytes;   /* number of bytes in gzip header */
 
-#define FAST 4
-#define SLOW 2
-/* speed options for the general purpose bit flag */
+/* Speed options for the general purpose bit flag.  */
+enum { SLOW = 2, FAST = 4 };
 
 /* ===========================================================================
  * Deflate in to out.
@@ -71,15 +70,14 @@ int zip(in, out)
     put_long (stamp);
 
     /* Write deflated file to zip file */
-    updcrc(NULL, 0);
+    updcrc (NULL, 0);
 
     bi_init(out);
     ct_init(&attr, &method);
-    if (level == 1) {
-        deflate_flags |= FAST;
-    } else if (level == 9) {
-        deflate_flags |= SLOW;
-    }
+    if (level == 1)
+      deflate_flags |= FAST;
+    else if (level == 9)
+      deflate_flags |= SLOW;
 
     put_byte((uch)deflate_flags); /* extra flags */
     put_byte(OS_CODE);            /* OS identifier */
@@ -93,9 +91,9 @@ int zip(in, out)
     header_bytes = (off_t)outcnt;
 
 #ifdef IBM_Z_DFLTCC
-    (void)dfltcc_deflate(level);
+    dfltcc_deflate (level);
 #else
-    (void)deflate(level);
+    deflate (level);
 #endif
 
 #ifndef NO_SIZE_CHECK
@@ -109,7 +107,7 @@ int zip(in, out)
 #endif
 
     /* Write the crc and uncompressed size */
-    put_long(getcrc());
+    put_long (getcrc ());
     put_long((ulg)bytes_in);
     header_bytes += 2*4;
 
@@ -137,7 +135,7 @@ int file_read(buf, size)
         read_error();
     }
 
-    updcrc((uch*)buf, len);
+    updcrc ((uch *) buf, len);
     bytes_in += (off_t)len;
     return (int)len;
 }

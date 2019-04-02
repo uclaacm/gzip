@@ -718,7 +718,8 @@ local off_t deflate_fast()
  * evaluation for matches: a match is finally adopted only if there is
  * no better match at the next window position.
  */
-off_t deflate(int pack_level)
+off_t
+deflate (int pack_level)
 {
     IPos hash_head;          /* head of hash chain */
     IPos prev_match;         /* previous match */
@@ -726,8 +727,9 @@ off_t deflate(int pack_level)
     int match_available = 0; /* set if previous match exists */
     register unsigned match_length = MIN_MATCH-1; /* length of best match */
 
-    lm_init(pack_level);
-    if (pack_level <= 3) return deflate_fast(); /* optimized for speed */
+    lm_init (pack_level);
+    if (pack_level <= 3)
+      return deflate_fast();
 
     /* Process the input block. */
     while (lookahead != 0) {

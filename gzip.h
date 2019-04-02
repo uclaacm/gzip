@@ -74,25 +74,19 @@ extern int method;         /* compression method */
  */
 
 #ifndef	INBUFSIZ
-#  ifdef IBM_Z_DFLTCC
-/* DEFLATE COMPRESSION CALL works faster with larger input buffers */
-#    define INBUFSIZ  0x40000
-#  elif defined SMALL_MEM
+#  ifdef SMALL_MEM
 #    define INBUFSIZ  0x2000  /* input buffer size */
 #  else
-#    define INBUFSIZ  0x8000  /* input buffer size */
+#    define INBUFSIZ  0x40000 /* input buffer size */
 #  endif
 #endif
 #define INBUF_EXTRA  64     /* required by unlzw() */
 
 #ifndef	OUTBUFSIZ
-#  ifdef IBM_Z_DFLTCC
-/* DEFLATE COMPRESSION CALL works faster with larger output buffers */
-#    define OUTBUFSIZ   0x40000
-#  elif defined SMALL_MEM
+#  ifdef SMALL_MEM
 #    define OUTBUFSIZ   8192  /* output buffer size */
 #  else
-#    define OUTBUFSIZ  16384  /* output buffer size */
+#    define OUTBUFSIZ 0x40000 /* output buffer size */
 #  endif
 #endif
 #define OUTBUF_EXTRA 2048   /* required by unlzw() */
@@ -291,7 +285,7 @@ extern off_t flush_block (char *buf, ulg stored_len, int pad, int eof);
 
         /* in bits.c */
 extern unsigned short bi_buf;
-extern int            bi_valid;
+extern int bi_valid;
 extern void     bi_init    (file_t zipfile);
 extern void     send_bits  (int value, int length);
 extern unsigned bi_reverse (unsigned value, int length) _GL_ATTRIBUTE_CONST;

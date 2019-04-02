@@ -58,6 +58,7 @@ static char const *const license_msg[] = {
 #include <ctype.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <stdalign.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <sys/stat.h>
@@ -128,22 +129,20 @@ static char const *const license_msg[] = {
 
                 /* global buffers */
 
-#ifdef IBM_Z_DFLTCC
-/* DEFLATE COMPRESSION CALL works faster with page-aligned input buffers */
-__attribute__((aligned(4096)))
+/* With IBM_Z_DFLTCC, DEFLATE COMPRESSION works faster with
+   page-aligned input and output buffers, and requires page-aligned
+   windows; the alignment requirement is 4096.  On other platforms
+   alignment doesn't hurt, and alignment up to 8192 is portable so
+   let's do that.  */
+#ifdef __alignas_is_defined
+# define BUFFER_ALIGNED alignas (8192)
+#else
+# define BUFFER_ALIGNED /**/
 #endif
-DECLARE(uch, inbuf,  INBUFSIZ +INBUF_EXTRA);
-#ifdef IBM_Z_DFLTCC
-/* DEFLATE COMPRESSION CALL works faster with page-aligned output buffers */
-__attribute__((aligned(4096)))
-#endif
-DECLARE(uch, outbuf, OUTBUFSIZ+OUTBUF_EXTRA);
+DECLARE(uch BUFFER_ALIGNED, inbuf,  INBUFSIZ +INBUF_EXTRA);
+DECLARE(uch BUFFER_ALIGNED, outbuf, OUTBUFSIZ+OUTBUF_EXTRA);
 DECLARE(ush, d_buf,  DIST_BUFSIZE);
-#ifdef IBM_Z_DFLTCC
-/* DEFLATE COMPRESSION CALL works only with page-aligned windows */
-__attribute__((aligned(4096)))
-#endif
-DECLARE(uch, window, 2L*WSIZE);
+DECLARE(uch BUFFER_ALIGNED, window, 2L*WSIZE);
 #ifndef MAXSEG_64K
     DECLARE(ush, tab_prefix, 1L<<BITS);
 #else

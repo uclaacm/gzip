@@ -2,6 +2,10 @@ GNU gzip NEWS                                    -*- outline -*-
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** Performance improvements
+
+  IBM Z platforms now support hardware-accelerated deflation.
+
 
 * Noteworthy changes in release 1.10 (2018-12-29) [stable]
 

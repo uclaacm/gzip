@@ -130,7 +130,7 @@ int unzip(in, out)
     if (method == DEFLATED)  {
 
 #ifdef IBM_Z_DFLTCC
-        int res = dfltcc_inflate();
+        int res = dfltcc_inflate ();
 #else
         int res = inflate();
 #endif

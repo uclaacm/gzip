@@ -117,6 +117,7 @@
 /ssize_t.m4
 /stat-time.m4
 /stat.m4
+/stdalign.m4
 /stdbool.m4
 /stddef_h.m4
 /stdint.m4

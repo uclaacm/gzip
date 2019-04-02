@@ -171,6 +171,7 @@
 /stat-w32.h
 /stat.c
 /statat.c
+/stdalign.in.h
 /stdbool.h
 /stdbool.in.h
 /stddef.h

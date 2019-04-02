@@ -96,10 +96,8 @@ static const ulg crc_32_tab[] = {
   0x2d02ef8dL
 };
 
-/* ========================================================================
- * Shift register contents
- */
-static ulg crc = (ulg)0xffffffffL;
+/* Shift register contents.  */
+static ulg crc = 0xffffffffL;
 
 /* ===========================================================================
  * Copy input to output unchanged: zcat == cat with --force.
@@ -148,21 +146,18 @@ ulg updcrc(s, n)
     return c ^ 0xffffffffL;       /* (instead of ~c for 64-bit machines) */
 }
 
-/* ===========================================================================
- * Return a current CRC value.
- */
-ulg getcrc()
+/* Return a current CRC value.  */
+ulg
+getcrc (void)
 {
-    return crc ^ 0xffffffffL;
+  return crc ^ 0xffffffffL;
 }
 
-/* ===========================================================================
- * Set a new CRC value.
- */
-void setcrc(c)
-    ulg c;
+/* Set a new CRC value.  */
+void
+setcrc (ulg c)
 {
-    crc = c ^ 0xffffffffL;
+  crc = c ^ 0xffffffffL;
 }
 
 /* ===========================================================================
@@ -258,9 +253,8 @@ void flush_outbuf()
 {
     if (outcnt == 0) return;
 
-    if (!test) {
-        write_buf(ofd, (char *)outbuf, outcnt);
-    }
+    if (!test)
+      write_buf (ofd, outbuf, outcnt);
     bytes_out += (off_t)outcnt;
     outcnt = 0;
 }
