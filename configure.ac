@@ -78,6 +78,16 @@ AC_ARG_ENABLE([gcc-warnings],
    fi]
 )
 
+AC_ARG_ENABLE([dfltcc],
+  [AS_HELP_STRING([--enable-dfltcc],
+     [use DEFLATE COMPRESSION CALL instruction on IBM Z])],
+  [case $enableval in
+     yes|no) gl_dfltcc=$enableval ;;
+     *)      AC_MSG_ERROR([bad value $enableval for dfltcc option]) ;;
+   esac],
+  [gl_dfltcc=no]
+)
+
 # gl_GCC_VERSION_IFELSE([major], [minor], [run-if-found], [run-if-not-found])
 # ------------------------------------------------
 # If $CPP is gcc-MAJOR.MINOR or newer, then run RUN-IF-FOUND.
@@ -187,6 +197,12 @@ if test "$gl_gcc_warnings" = yes; then
   gl_MANYWARN_COMPLEMENT([GNULIB_WARN_CFLAGS], [$WARN_CFLAGS], [$nw])
   AC_SUBST([GNULIB_WARN_CFLAGS])
 fi
+
+if test "$gl_dfltcc" = yes; then
+  AC_DEFINE([IBM_Z_DFLTCC], ,
+    [Use DEFLATE COMPRESSION CALL instruction on IBM Z machines.])
+fi
+AM_CONDITIONAL([IBM_Z_DFLTCC],  [test "$gl_dfltcc" = yes])
 
 # cc -E produces incorrect asm files on SVR4, so postprocess it.
 ASCPPPOST="sed '/^ *\\#/d; s,//.*,,; s/% /%/g; s/\\. /./g'"

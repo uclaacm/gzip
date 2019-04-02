@@ -29,12 +29,13 @@ chmod +x compress || framework_failure_
 # Note that the basename must have a length of 6 or greater.
 # Otherwise, "test -f $name" below would fail.
 name=123456.Z
+gzname=123456.gz
 
 printf '%1012977s' ' ' | gzip -c > $name || framework_failure_
 
 fail=0
 
 znew -K $name || fail=1
-test -f $name || fail=1
+test -f $name || test -f $gzname || fail=1
 
 Exit $fail

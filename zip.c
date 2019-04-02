@@ -23,8 +23,11 @@
 #include "tailor.h"
 #include "gzip.h"
 
-local ulg crc;       /* crc on uncompressed file data */
 off_t header_bytes;   /* number of bytes in gzip header */
+
+#define FAST 4
+#define SLOW 2
+/* speed options for the general purpose bit flag */
 
 /* ===========================================================================
  * Deflate in to out.
@@ -68,11 +71,15 @@ int zip(in, out)
     put_long (stamp);
 
     /* Write deflated file to zip file */
-    crc = updcrc(0, 0);
+    updcrc(NULL, 0);
 
     bi_init(out);
     ct_init(&attr, &method);
-    lm_init(level, &deflate_flags);
+    if (level == 1) {
+        deflate_flags |= FAST;
+    } else if (level == 9) {
+        deflate_flags |= SLOW;
+    }
 
     put_byte((uch)deflate_flags); /* extra flags */
     put_byte(OS_CODE);            /* OS identifier */
@@ -85,7 +92,11 @@ int zip(in, out)
     }
     header_bytes = (off_t)outcnt;
 
-    (void)deflate();
+#ifdef IBM_Z_DFLTCC
+    (void)dfltcc_deflate(level);
+#else
+    (void)deflate(level);
+#endif
 
 #ifndef NO_SIZE_CHECK
   /* Check input size
@@ -98,7 +109,7 @@ int zip(in, out)
 #endif
 
     /* Write the crc and uncompressed size */
-    put_long(crc);
+    put_long(getcrc());
     put_long((ulg)bytes_in);
     header_bytes += 2*4;
 
@@ -126,7 +137,7 @@ int file_read(buf, size)
         read_error();
     }
 
-    crc = updcrc((uch*)buf, len);
+    updcrc((uch*)buf, len);
     bytes_in += (off_t)len;
     return (int)len;
 }

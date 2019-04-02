@@ -128,9 +128,21 @@ static char const *const license_msg[] = {
 
                 /* global buffers */
 
+#ifdef IBM_Z_DFLTCC
+/* DEFLATE COMPRESSION CALL works faster with page-aligned input buffers */
+__attribute__((aligned(4096)))
+#endif
 DECLARE(uch, inbuf,  INBUFSIZ +INBUF_EXTRA);
+#ifdef IBM_Z_DFLTCC
+/* DEFLATE COMPRESSION CALL works faster with page-aligned output buffers */
+__attribute__((aligned(4096)))
+#endif
 DECLARE(uch, outbuf, OUTBUFSIZ+OUTBUF_EXTRA);
 DECLARE(ush, d_buf,  DIST_BUFSIZE);
+#ifdef IBM_Z_DFLTCC
+/* DEFLATE COMPRESSION CALL works only with page-aligned windows */
+__attribute__((aligned(4096)))
+#endif
 DECLARE(uch, window, 2L*WSIZE);
 #ifndef MAXSEG_64K
     DECLARE(ush, tab_prefix, 1L<<BITS);

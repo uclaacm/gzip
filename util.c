@@ -96,6 +96,11 @@ static const ulg crc_32_tab[] = {
   0x2d02ef8dL
 };
 
+/* ========================================================================
+ * Shift register contents
+ */
+static ulg crc = (ulg)0xffffffffL;
+
 /* ===========================================================================
  * Copy input to output unchanged: zcat == cat with --force.
  * IN assertion: insize bytes have already been read in inbuf and inptr bytes
@@ -126,12 +131,10 @@ int copy(in, out)
  * Return the current crc in either case.
  */
 ulg updcrc(s, n)
-    uch *s;                 /* pointer to bytes to pump through */
+    const uch *s;           /* pointer to bytes to pump through */
     unsigned n;             /* number of bytes in s[] */
 {
     register ulg c;         /* temporary variable */
-
-    static ulg crc = (ulg)0xffffffffL; /* shift register contents */
 
     if (s == NULL) {
         c = 0xffffffffL;
@@ -143,6 +146,23 @@ ulg updcrc(s, n)
     }
     crc = c;
     return c ^ 0xffffffffL;       /* (instead of ~c for 64-bit machines) */
+}
+
+/* ===========================================================================
+ * Return a current CRC value.
+ */
+ulg getcrc()
+{
+    return crc ^ 0xffffffffL;
+}
+
+/* ===========================================================================
+ * Set a new CRC value.
+ */
+void setcrc(c)
+    ulg c;
+{
+    crc = c ^ 0xffffffffL;
 }
 
 /* ===========================================================================
@@ -238,7 +258,9 @@ void flush_outbuf()
 {
     if (outcnt == 0) return;
 
-    write_buf(ofd, (char *)outbuf, outcnt);
+    if (!test) {
+        write_buf(ofd, (char *)outbuf, outcnt);
+    }
     bytes_out += (off_t)outcnt;
     outcnt = 0;
 }

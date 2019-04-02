@@ -78,7 +78,7 @@
 
 local file_t zfile; /* output gzip file */
 
-local unsigned short bi_buf;
+unsigned short bi_buf;
 /* Output buffer. bits are inserted starting at the bottom (least significant
  * bits).
  */
@@ -88,7 +88,7 @@ local unsigned short bi_buf;
  * more than 16 bits on some systems.)
  */
 
-local int bi_valid;
+int bi_valid;
 /* Number of valid bits in bi_buf.  All bits above the last valid bit
  * are always zero.
  */
