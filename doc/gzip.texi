@@ -69,7 +69,7 @@ Free Documentation License''.
 * Sample::		Sample output from @command{gzip}.
 * Invoking gzip::	How to run @command{gzip}.
 * Advanced usage::	Concatenated files.
-* Environment::		The @env{GZIP} environment variable
+* Environment::		Environment variables.
 * Tapes::               Using @command{gzip} on tapes.
 * Problems::		Reporting bugs.
 * GNU Free Documentation License:: Copying and sharing this manual.
@@ -512,6 +512,47 @@ You can use an alias or script instead.  For example, if
 export PATH=/usr/bin
 exec gzip -9 "$@@"
 @end example
+
+The following environment variables are applicable only when using
+@command{gzip} on IBM Z mainframes supporting DEFLATE COMPRESSION CALL
+instruction:
+
+@table @option
+
+@item DFLTCC
+Whether DEFLATE COMPRESSION CALL should be used.  Default value is @samp{1}.
+Set this to @samp{0} to disable DEFLATE COMPRESSION CALL altogether.
+
+@item DFLTCC_LEVEL_MASK
+Compression levels on which DEFLATE COMPRESSION CALL should be used.
+Represented as a bit mask in decimal or hexadecimal form, where each bit
+corresponds to a compression level.  Default value is @samp{2}, which means
+level 1 only.  In order to make use of DEFLATE COMPRESSION CALL by default, that
+is, on levels 1-6, set this to @samp{0x7e}.
+
+@item DFLTCC_BLOCK_SIZE
+Size of deflate blocks produced by DEFLATE COMPRESSION CALL in bytes in decimal
+or hexadecimal form.  Default value is @samp{1048576} (1 megabyte).  When using
+DEFLATE COMPRESSION CALL to compress a file containing heterogeneous data (e.g.
+a @samp{.tar} archive containing text and binary files), setting this to a
+smaller value may improve compression ratio.
+
+@item DFLTCC_FIRST_FHT_BLOCK_SIZE
+Size of the first fixed deflate block produced by DEFLATE COMPRESSION CALL in
+bytes in decimal or hexadecimal form.  Default value is @samp{4096} (4
+kilobytes).  When using DEFLATE COMPRESSION CALL to compress a small file,
+setting this to a larger value may improve compression ratio.
+
+@item DFLTCC_RIBM
+Value of "Reserved for IBM" field of DEFLATE COMPRESSION CALL parameter block.
+Default value is @samp{0}.
+
+@item SOURCE_DATE_EPOCH
+If set to any value, disables compression with DEFLATE COMPRESSION CALL.  This
+variable is normally set during reproducible builds, where DEFLATE COMPRESSION
+CALL must be disabled, because its output may not be reproducible.
+
+@end table
 
 @node Tapes
 @chapter Using @command{gzip} on tapes
