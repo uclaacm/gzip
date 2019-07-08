@@ -22,7 +22,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#ifdef DFLTCC_USDT
+#ifdef HAVE_SYS_SDT_H
 # include <sys/sdt.h>
 #endif
 
@@ -39,11 +39,11 @@
 
 typedef enum
 {
- DFLTCC_CC_OK = 0,
- DFLTCC_CC_OP1_TOO_SHORT = 1,
- DFLTCC_CC_OP2_TOO_SHORT = 2,
- DFLTCC_CC_OP2_CORRUPT = 2,
- DFLTCC_CC_AGAIN = 3,
+  DFLTCC_CC_OK = 0,
+  DFLTCC_CC_OP1_TOO_SHORT = 1,
+  DFLTCC_CC_OP2_TOO_SHORT = 2,
+  DFLTCC_CC_OP2_CORRUPT = 2,
+  DFLTCC_CC_AGAIN = 3,
 } dfltcc_cc;
 
 #define DFLTCC_QAF 0
@@ -51,8 +51,6 @@ typedef enum
 #define DFLTCC_CMPR 2
 #define DFLTCC_XPND 4
 #define HBT_CIRCULAR (1 << 7)
-/* #define HB_BITS 15 */
-/* #define HB_SIZE (1 << HB_BITS) */
 #define DFLTCC_FACILITY 151
 #define DFLTCC_FMT0 0
 #define CVT_CRC32 0
@@ -155,9 +153,16 @@ is_dfltcc_enabled (void)
   if (env && STREQ (env, "0"))
     return 0;
 
-  register int r0 __asm__ ("r0") = sizeof facilities / 8;
-  __asm__ ("stfle %[facilities]\n"
-           : [facilities] "=Q"(facilities) : [r0] "r"(r0) : "cc", "memory");
+  memset (facilities, 0, sizeof facilities);
+  register char r0 __asm__ ("r0") = sizeof facilities / 8 - 1;
+  /* STFLE is supported since z9-109 and only in z/Architecture mode.  When
+   * compiling with -m31, gcc defaults to ESA mode, however, since the kernel
+   * is 64-bit, it's always z/Architecture mode at runtime.  */
+  __asm__ (".machinemode push\n"
+           ".machinemode zarch\n"
+           "stfle %[facilities]\n"
+           ".machinemode pop\n"
+           : [facilities] "=Q"(facilities), [r0] "+r"(r0) :: "cc");
   return is_bit_set (facilities, DFLTCC_FACILITY);
 }
 
@@ -180,12 +185,12 @@ dfltcc (int fn, void *param,
   int cc;
 
   __asm__ volatile (
-#ifdef DFLTCC_USDT
+#ifdef HAVE_SYS_SDT_H
                     STAP_PROBE_ASM (zlib, dfltcc_entry,
                                     STAP_PROBE_ASM_TEMPLATE (5))
 #endif
                     ".insn rrf,0xb9390000,%[r2],%[r4],%[hist],0\n"
-#ifdef DFLTCC_USDT
+#ifdef HAVE_SYS_SDT_H
                     STAP_PROBE_ASM (zlib, dfltcc_exit,
                                     STAP_PROBE_ASM_TEMPLATE (5))
 #endif
@@ -198,7 +203,7 @@ dfltcc (int fn, void *param,
                     : [r0] "r" (r0)
                       , [r1] "r" (r1)
                       , [hist] "r" (hist)
-#ifdef DFLTCC_USDT
+#ifdef HAVE_SYS_SDT_H
                       , STAP_PROBE_ASM_OPERANDS (5, r2, r3, r4, r5, hist)
 #endif
                     : "cc", "memory");
@@ -264,10 +269,16 @@ init_param (union aligned_dfltcc_param_v0 *ctx)
 }
 
 static void
-bi_close_block (struct dfltcc_param_v0 *param)
+bi_load (struct dfltcc_param_v0 *param)
 {
   bi_valid = param->sbb;
   bi_buf = bi_valid == 0 ? 0 : outbuf[outcnt] & ((1 << bi_valid) - 1);
+}
+
+static void
+bi_close_block (struct dfltcc_param_v0 *param)
+{
+  bi_load (param);
   send_bits (bi_reverse (param->eobs >> (15 - param->eobl), param->eobl),
              param->eobl);
   param->bcf = 0;
@@ -278,6 +289,7 @@ close_block (struct dfltcc_param_v0 *param)
 {
   bi_close_block (param);
   bi_windup ();
+  /* bi_windup has written out a possibly partial byte, fix up the position */
   param->sbb = (param->sbb + param->eobl) % 8;
   if (param->sbb != 0)
     {
@@ -291,6 +303,8 @@ close_stream (struct dfltcc_param_v0 *param)
 {
   if (param->bcf)
     bi_close_block (param);
+  else
+    bi_load (param);
   send_bits (1, 3); /* BFINAL=1, BTYPE=00 */
   bi_windup ();
   put_short (0x0000);
@@ -334,7 +348,16 @@ dfltcc_deflate (int pack_level)
     {
       /* Flush the output data.  */
       if (outcnt > OUTBUFSIZ - 8)
-        flush_outbuf ();
+        {
+          if (param->sbb == 0)
+            flush_outbuf ();
+          else
+            {
+              uch partial = outbuf[outcnt];
+              flush_outbuf ();
+              outbuf[outcnt] = partial;
+            }
+        }
 
       /* Close the block.  */
       if (param->bcf && total_in == block_threshold && !param->cf)
@@ -360,14 +383,16 @@ dfltcc_deflate (int pack_level)
         {
           if (total_in == 0 && block_threshold > 0)
             param->htt = HTT_FIXED;
-          else {
-            param->htt = HTT_DYNAMIC;
-            dfltcc_gdht (param);
-          }
+          else
+            {
+              param->htt = HTT_DYNAMIC;
+              dfltcc_gdht (param);
+            }
         }
 
       /* Compress inbuf into outbuf.  */
-      dfltcc_cmpr_xpnd (param, DFLTCC_CMPR);
+      while (dfltcc_cmpr_xpnd (param, DFLTCC_CMPR) == DFLTCC_CC_AGAIN)
+        ;
 
       /* Unmask the input data.  */
       insize += extra;
@@ -413,7 +438,9 @@ dfltcc_inflate (void)
         }
 
         /* Decompress inbuf into outbuf.  */
-        dfltcc_cc cc = dfltcc_cmpr_xpnd (param, DFLTCC_XPND);
+        dfltcc_cc cc;
+        while ((cc = dfltcc_cmpr_xpnd (param, DFLTCC_XPND)) == DFLTCC_CC_AGAIN)
+          ;
         if (cc == DFLTCC_CC_OK)
           {
             /* The entire deflate stream has been successfully decompressed.  */
@@ -422,6 +449,9 @@ dfltcc_inflate (void)
         if (cc == DFLTCC_CC_OP2_CORRUPT && param->oesc != 0)
           {
             /* The deflate stream is corrupted.  */
+            fprintf (stderr, "Operation-Ending-Supplemental Code 0x%x\n",
+                     param->oesc);
+            flush_outbuf ();
             return 2;
           }
         /* There must be more data to decompress.  */
@@ -430,7 +460,7 @@ dfltcc_inflate (void)
   if (param->sbb != 0)
     {
       /* The deflate stream has ended in the middle of a byte.  Go to
-        the next byte boundary, so that unzip can read CRC and length.  */
+         the next byte boundary, so that unzip can read CRC and length.  */
       inptr++;
     }
 

@@ -263,7 +263,7 @@ AC_SUBST([ASFLAGS_config])
 AC_ISC_POSIX
 AC_C_CONST
 AC_HEADER_STDC
-AC_CHECK_HEADERS_ONCE(fcntl.h limits.h memory.h time.h)
+AC_CHECK_HEADERS_ONCE(fcntl.h limits.h memory.h time.h sys/sdt.h)
 AC_CHECK_FUNCS_ONCE([chown fchmod fchown lstat siginterrupt])
 AC_HEADER_DIRENT
 AC_TYPE_SIGNAL

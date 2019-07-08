@@ -28,6 +28,7 @@ returns_ 1 gzip -dc "$abs_srcdir/hufts-segv.gz" > out 2> err || fail=1
 compare /dev/null out || fail=1
 
 sed 's/.*hufts-segv.gz: /...: /' err > k; mv k err || fail=1
+grep -v 'Operation-Ending-Supplemental Code' err > k; mv k err || fail=1
 compare exp err || fail=1
 
 printf '\037\213\010\000\060\060\060\060\060\060\144\000\000\000' > bug33501 \
@@ -35,6 +36,7 @@ printf '\037\213\010\000\060\060\060\060\060\060\144\000\000\000' > bug33501 \
 printf '\ngzip: stdin: invalid compressed data--format violated\n' >exp33501 \
   || framework_failure_
 returns_ 1 gzip -d <bug33501 >out33501 2> err33501 || fail=1
+grep -v 'Operation-Ending-Supplemental Code' err33501 > k; mv k err33501 || fail=1
 compare exp33501 err33501 || fail=1
 
 Exit $fail
