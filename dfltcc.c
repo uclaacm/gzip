@@ -152,7 +152,7 @@ is_dfltcc_enabled (void)
   char facilities[(DFLTCC_FACILITY / 64 + 1) * 8];
 
   char const *env = getenv ("DFLTCC");
-  if (env && !strcmp (env, "0"))
+  if (env && STREQ (env, "0"))
     return 0;
 
   register int r0 __asm__ ("r0") = sizeof facilities / 8;
