@@ -72,6 +72,8 @@ typedef enum
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
+#define STREQ(a, b) (strcmp (a, b) == 0)
+
 struct dfltcc_qaf_param
 {
   char fns[16];
