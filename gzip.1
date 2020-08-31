@@ -24,7 +24,9 @@ gzip, gunzip, zcat \- compress or expand files
 .I "name \&..."
 ]
 .SH DESCRIPTION
-.I Gzip
+The
+.B gzip
+command
 reduces the size of the named files using Lempel-Ziv coding (LZ77).
 Whenever possible,
 each file is replaced by one with the extension
@@ -35,14 +37,18 @@ while keeping the same ownership modes, access and modification times.
 for MSDOS, OS/2 FAT, Windows NT FAT and Atari.)
 If no files are specified, or if a file name is "-", the standard input is
 compressed to the standard output.
-.I Gzip
+The
+.B gzip
+command
 will only attempt to compress regular files.
 In particular, it will ignore symbolic links.
 .PP
 If the compressed file name is too long for its file system,
-.I gzip
+.B gzip
 truncates it.
-.I Gzip
+The
+.B gzip
+command
 attempts to truncate only the parts of the file name longer than 3 characters.
 (A part is delimited by dots.) If the name consists of small parts only,
 the longest parts are truncated. For example, if file names are limited
@@ -51,7 +57,7 @@ Names are not truncated on systems which do not have a limit on file name
 length.
 .PP
 By default,
-.I gzip
+.B gzip
 keeps the original file name and timestamp in the compressed file. These
 are used when decompressing the file with the
 .B \-N
@@ -59,21 +65,21 @@ option. This is useful when the compressed file name was truncated or
 when the timestamp was not preserved after a file transfer.
 .PP
 Compressed files can be restored to their original form using
-.I gzip -d
+.B "gzip -d"
 or
-.I gunzip
+.B gunzip
 or
-.IR zcat .
+.BR zcat .
 If the original name saved in the compressed file is not suitable for its
 file system, a new name is constructed from the original one to make it
 legal.
 .PP
-.I gunzip
+.B gunzip
 takes a list of files on its command line and replaces each
 file whose name ends with .gz, -gz, .z, -z, or _z (ignoring case)
 and which begins with the correct magic number with an uncompressed
 file without the original extension.
-.I gunzip
+.B gunzip
 also recognizes the special extensions
 .B "\&.tgz"
 and
@@ -84,80 +90,84 @@ and
 .B "\&.tar.Z"
 respectively.
 When compressing,
-.I gzip
+.B gzip
 uses the
 .B "\&.tgz"
 extension if necessary instead of truncating a file with a
 .B "\&.tar"
 extension.
 .PP
-.I gunzip
+.B gunzip
 can currently decompress files created by
-.IR gzip ,
-.IR zip ,
-.IR compress ,
-.I "compress -H"
+.BR gzip ,
+.BR zip ,
+.BR compress ,
+.B "compress -H"
 or
-.IR pack .
+.BR pack .
 The detection of the input format is automatic.  When using
 the first two formats,
-.I gunzip
+.B gunzip
 checks a 32 bit CRC. For
-.I pack
+.B pack
 and
-.I gunzip
+.B gunzip
 checks the uncompressed length. The standard
-.I compress
+.B compress
 format was not designed to allow consistency checks. However
-.I gunzip
+.B gunzip
 is sometimes able to detect a bad .Z file. If you get an error
 when uncompressing a .Z file, do not assume that the .Z file is
 correct simply because the standard
-.I uncompress
+.B uncompress
 does not complain. This generally means that the standard
-.I uncompress
+.B uncompress
 does not check its input, and happily generates garbage output.
 The SCO compress -H format (lzh compression method) does not include a CRC
 but also allows some consistency checks.
 .PP
 Files created by
-.I zip
+.B zip
 can be uncompressed by gzip only if they have a single member compressed
 with the 'deflation' method. This feature is only intended to help
 conversion of tar.zip files to the tar.gz format.  To extract a
-.I zip
+.B zip
 file with a single member, use a command like
-.I "gunzip <foo.zip"
+.B "gunzip <foo.zip"
 or
-.IR "gunzip -S .zip foo.zip" .
+.BR "gunzip -S .zip foo.zip" .
 To extract zip files
 with several members, use
-.I unzip
+.B unzip
 instead of
-.IR gunzip .
+.BR gunzip .
 .PP
-.I zcat
+The
+.B zcat
+command
 is identical to
-.I gunzip
+.B gunzip
 .BR \-c .
 (On some systems,
-.I zcat
+.B zcat
 may be installed as
-.I gzcat
+.B gzcat
 to preserve the original link to
-.IR compress .)
-.I zcat
+.BR compress .)
+.B zcat
 uncompresses either a list of files on the command line or its
 standard input and writes the uncompressed data on standard output.
-.I zcat
+.B zcat
 will uncompress files that have the correct magic number whether
 they have a
 .B "\&.gz"
 suffix or not.
 .PP
-.I Gzip
+The
+.B gzip
+command
 uses the Lempel-Ziv algorithm used in
-.I zip
+.B zip
 and PKZIP.
 The amount of compression obtained depends on the size of the
 input and the distribution of common substrings.
@@ -165,18 +175,18 @@ Typically, text such as source code or English
 is reduced by 60\-70%.
 Compression is generally much better than that achieved by
 LZW (as used in
-.IR compress ),
+.BR compress ),
 Huffman coding (as used in
-.IR pack ),
+.BR pack ),
 or adaptive Huffman coding
-.RI ( compact ).
+.RB ( compact ).
 .PP
 Compression is always performed, even if the compressed file is
 slightly larger than the original. The worst case expansion is
 a few bytes for the gzip file header, plus 5 bytes every 32K block,
 or an expansion ratio of 0.015% for large files. Note that the actual
 number of used disk blocks almost never increases.
-.I gzip
+.B gzip
 preserves the mode, ownership and timestamps of files when compressing
 or decompressing.
 .SH OPTIONS
@@ -200,17 +210,17 @@ Force compression or decompression even if the file has multiple links
 or the corresponding file already exists, or if the compressed data
 is read from or written to a terminal. If the input data is not in
 a format recognized by
-.IR gzip ,
+.BR gzip ,
 and if the option --stdout is also given, copy the input data without change
 to the standard output: let
-.I zcat
+.B zcat
 behave as
-.IR cat .
+.BR cat .
 If
 .B \-f
 is not given,
 and when not running in the background,
-.I gzip
+.B gzip
 prompts to verify whether an existing file should be overwritten.
 .TP
 .B \-h --help
@@ -253,7 +263,7 @@ the title and totals lines are not displayed.
 .TP
 .B \-L --license
 Display the
-.I gzip
+.B gzip
 license and quit.
 .TP
 .B \-n --no-name
@@ -261,7 +271,7 @@ When compressing, do not save the original file name and timestamp by
 default. (The original name is always saved if the name had to be
 truncated.) When decompressing, do not restore the original file name
 if present (remove only the
-.I gzip
+.B gzip
 suffix from the compressed file name) and do not restore the original
 timestamp if present (copy it from the compressed file). This option
 is the default when decompressing.
@@ -279,10 +289,10 @@ Suppress all warnings.
 .B \-r --recursive
 Travel the directory structure recursively. If any of the file names
 specified on the command line are directories,
-.I gzip
+.B gzip
 will descend into the directory and compress all the files it finds there
 (or decompress them in the case of
-.I gunzip
+.B gunzip
 ).
 .TP
 .B \-S .suf   --suffix .suf
@@ -296,7 +306,7 @@ suffixes to try, when deriving an output file name from an input file name.
 .TP
 .B --synchronous
 Use synchronous output.  With this option,
-.I gzip
+.B gzip
 is less likely to lose data during a system crash, but it can be
 considerably slower.
 .TP
@@ -312,7 +322,7 @@ Version. Display the version number and compilation options then quit.
 .TP
 .B \-# --fast --best
 Regulate the speed of compression using the specified digit
-.IR # ,
+.BR # ,
 where
 .B \-1
 or
@@ -333,7 +343,7 @@ Normally, after a change is made to any file in the archive, the compression alg
 With this option, rsync can transfer only the changed files as well as a small amount of metadata that is required to update the archive structure in the area that was changed.
 .SH "ADVANCED USAGE"
 Multiple compressed files can be concatenated. In this case,
-.I gunzip
+.B gunzip
 will extract all members at once. For example:
 
       gzip -c file1  > foo.gz
@@ -376,18 +386,18 @@ replacement.
 The obsolescent environment variable
 .B GZIP
 can hold a set of default options for
-.IR gzip .
+.BR gzip .
 These options are interpreted first and can be overwritten by explicit
 command line parameters.  As this can cause problems when using
 scripts, this feature is supported only for options that are
 reasonably likely to not cause too much harm, and
-.I gzip
+.B gzip
 warns if it is used.
 This feature will be removed in a future release of
-.IR gzip .
+.BR gzip .
 .PP
 You can use an alias or script instead.  For example, if
-.I gzip
+.B gzip
 is in the directory
 .B /usr/bin
 you can prepend
@@ -405,13 +415,13 @@ containing the following:
 znew(1), zcmp(1), zmore(1), zforce(1), gzexe(1), zip(1), unzip(1), compress(1)
 .PP
 The
-.I gzip
+.B gzip
 file format is specified in P. Deutsch, \s-1GZIP\s0 file format
 specification version 4.3,
 .BR <https://www.ietf.org/rfc/rfc1952.txt> ,
 Internet RFC 1952 (May 1996).
 The
-.I zip
+.B zip
 deflation format is specified in P. Deutsch, \s-1DEFLATE\s0 Compressed
 Data Format Specification version 1.3,
 .BR <https://www.ietf.org/rfc/rfc1951.txt> ,
@@ -425,7 +435,7 @@ Invalid options were specified on the command line.
 .TP
 \fIfile\fP\^: not in gzip format
 The file specified to
-.I gunzip
+.B gunzip
 has not been compressed.
 .TP
 \fIfile\fP\^: Corrupt input. Use zcat to recover some data.
@@ -435,10 +445,10 @@ can be recovered using
       zcat \fIfile\fP > recover
 .TP
 \fIfile\fP\^: compressed with \fIxx\fP bits, can only handle \fIyy\fP bits
-.I File
+.B File
 was compressed (using LZW) by a program that could deal with
 more
-.I bits
+bits
 than the decompress code on this machine.
 Recompress the file with gzip, which compresses better and uses
 less memory.
@@ -467,7 +477,7 @@ left unaltered.
 .TP
 -- has \fIxx\fP other links: unchanged
 The input file has links; it is left unchanged.  See
-.IR ln "(1)"
+.BR ln "(1)"
 for more information. Use the
 .B \-f
 flag to force compression of multiply-linked files.
@@ -475,9 +485,9 @@ flag to force compression of multiply-linked files.
 When writing compressed data to a tape, it is generally necessary to
 pad the output with zeroes up to a block boundary. When the data is
 read and the whole block is passed to
-.I gunzip
+.B gunzip
 for decompression,
-.I gunzip
+.B gunzip
 detects that there is extra trailing garbage after the compressed data
 and emits a warning by default.  You can use the --quiet option to
 suppress the warning.
@@ -495,9 +505,9 @@ compressed file is on a non seekable media.
 
 In some rare cases, the --best option gives worse compression than
 the default compression level (-6). On some highly redundant files,
-.I compress
+.B compress
 compresses better than
-.IR gzip .
+.BR gzip .
 .SH "REPORTING BUGS"
 Report bugs to: bug\-gzip@gnu.org
 .br

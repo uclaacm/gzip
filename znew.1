@@ -5,7 +5,9 @@ znew \-   recompress .Z files to .gz files
 .B znew
 [ -ftv9PK] [ name.Z ...  ]
 .SH DESCRIPTION
-.I  Znew
+The
+.B Znew
+command
 recompresses files from .Z (compress) format to .gz (gzip) format.
 If you want to recompress a file already in gzip format, rename the file
 to force a .Z extension then apply znew.
@@ -35,13 +37,13 @@ gzip(1), zmore(1), zdiff(1), zgrep(1), zforce(1), gzexe(1), compress(1)
 If the
 .B \-P
 option is used,
-.I znew
+.B znew
 does not maintain the timestamp if
-.IR touch (1)
+.BR touch (1)
 does not support the
 .B \-r
 option, and does not maintain permissions if
-.IR chmod (1)
+.BR chmod (1)
 does not support the
 .B \-\-reference
 option.
