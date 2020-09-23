@@ -27,6 +27,7 @@ TESTS =					\
   reproducible				\
   stdin					\
   timestamp				\
+  two-files				\
   trailing-nul				\
   unpack-invalid			\
   unpack-valid				\
