@@ -156,3 +156,6 @@
 /xsize.m4
 /year2038.m4
 /yesno.m4
+/inttypes.m4
+/open-slash.m4
+/zzgnulib.m4
