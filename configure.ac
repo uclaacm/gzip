@@ -210,8 +210,9 @@ AC_SUBST([ASCPPPOST])
 
 AC_CACHE_CHECK([for underline in external names], [gzip_cv_underline],
   [gzip_cv_underline=yes
-   AC_TRY_COMPILE([int foo() {return 0;}], [],
-     [$NM conftest.$OBJEXT | grep _foo >/dev/null 2>&1 ||
+   AC_COMPILE_IFELSE(
+     [AC_LANG_PROGRAM([[int foo() {return 0;}]], [[]])],
+       [$NM conftest.$OBJEXT | grep _foo >/dev/null 2>&1 ||
         gzip_cv_underline=no])])
 ASCPPFLAGS=
 if test $gzip_cv_underline = no; then
