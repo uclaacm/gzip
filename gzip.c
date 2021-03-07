@@ -656,7 +656,9 @@ int main (int argc, char **argv)
     ALLOC(ush, tab_prefix1, 1L<<(BITS-1));
 #endif
 
+#if SIGPIPE
     exiting_signal = quiet ? SIGPIPE : 0;
+#endif
     install_signal_handlers ();
 
     /* And get to work */
