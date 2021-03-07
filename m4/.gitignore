@@ -10,7 +10,6 @@
 /dirent-safer.m4
 /dirent_h.m4
 /dirfd.m4
-/dirname.m4
 /double-slash-root.m4
 /dup.m4
 /dup2.m4
@@ -58,9 +57,9 @@
 /gnulib-common.m4
 /gnulib-comp.m4
 /gnulib-tool.m4
-/host-cpu-c-abi.m4
 /include_next.m4
 /intmax_t.m4
+/inttypes.m4
 /inttypes_h.m4
 /isnand.m4
 /isnanf.m4
@@ -68,13 +67,8 @@
 /largefile.m4
 /ldexpl.m4
 /lib-ignore.m4
-/lib-ld.m4
-/lib-link.m4
-/lib-prefix.m4
 /limits-h.m4
-/localtime-buffer.m4
 /lock.m4
-/longlong.m4
 /lseek.m4
 /lstat.m4
 /malloc.m4
@@ -93,11 +87,14 @@
 /nocrash.m4
 /off_t.m4
 /open-cloexec.m4
+/open-slash.m4
 /open.m4
 /openat.m4
 /opendir.m4
 /pathmax.m4
 /perror.m4
+/pid_t.m4
+/pipe.m4
 /printf-frexp.m4
 /printf-frexpl.m4
 /printf-posix-rpl.m4
@@ -117,6 +114,7 @@
 /ssize_t.m4
 /stat-time.m4
 /stat.m4
+/std-gnu11.m4
 /stdalign.m4
 /stdbool.m4
 /stddef_h.m4
@@ -156,7 +154,4 @@
 /xsize.m4
 /year2038.m4
 /yesno.m4
-/inttypes.m4
-/open-slash.m4
 /zzgnulib.m4
-/pipe.m4
