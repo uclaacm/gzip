@@ -242,3 +242,6 @@
 /xsize.h
 /yesno.c
 /yesno.h
+/free.c
+/idx.h
+/minmax.h
