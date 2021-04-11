@@ -132,10 +132,10 @@ static char const *const license_msg[] = {
 /* With IBM_Z_DFLTCC, DEFLATE COMPRESSION works faster with
    page-aligned input and output buffers, and requires page-aligned
    windows; the alignment requirement is 4096.  On other platforms
-   alignment doesn't hurt, and alignment up to 8192 is portable so
+   alignment doesn't hurt, and alignment up to 4096 is portable so
    let's do that.  */
 #ifdef __alignas_is_defined
-# define BUFFER_ALIGNED alignas (8192)
+# define BUFFER_ALIGNED alignas (4096)
 #else
 # define BUFFER_ALIGNED /**/
 #endif
