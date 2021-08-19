@@ -942,10 +942,10 @@ local void treat_file(iname)
               }
             if (2 <= istat.st_nlink)
               {
-                WARN ((stderr, "%s: %s has %lu other link%c -- unchanged\n",
+                WARN ((stderr, "%s: %s has %lu other link%s -- file ignored\n",
                        program_name, ifname,
                        (unsigned long int) istat.st_nlink - 1,
-                       istat.st_nlink == 2 ? ' ' : 's'));
+                       istat.st_nlink == 2 ? "" : "s"));
                 close (ifd);
                 return;
               }
