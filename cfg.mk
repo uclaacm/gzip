@@ -14,6 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# Don't include the translation project coordinator email address
+# in announcement template.
+translation_project_ =
+
 # Used in maint.mk's web-manual rule
 manual_title = gzip: the data compression program
 
