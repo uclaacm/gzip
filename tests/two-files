@@ -19,6 +19,8 @@
 
 . "${srcdir=.}/init.sh"; path_prepend_ ..
 
+test -r /dev/urandom || skip_ "/dev/urandom missing"
+
 dd if=/dev/urandom of=a count=5000 bs=1
 dd if=/dev/urandom of=b count=5000 bs=1
 cp a a.exp
