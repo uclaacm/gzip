@@ -34,9 +34,10 @@ diff a b | diff exp - || skip_ "diff output format is incompatible with POSIX"
 
 fail=0
 gzip a b || fail=1
-returns_ 1 zdiff a.gz b.gz > out 2>&1 || fail=1
+returns_ 1 zdiff a.gz b.gz > out 2> err || fail=1
 
 compare exp out || fail=1
+grep -v '^+' err && fail=1
 
 rm -f out
 # expect success, for equal files
