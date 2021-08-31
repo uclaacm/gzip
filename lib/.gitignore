@@ -67,6 +67,7 @@
 /fpurge.c
 /freading.c
 /freading.h
+/free.c
 /frexp.c
 /frexpl.c
 /fseek.c
@@ -97,6 +98,9 @@
 /gettimeofday.c
 /glthread
 /gnulib.mk
+/ialloc.c
+/ialloc.h
+/idx.h
 /ignore-value.h
 /intprops.h
 /inttypes.h
@@ -124,6 +128,7 @@
 /memchr.valgrind
 /mempcpy.c
 /memrchr.c
+/minmax.h
 /msvc-inval.c
 /msvc-inval.h
 /msvc-nothrow.c
@@ -154,6 +159,7 @@
 /raise.c
 /readdir.c
 /realloc.c
+/reallocarray.c
 /rmdir.c
 /save-cwd.c
 /save-cwd.h
@@ -213,8 +219,8 @@
 /unistd.in.h
 /unlink.c
 /unlinkat.c
-/unused-parameter.h
 /utime.c
+/utime.h
 /utime.in.h
 /utimens.c
 /utimens.h
@@ -242,6 +248,3 @@
 /xsize.h
 /yesno.c
 /yesno.h
-/free.c
-/idx.h
-/minmax.h

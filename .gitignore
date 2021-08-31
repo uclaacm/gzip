@@ -9,7 +9,6 @@
 *~
 .deps
 /GNUmakefile
-/GNUmakefile
 /INSTALL
 /README-release
 /aclocal.m4
@@ -20,11 +19,7 @@
 /gzexe
 /gzip
 /gzip-*
-/lib/arg-nonnull.h
-/lib/c++defs.h
-/lib/warn-on-use.h
 /libver.a
-/maint.mk
 /maint.mk
 /version.[ch]
 /zcat
