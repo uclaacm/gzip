@@ -21,6 +21,7 @@ TESTS =					\
   hufts					\
   keep					\
   list					\
+  list-big				\
   memcpy-abuse				\
   mixed					\
   null-suffix-clobber			\

@@ -112,7 +112,6 @@ int copy(in, out)
     errno = 0;
     while (insize > inptr) {
         write_buf(out, (char*)inbuf + inptr, insize - inptr);
-        bytes_out += insize - inptr;
         got = read_buffer (in, (char *) inbuf, INBUFSIZ);
         if (got == -1)
             read_error();
@@ -255,9 +254,7 @@ void flush_outbuf()
 {
     if (outcnt == 0) return;
 
-    if (!test)
-      write_buf (ofd, outbuf, outcnt);
-    bytes_out += (off_t)outcnt;
+    write_buf (ofd, outbuf, outcnt);
     outcnt = 0;
 }
 
@@ -270,16 +267,13 @@ void flush_window()
     if (outcnt == 0) return;
     updcrc(window, outcnt);
 
-    if (!test) {
-        write_buf(ofd, (char *)window, outcnt);
-    }
-    bytes_out += (off_t)outcnt;
+    write_buf (ofd, window, outcnt);
     outcnt = 0;
 }
 
 /* ===========================================================================
- * Does the same as write(), but also handles partial pipe writes and checks
- * for error return.
+ * Update the count of output bytes.  If testing, do not do any
+ * output.  Otherwise, write the buffer, checking for errors.
  */
 void write_buf(fd, buf, cnt)
     int       fd;
@@ -287,6 +281,10 @@ void write_buf(fd, buf, cnt)
     unsigned  cnt;
 {
     unsigned  n;
+
+    bytes_out += cnt;
+    if (test)
+      return;
 
     while ((n = write_buffer (fd, buf, cnt)) != cnt) {
         if (n == (unsigned)(-1)) {

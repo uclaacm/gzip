@@ -262,6 +262,7 @@ extern int zip        (int in, int out);
 extern int file_read  (char *buf,  unsigned size);
 
         /* in unzip.c */
+extern ulg unzip_crc;
 extern int unzip      (int in, int out);
 extern int check_zipfile (int in);
 

@@ -51,6 +51,8 @@
 
 /* Globals */
 
+ulg unzip_crc;  /* CRC found by 'unzip'.  */
+
 static int decrypt;        /* flag to turn on decryption */
 static int pkzip = 0;      /* set for a pkzip file */
 static int ext_header = 0; /* set if extended local header */
@@ -210,6 +212,7 @@ int unzip(in, out)
         }
     }
     ext_header = pkzip = 0; /* for next file */
+    unzip_crc = orig_crc;
     if (err == OK) return OK;
     exit_code = ERROR;
     if (!test) abort_gzip();

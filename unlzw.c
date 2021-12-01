@@ -225,10 +225,8 @@ int unlzw(in, out)
                             "posbits:%ld inbuf:%02X %02X %02X %02X %02X\n",
                             posbits, p[-1],p[0],p[1],p[2],p[3]);
 #endif
-                    if (!test && outpos > 0) {
-                        write_buf(out, (char*)outbuf, outpos);
-                        bytes_out += (off_t)outpos;
-                    }
+                    if (outpos > 0)
+                      write_buf (out, outbuf, outpos);
                     gzip_error (to_stdout
                                 ? "corrupt input."
                                 : "corrupt input. Use zcat to recover some data.");
@@ -257,10 +255,7 @@ int unlzw(in, out)
                             outpos += i;
                         }
                         if (outpos >= OUTBUFSIZ) {
-                            if (!test) {
-                                write_buf(out, (char*)outbuf, outpos);
-                                bytes_out += (off_t)outpos;
-                            }
+                            write_buf (out, outbuf, outpos);
                             outpos = 0;
                         }
                         stackp+= i;
@@ -281,9 +276,7 @@ int unlzw(in, out)
         }
     } while (rsize != 0);
 
-    if (!test && outpos > 0) {
-        write_buf(out, (char*)outbuf, outpos);
-        bytes_out += (off_t)outpos;
-    }
+    if (outpos > 0)
+      write_buf (out, outbuf, outpos);
     return OK;
 }
