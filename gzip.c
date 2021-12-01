@@ -173,9 +173,11 @@ static int no_name = -1;     /* don't save or restore the original file name */
 static int no_time = -1;     /* don't save or restore the original file time */
 static int recursive = 0;    /* recurse through directories (-r) */
 static int list = 0;         /* list the file contents (-l) */
+#ifndef DEBUG
+static
+#endif
        int verbose = 0;      /* be verbose (-v) */
        int quiet = 0;        /* be very quiet (-q) */
-static int do_lzw = 0;       /* generate output compatible with old compress (-Z) */
        int test = 0;         /* test .gz file integrity */
 static int foreground = 0;   /* set if program run in foreground */
        char *program_name;   /* program name */
@@ -380,10 +382,6 @@ local void help()
  "  -V, --version     display version number",
  "  -1, --fast        compress faster",
  "  -9, --best        compress better",
-#ifdef LZW
- "  -Z, --lzw         produce output compatible with old compress",
- "  -b, --bits=BITS   max number of bits per code (implies -Z)",
-#endif
  "",
  "With no FILE, or when FILE is -, read standard input.",
  "",
@@ -588,14 +586,10 @@ int main (int argc, char **argv)
         case 'V':
             version (); finish_out (); break;
         case 'Z':
-#ifdef LZW
-            do_lzw = 1; break;
-#else
             fprintf(stderr, "%s: -Z not supported in this version\n",
                     program_name);
             try_help ();
             break;
-#endif
         case '1' + ENV_OPTION:  case '2' + ENV_OPTION:  case '3' + ENV_OPTION:
         case '4' + ENV_OPTION:  case '5' + ENV_OPTION:  case '6' + ENV_OPTION:
         case '7' + ENV_OPTION:  case '8' + ENV_OPTION:  case '9' + ENV_OPTION:
@@ -641,8 +635,6 @@ int main (int argc, char **argv)
         fprintf(stderr, "%s: invalid suffix '%s'\n", program_name, z_suffix);
         do_exit(ERROR);
     }
-
-    if (do_lzw && !decompress) work = lzw;
 
     /* Allocate all global buffers (for DYN_ALLOC option) */
     ALLOC(uch, inbuf,  INBUFSIZ +INBUF_EXTRA);

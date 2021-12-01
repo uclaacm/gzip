@@ -191,7 +191,6 @@ typedef int file_t;     /* Do not use stdio */
  */
 
 extern int exit_code;      /* program exit code */
-extern int verbose;        /* be verbose (-v) */
 extern int quiet;          /* be quiet (-q) */
 extern int level;          /* compression level */
 extern int test;           /* check .z file integrity */
@@ -239,6 +238,7 @@ extern int save_orig_name; /* set if original name must be saved */
 
 /* Diagnostic functions */
 #ifdef DEBUG
+extern int verbose;        /* be verbose (-v) */
 #  define Assert(cond,msg) {if (!(cond)) gzip_error (msg);}
 #  define Trace(x) fprintf x
 #  define Tracev(x) {if (verbose) fprintf x ;}
@@ -275,7 +275,6 @@ extern int unlzh      (int in, int out);
 extern noreturn void abort_gzip (void);
 
         /* in deflate.c */
-extern void lm_init (int pack_level);
 extern off_t deflate (int pack_level);
 
         /* in trees.c */
@@ -284,8 +283,10 @@ extern int  ct_tally    (int dist, int lc);
 extern off_t flush_block (char *buf, ulg stored_len, int pad, int eof);
 
         /* in bits.c */
+#ifdef IBM_Z_DFLTCC
 extern unsigned short bi_buf;
 extern int bi_valid;
+#endif
 extern void     bi_init    (file_t zipfile);
 extern void     send_bits  (int value, int length);
 extern unsigned bi_reverse (unsigned value, int length) _GL_ATTRIBUTE_CONST;

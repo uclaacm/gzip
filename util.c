@@ -153,12 +153,14 @@ getcrc (void)
   return crc ^ 0xffffffffL;
 }
 
+#ifdef IBM_Z_DFLTCC
 /* Set a new CRC value.  */
 void
 setcrc (ulg c)
 {
   crc = c ^ 0xffffffffL;
 }
+#endif
 
 /* ===========================================================================
  * Clear input and output buffers
@@ -346,6 +348,7 @@ int xunlink (filename)
   return r;
 }
 
+#ifdef NO_MULTIPLE_DOTS
 /* ========================================================================
  * Make a file name legal for file systems not allowing file names with
  * multiple dots or starting with a dot (such as MSDOS), by changing
@@ -364,6 +367,7 @@ void make_simple_name(name)
         if (*--p == '.') *p = '_';
     } while (p != name);
 }
+#endif
 
 /* Convert the value of the environment variable ENVVAR_NAME
    to a newly allocated argument vector, and set *ARGCP and *ARGVP

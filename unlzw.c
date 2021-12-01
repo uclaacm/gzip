@@ -85,7 +85,8 @@ union	bytes {
 #define de_stack        ((char_type *)(&d_buf[DIST_BUFSIZE-1]))
 #define tab_suffixof(i) tab_suffix[i]
 
-int block_mode = BLOCK_MODE; /* block compress mode -C compatible with 2.0 */
+/* block compress mode -C compatible with 2.0 */
+static int block_mode = BLOCK_MODE;
 
 /* ============================================================================
  * Decompress in to out.  This routine adapts to the codes in the

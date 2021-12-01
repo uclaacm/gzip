@@ -20,8 +20,3 @@
 
 #define PATCHLEVEL 0
 #define REVDATE "2002-09-30"
-
-/* This version does not support compression into old compress format: */
-#ifdef LZW
-#  undef LZW
-#endif

@@ -45,7 +45,5 @@
 #define FIRST  (CLEAR+1) /* first free entry */
 
 extern int maxbits;      /* max bits per code for LZW */
-extern int block_mode;   /* block compress mode -C compatible with 2.0 */
 
-extern int lzw    (int in, int out);
 extern int unlzw  (int in, int out);
