@@ -300,14 +300,6 @@ ratio: compression ratio (0.0% if unknown)
 uncompressed_name: name of the uncompressed file
 @end example
 
-The uncompressed size is given as @minus{}1 for files not in @command{gzip}
-format, such as compressed @samp{.Z} files.  To get the uncompressed size for
-such a file, you can use:
-
-@example
-zcat file.Z | wc -c
-@end example
-
 In combination with the @option{--verbose} option, the following fields are also
 displayed:
 
@@ -322,16 +314,6 @@ The @abbr{CRC} is given as ffffffff for a file not in gzip format.
 With @option{--verbose}, the size totals and compression ratio for all files
 is also displayed, unless some sizes are unknown.  With @option{--quiet},
 the title and totals lines are not displayed.
-
-The @command{gzip} format represents the input size modulo
-@math{2^32}, so the uncompressed size and compression ratio are listed
-incorrectly for uncompressed files 4 GiB and larger.  To work around
-this problem, you can use the following command to discover a large
-uncompressed file's true size:
-
-@example
-zcat file.gz | wc -c
-@end example
 
 @item --license
 @itemx -L

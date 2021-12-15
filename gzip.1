@@ -492,17 +492,6 @@ detects that there is extra trailing garbage after the compressed data
 and emits a warning by default.  You can use the --quiet option to
 suppress the warning.
 .SH BUGS
-The gzip format represents the input size modulo 2^32, so the
---list option reports incorrect uncompressed sizes and compression
-ratios for uncompressed files 4 GB and larger.  To work around this
-problem, you can use the following command to discover a large
-uncompressed file's true size:
-
-      zcat file.gz | wc -c
-
-The --list option reports sizes as -1 and crc as ffffffff if the
-compressed file is on a non seekable media.
-
 In some rare cases, the --best option gives worse compression than
 the default compression level (-6). On some highly redundant files,
 .B compress

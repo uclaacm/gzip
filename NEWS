@@ -2,6 +2,16 @@ GNU gzip NEWS                                    -*- outline -*-
 
 * Noteworthy changes in release ?.? (????-??-??) [?]
 
+** Changes in behavior
+
+  'gzip -l' no longer misreports file lengths 4 GiB and larger.
+  Previously, 'gzip -l' output the 32-bit value stored in the gzip
+  header even though that is the uncompressed length modulo 2**32.
+  Now, 'gzip -l' calculates the uncompressed length by decompressing
+  the data and counting the resulting bytes.  Although this can take
+  much more time, nowadays the correctness pros seem to outweigh the
+  performance cons.
+
 
 * Noteworthy changes in release 1.11 (2021-09-03) [stable]
 
