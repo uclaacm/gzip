@@ -63,31 +63,6 @@ gl_INIT
 # Note -Wvla is implicitly added by gl_MANYWARN_ALL_GCC
 AC_DEFINE([GNULIB_NO_VLA], [1], [Define to 1 to disable use of VLAs])
 
-AC_ARG_ENABLE([gcc-warnings],
-  [AS_HELP_STRING([--enable-gcc-warnings],
-     [turn on many GCC warnings (for developers; best with GNU make)])],
-  [case $enableval in
-     yes|no) ;;
-     *)      AC_MSG_ERROR([bad value $enableval for gcc-warnings option]) ;;
-   esac
-   gl_gcc_warnings=$enableval],
-  [if test -d "$srcdir"/.git; then
-     gl_gcc_warnings=yes
-   else
-     gl_gcc_warnings=no
-   fi]
-)
-
-AC_ARG_ENABLE([dfltcc],
-  [AS_HELP_STRING([--enable-dfltcc],
-     [use DEFLATE COMPRESSION CALL instruction on IBM Z])],
-  [case $enableval in
-     yes|no) gl_dfltcc=$enableval ;;
-     *)      AC_MSG_ERROR([bad value $enableval for dfltcc option]) ;;
-   esac],
-  [gl_dfltcc=no]
-)
-
 # gl_GCC_VERSION_IFELSE([major], [minor], [run-if-found], [run-if-not-found])
 # ------------------------------------------------
 # If $CPP is gcc-MAJOR.MINOR or newer, then run RUN-IF-FOUND.
@@ -106,12 +81,52 @@ AC_DEFUN([gl_GCC_VERSION_IFELSE],
   ]
 )
 
+AC_ARG_ENABLE([gcc-warnings],
+  [AS_HELP_STRING([--enable-gcc-warnings@<:@=TYPE@:>@],
+    [control generation of GCC warnings.  The TYPE 'no' disables
+     warnings (default for non-developer builds); 'yes' generates
+     cheap warnings if available (default for developer builds);
+     'expensive' in addition generates expensive-to-compute warnings
+     if available.])],
+  [case $enableval in
+     no|yes|expensive) ;;
+     *)      AC_MSG_ERROR([bad value $enableval for gcc-warnings option]) ;;
+   esac
+   gl_gcc_warnings=$enableval],
+  [
+   # GCC provides fine-grained control over diagnostics which
+   # is used in gnulib for example to suppress warnings from
+   # certain sections of code.  So if this is available and
+   # we're running from a git repo, then auto enable the warnings.
+   gl_gcc_warnings=no
+   gl_GCC_VERSION_IFELSE([4], [6],
+                         [test -d "$srcdir"/.git \
+                          && ! test -f "$srcdir"/.tarball-version \
+                          && gl_gcc_warnings=yes])]
+)
+
+AC_ARG_ENABLE([dfltcc],
+  [AS_HELP_STRING([--enable-dfltcc],
+     [use DEFLATE COMPRESSION CALL instruction on IBM Z])],
+  [case $enableval in
+     yes|no) gl_dfltcc=$enableval ;;
+     *)      AC_MSG_ERROR([bad value $enableval for dfltcc option]) ;;
+   esac],
+  [gl_dfltcc=no]
+)
+
 if test "$gl_gcc_warnings" = yes; then
   gl_WARN_ADD([-Werror], [WERROR_CFLAGS])
   AC_SUBST([WERROR_CFLAGS])
 
-  nw=
+  ew=
+  AS_IF([test $gl_gcc_warnings != expensive],
+    [# -fanalyzer and related options slow GCC considerably.
+     ew="$ew -fanalyzer -Wno-analyzer-double-free -Wno-analyzer-malloc-leak"
+     ew="$ew -Wno-analyzer-null-dereference -Wno-analyzer-use-after-free"])
+
   # This, $nw, is the list of warnings we disable.
+  nw=$ew
   nw="$nw -Wdeclaration-after-statement" # too useful to forbid
   nw="$nw -Waggregate-return"       # anachronistic
   nw="$nw -Wlong-long"              # C90 is anachronistic (lib/gethrxtime.h)
