@@ -30,6 +30,7 @@ local-checks-to-skip =		\
   sc_bindtextdomain		\
   sc_error_message_period	\
   sc_error_message_uppercase	\
+  sc_indent			\
   sc_program_name		\
   sc_texinfo_acronym
 
