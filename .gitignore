@@ -36,3 +36,6 @@ ChangeLog
 Makefile
 Makefile.in
 gzip.doc.gz
+
+# Rust ignore
+/target
