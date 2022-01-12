@@ -57,7 +57,7 @@ dependencies = [
 
 [[package]]
 name = "gzip"
-version = "2.0.0"
+version = "1.90.0"
 dependencies = [
  "clap",
 ]
