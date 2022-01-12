@@ -1,6 +1,6 @@
-use std::{env, path::PathBuf};
+use std::path::PathBuf;
 
-use clap::{Parser, ErrorKind, IntoApp};
+use clap::Parser;
 
 const DEFAULT_COMPRESSION_LEVEL: usize = 6;
 
@@ -69,16 +69,169 @@ struct Args {
     test: bool,
 
     /// Compress faster
-    #[clap(short = '1', long, conflicts_with = "best")]
-    fast: bool,
+    #[clap(
+        name = "level_1",
+        short = '1',
+        long = "fast",
+        overrides_with_all = &[
+            "level_1",
+            "level_2",
+            "level_3",
+            "level_4",
+            "level_5",
+            "level_6",
+            "level_7",
+            "level_8",
+            "level_9"
+        ],
+    )]
+    level_1: bool,
+
+    #[clap(
+        name = "level_2",
+        short = '2',
+        overrides_with_all = &[
+            "level_1",
+            "level_2",
+            "level_3",
+            "level_4",
+            "level_5",
+            "level_6",
+            "level_7",
+            "level_8",
+            "level_9"
+        ],
+        hide = true
+    )]
+    level_2: bool,
+
+    #[clap(
+        name = "level_3",
+        short = '3',
+        overrides_with_all = &[
+            "level_1",
+            "level_2",
+            "level_3",
+            "level_4",
+            "level_5",
+            "level_6",
+            "level_7",
+            "level_8",
+            "level_9"
+        ],
+        hide = true
+    )]
+    level_3: bool,
+
+    #[clap(
+        name = "level_4",
+        short = '4',
+        overrides_with_all = &[
+            "level_1",
+            "level_2",
+            "level_3",
+            "level_4",
+            "level_5",
+            "level_6",
+            "level_7",
+            "level_8",
+            "level_9"
+        ],
+        hide = true
+    )]
+    level_4: bool,
+
+    #[clap(
+        name = "level_5",
+        short = '5',
+        overrides_with_all = &[
+            "level_1",
+            "level_2",
+            "level_3",
+            "level_4",
+            "level_5",
+            "level_6",
+            "level_7",
+            "level_8",
+            "level_9"
+        ],
+        hide = true
+    )]
+    level_5: bool,
+
+    #[clap(
+        name = "level_6",
+        short = '6',
+        overrides_with_all = &[
+            "level_1",
+            "level_2",
+            "level_3",
+            "level_4",
+            "level_5",
+            "level_6",
+            "level_7",
+            "level_8",
+            "level_9"
+        ],
+        hide = true
+    )]
+    level_6: bool,
+
+    #[clap(
+        name = "level_7",
+        short = '7',
+        overrides_with_all = &[
+            "level_1",
+            "level_2",
+            "level_3",
+            "level_4",
+            "level_5",
+            "level_6",
+            "level_7",
+            "level_8",
+            "level_9"
+        ],
+        hide = true
+    )]
+    level_7: bool,
+
+    #[clap(
+        name = "level_8",
+        short = '8',
+        overrides_with_all = &[
+            "level_1",
+            "level_2",
+            "level_3",
+            "level_4",
+            "level_5",
+            "level_6",
+            "level_7",
+            "level_8",
+            "level_9"
+        ],
+        hide = true
+    )]
+    level_8: bool,
 
     /// Compress better
-    #[clap(short = '9', long, conflicts_with = "fast")]
-    best: bool,
-
-    /// Set compression level
-    #[clap(skip)]
-    compression_level: usize,
+    #[clap(
+        name = "level_9",
+        short = '9',
+        long = "best",
+        multiple_occurrences = true,
+        overrides_with_all = &[
+            "level_1",
+            "level_2",
+            "level_3",
+            "level_4",
+            "level_5",
+            "level_6",
+            "level_7",
+            "level_8",
+            "level_9"
+        ],
+    )]
+    level_9: bool,
 
     /// Use suffix SUF on compressed files
     #[clap(short = 'S', long, default_value = "")]
@@ -97,62 +250,5 @@ struct Args {
 }
 
 fn main() {
-    // Parse and validate arguments.
-    let (level, cleaned_args) = clean_args(env::args());
-    let mut args = Args::parse_from(cleaned_args.iter());
-    args.compression_level = match (args.fast, args.best, level) {
-        (_, true, _) => 9,
-        (_, _, Some(0)) => {
-            println!("{}", Args::into_app().error(ErrorKind::ArgumentNotFound, "invalid option -- '0'"));
-            return;
-        }
-        (_, _, Some(d)) => d,
-        (true, _, None) => 1,
-        _ => DEFAULT_COMPRESSION_LEVEL,
-    };
-}
-
-/// Consume an iterator of arguments into the final level flag `(-1, -2, ..., -9)`, if
-/// present, and its arguments after removal.
-///
-/// For example, `["-1dc3", "--fast"]` becomes `(Some(3), ["-dc", "--fast"])`.
-/// 
-/// This function makes no guarantee as to whether the returned level flag is valid in
-/// the program context. In the case of gzip, -0 is invalid, and must be handled
-/// separately.
-fn clean_args<I: IntoIterator<Item = String>>(args: I) -> (Option<usize>, Vec<String>) {
-    let (mut level, mut cleaned_args) = (None, vec![]);
-    args.into_iter().for_each(|s| {
-        let mut cleaned = String::new();
-        if s.starts_with("-") && !s.starts_with("--") {
-            s.chars().for_each(|c| {
-                if c == '=' {
-                    return;
-                }
-                if let Some(d) = c.to_digit(10) {
-                    level = Some(d as usize);
-                } else {
-                    cleaned.push(c);
-                }
-            });
-            if !["", "-"].contains(&cleaned.as_str()) {
-                cleaned_args.push(cleaned);
-            }
-        } else {
-            cleaned_args.push(s.clone());
-        }
-    });
-    (level, cleaned_args)
-}
-
-#[cfg(test)]
-mod test {
-    use crate::clean_args;
-
-    #[test]
-    fn test_clean_args() {
-        let (level, args) = clean_args("--test -cat".split(" ").map(|s| s.to_string()));
-        assert_eq!(level, None);
-        assert_eq!(args, vec!["--test", "-cat"]);
-    }
+    let _args = Args::parse();
 }
