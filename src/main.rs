@@ -1,6 +1,8 @@
-use std::path::PathBuf;
+use std::{path::PathBuf};
 
 use clap::Parser;
+
+mod lib;
 
 const DEFAULT_COMPRESSION_LEVEL: u32 = 6;
 
