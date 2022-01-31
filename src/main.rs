@@ -1,22 +1,8 @@
-<<<<<<< Updated upstream
-use std::path::PathBuf;
-||||||| constructed merge base
-use std::{path::PathBuf};
-=======
 use std::{fs::OpenOptions, io, path::PathBuf, time::SystemTime};
->>>>>>> Stashed changes
 
 use clap::Parser;
-<<<<<<< Updated upstream
+use flate2::{read::GzDecoder, Compression, GzBuilder};
 
-||||||| constructed merge base
-
-mod lib;
-
-=======
-use flate2::{write::GzEncoder, Compression, GzBuilder};
-
->>>>>>> Stashed changes
 const DEFAULT_COMPRESSION_LEVEL: u32 = 6;
 
 static LEVEL_FLAGS: &'static [&'static str] = &[
@@ -202,19 +188,37 @@ impl Args {
 
 fn main() {
     let args = Args::parse();
+
+    if args.decompress {
+        decompress_files(args)
+    } else {
+        compress_files(args)
+    }
+}
+
+fn decompress_files(args: Args) {
+    for file in args.files {
+        let file_name = file.file_name().unwrap().to_str().unwrap();
+        let mut output = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .open(file_name.strip_suffix(".gz").unwrap_or(file_name))
+            .unwrap();
+        let mut gz_in = GzDecoder::new(OpenOptions::new().read(true).open(file).unwrap());
+        io::copy(&mut gz_in, &mut output);
+    }
+}
+
+fn compress_files(args: Args) {
     let compression_level = args.compression_level();
 
     for file in args.files {
         let file_name = file.file_name().unwrap().to_str().unwrap();
-        println!("Compressing {}", file_name);
-        let mut gz_writer = GzBuilder::new().filename(file_name);
-        let mut gz_out = OpenOptions::new()
+        let gz_writer = GzBuilder::new().filename(file_name);
+        let gz_out = OpenOptions::new()
             .create(true)
             .write(true)
-            .open(format!(
-                "{}.gz",
-                file_name
-            ))
+            .open(format!("{}.gz", file_name))
             .unwrap();
         let meta = file.metadata().expect("failed to acquire file metadata");
         let gz_writer = gz_writer.mtime(
