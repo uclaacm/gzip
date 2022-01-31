@@ -1,7 +1,22 @@
+<<<<<<< Updated upstream
 use std::path::PathBuf;
+||||||| constructed merge base
+use std::{path::PathBuf};
+=======
+use std::{fs::OpenOptions, io, path::PathBuf, time::SystemTime};
+>>>>>>> Stashed changes
 
 use clap::Parser;
+<<<<<<< Updated upstream
 
+||||||| constructed merge base
+
+mod lib;
+
+=======
+use flate2::{write::GzEncoder, Compression, GzBuilder};
+
+>>>>>>> Stashed changes
 const DEFAULT_COMPRESSION_LEVEL: u32 = 6;
 
 static LEVEL_FLAGS: &'static [&'static str] = &[
@@ -168,6 +183,7 @@ struct Args {
 }
 
 impl Args {
+    /// User-identified compression level for this run of gzip.
     fn compression_level(&self) -> u32 {
         match self {
             Args { level_1: true, .. } => 1,
@@ -185,5 +201,36 @@ impl Args {
 }
 
 fn main() {
-    let _args = Args::parse();
+    let args = Args::parse();
+    let compression_level = args.compression_level();
+
+    for file in args.files {
+        let file_name = file.file_name().unwrap().to_str().unwrap();
+        println!("Compressing {}", file_name);
+        let mut gz_writer = GzBuilder::new().filename(file_name);
+        let mut gz_out = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .open(format!(
+                "{}.gz",
+                file_name
+            ))
+            .unwrap();
+        let meta = file.metadata().expect("failed to acquire file metadata");
+        let gz_writer = gz_writer.mtime(
+            meta.modified()
+                .unwrap()
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .as_secs() as u32,
+        );
+
+        let mut reader = OpenOptions::new()
+            .read(true)
+            .write(false)
+            .open(file)
+            .unwrap();
+        let mut writer = gz_writer.write(gz_out, Compression::new(compression_level));
+        io::copy(&mut reader, &mut writer);
+    }
 }
