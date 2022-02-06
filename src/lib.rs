@@ -2,13 +2,16 @@
 //! of the gzip file format in Rust.
 
 use std::{
-    io::{self, Read, Write},
-    result,
+    io::{self, Write},
+    result, time,
 };
 
-use flate2::{write::DeflateEncoder, Compression};
+use flate2::{write::GzEncoder, Compression};
 
-const GZIP_MAGIC: [u8; 2] = [0o037, 0o213];
+/// Magic number for a gzip archive.
+pub const GZIP_MAGIC: [u8; 2] = [0o037, 0o213];
+
+/// Previously-used magic number for a gzip archive.
 const OLD_GZIP_MAGIC: [u8; 2] = [0o37, 0o236];
 const LZH_MAGIC: [u8; 2] = [0o037, 0o236];
 const PKZIP_MAGIC: [u8; 4] = [0o120, 0o113, 0o003, 0o004];
@@ -17,9 +20,13 @@ const PKZIP_MAGIC: [u8; 4] = [0o120, 0o113, 0o003, 0o004];
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]
 pub enum OsCode {
+    /// The FAT file system.
     FAT = 0,
+
     AMIGA = 1,
     VMS = 2,
+
+    /// EXT-like file systems.
     UNIX = 3,
     VMCMS = 4,
     ATARI = 5,
@@ -39,79 +46,14 @@ pub enum OsCode {
     UNKNOWN = 255,
 }
 
-/// A member in a gzip file.
-/// 
-/// A gzip file consists of a series of "members" (compressed data sets). The format of each member is specified in the following
-/// data structure.  The members simply appear one after another in the file,
-/// with no additional information before, between, or after them.
-///
-/// See: [RFC 1952](https://datatracker.ietf.org/doc/html/rfc1952)
-#[derive(Debug)]
-pub struct Member {
-    /// Method used in compressing this member.
-    method: Method,
-
-    /// One-hot byte enabling extra fields in a gzip member.
-    flags: u8,
-
-    /// Most recent modification time of the compressed file.
-    mtime: u32,
-
-    /// Provided if [Flag::ExtraField] is set.
-    extra_field: Option<Subfield>,
-
-    /// Zero-terminated string containing the original file name, if [Flag::Name] is set.
-    name: Option<String>,
-
-    /// Zero-terminated file comment, if [Flag::Comment] is set.
-    comment: Option<String>,
-
-    /// CRC-16 of the gzip header, provided if [Flag::HeaderCrc] is set.
-    crc_16: Option<u16>,
-
-    /// Data associated with this member.
-    data: Vec<u8>,
-
-    /// CRC-32 of the original, uncompressed file.
-    crc_32: u32,
-
-    /// Size of the original, uncompressed file mod 2^32.
-    size: u32,
-}
-
-impl Default for Member {
-    fn default() -> Self {
-        Self {
-            method: Method::Deflate,
-            flags: 0,
-            mtime: 0,
-            extra_field: None,
-            name: None,
-            comment: None,
-            crc_16: None,
-            data: vec![],
-            crc_32: 0,
-            size: 0,
-        }
-    }
-}
-
-impl<'a, V> From<V> for Member
-where
-    V: IntoIterator<Item = &'a u8>,
-{
-    fn from(v: V) -> Self {
-        let mut m = Self::default();
-        m.data = v.into_iter().cloned().collect();
-        m
-    }
-}
-
 /// Optional associated data to a [Member].
 #[derive(Debug, Clone)]
 pub struct Subfield {
     pub id: SubfieldId,
+    
+    /// Length of the subfield.
     len: u32,
+
     data: Vec<u8>,
 }
 
@@ -182,7 +124,7 @@ pub enum Error {
     Custom(&'static str),
 }
 
-type Result<T> = result::Result<T, Error>;
+pub type Result<T> = result::Result<T, Error>;
 
 impl From<io::Error> for Error {
     fn from(e: io::Error) -> Self {
@@ -190,3 +132,192 @@ impl From<io::Error> for Error {
     }
 }
 
+/// A member in a gzip file.
+///
+/// A gzip file consists of a series of "members" (compressed data sets). The format of each member is specified in the following
+/// data structure.  The members simply appear one after another in the file,
+/// with no additional information before, between, or after them.
+///
+/// See: [RFC 1952](https://datatracker.ietf.org/doc/html/rfc1952)
+#[derive(Debug)]
+pub struct Member {
+    /// Method used in compressing this member.
+    method: Method,
+
+    /// One-hot bit vector enabling extra fields in a gzip member.
+    flags: u8,
+
+    /// Most recent modification time of the compressed file.
+    mtime: u32,
+
+    /// Provided if [Flag::ExtraField] is set.
+    extra_field: Option<Subfield>,
+
+    /// Zero-terminated string containing the original file name, if [Flag::Name] is set.
+    name: Option<String>,
+
+    /// Zero-terminated file comment, if [Flag::Comment] is set.
+    comment: Option<String>,
+
+    /// CRC-16 of the gzip header, provided if [Flag::HeaderCrc] is set.
+    crc_16: Option<u16>,
+
+    /// Data associated with this member.
+    data: Vec<u8>,
+
+    /// CRC-32 of the original, uncompressed file.
+    crc_32: u32,
+
+    /// Size of the original, uncompressed file mod 2^32.
+    size: u32,
+}
+
+impl Default for Member {
+    fn default() -> Self {
+        Self {
+            method: Method::Deflate,
+            flags: 0,
+            mtime: 0,
+            extra_field: None,
+            name: None,
+            comment: None,
+            crc_16: None,
+            data: vec![],
+            crc_32: 0,
+            size: 0,
+        }
+    }
+}
+
+impl<'a, V> From<V> for Member
+where
+    V: IntoIterator<Item = &'a u8>,
+{
+    fn from(v: V) -> Self {
+        let mut m = Self::default();
+        m.data = v.into_iter().cloned().collect();
+        m
+    }
+}
+
+/// Format of a gzip archive.
+pub type Archive = Vec<Member>;
+
+/// Options to instantiate a gzip [Member].
+#[derive(Debug)]
+pub struct Options {
+    /// Compression level to be used.
+    level: Compression,
+
+    /// Use most recent modification time of the compressed file
+    /// (otherwise set to 0).
+    mtime: Option<time::SystemTime>,
+
+    /// Include an extra field.
+    extra_field: Option<Subfield>,
+
+    /// Include the original file name as a zero-terminated string.
+    name: Option<String>,
+
+    /// Include a zero-terminated file comment.
+    comment: Option<String>,
+
+    /// Take the CRC-16 of the gzip header when compressing.
+    crc_16: bool,
+}
+
+impl Default for Options {
+    fn default() -> Self {
+        Self {
+            level: Compression::fast(),
+            mtime: None,
+            extra_field: None,
+            name: None,
+            comment: None,
+            crc_16: false,
+        }
+    }
+}
+
+impl Options {
+    /// Set the level of compression to be used.
+    pub fn level<'a>(&'a mut self, level: u32) -> &'a Self {
+        self.level = Compression::new(level);
+        self
+    }
+
+    /// Set the name of the original file.
+    pub fn name<'a, S: ToString>(&'a mut self, name: &S) -> &'a Self {
+        self.name = Some(name.to_string());
+        self
+    }
+
+    /// Include an optional comment.
+    pub fn comment<'a, S: ToString>(&'a mut self, comment: &S) -> &'a Self {
+        self.comment = Some(comment.to_string());
+        self
+    }
+
+    /// Write a CRC-16 checksum of the archive header.
+    pub fn crc_16<'a, S: AsRef<str>>(&'a mut self) -> &'a Self {
+        self.crc_16 = true;
+        self
+    }
+
+    /// Enable and set the extra field for this writer.
+    pub fn extra<'a>(&'a mut self, subfield: &Subfield) -> &'a Self {
+        self.extra_field = Some(subfield.clone());
+        self
+    }
+
+    /// Build the [GzWriter] for this operation.
+    pub fn to_writer<W: Write>(&mut self, writer: &mut W) -> GzWriter<W> {
+        todo!()
+    }
+}
+
+pub struct GzWriter<W: Write> {
+    /// Whether or not the header has been written.
+    header_written: bool,
+
+    /// Number of bytes written. Used as the original file size.
+    bytes_written: usize,
+
+    /// Options supplied to the writer.
+    options: Options,
+
+    /// Output [writer](Write).
+    output: GzEncoder<W>,
+}
+
+impl<W: Write> Write for GzWriter<W> {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        if !self.header_written {
+            // Write header for the gzip archive.
+            todo!()
+        }
+        self.output.write(buf)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        self.output.flush()
+    }
+}
+
+impl<W: Write> Drop for GzWriter<W> {
+    /// Write the CRC-32 and original file size to finish the header.
+    fn drop(&mut self) {
+        drop(self)
+    }
+}
+
+impl<W: Write> GzWriter<W> {
+    fn new(options: Options) -> Self {
+        todo!()
+    }
+
+    /// Terminate the current [GzWriter] file, writing the original file size and a CRC-32.
+    pub fn finish(&mut self) -> io::Result<usize> {
+        Ok(self.output.write(&self.bytes_written.to_le_bytes())? + self.output.write(b"crc-32")?)
+    }
+}
