@@ -2,11 +2,11 @@
 //! of the gzip file format in Rust.
 
 use std::{
-    io::{self, Write},
+    io::{self, Read, Write},
     result, time,
 };
 
-use flate2::{write::GzEncoder, Compression};
+use flate2::{read::GzDecoder, write::GzEncoder, Compression};
 
 /// Magic number for a gzip archive.
 pub const GZIP_MAGIC: [u8; 2] = [0o037, 0o213];
@@ -50,7 +50,7 @@ pub enum OsCode {
 #[derive(Debug, Clone)]
 pub struct Subfield {
     pub id: SubfieldId,
-    
+
     /// Length of the subfield.
     len: u32,
 
@@ -86,6 +86,19 @@ pub enum Method {
 impl Into<u8> for Method {
     fn into(self) -> u8 {
         self as u8
+    }
+}
+
+impl From<u8> for Method {
+    fn from(i: u8) -> Self {
+        match i {
+            0 => Method::Store,
+            1 => Method::Compress,
+            2 => Method::Pack,
+            3 => Method::Lzh,
+            8 => Method::Deflate,
+            _ => Method::MaxMethods,
+        }
     }
 }
 
@@ -195,7 +208,46 @@ where
 {
     fn from(v: V) -> Self {
         let mut m = Self::default();
-        m.data = v.into_iter().cloned().collect();
+        let mut it = v.into_iter().copied();
+        m.method = Method::from(it.next().unwrap());
+        m.flags = it.next().unwrap();
+        m.mtime = u32::from_be_bytes([
+            it.next().unwrap(),
+            it.next().unwrap(),
+            it.next().unwrap(),
+            it.next().unwrap(),
+        ]);
+
+        if m.flags & Flag::ExtraField as u8 != 0 {
+            m.extra_field = todo!();
+        }
+
+        if m.flags & Flag::OriginalName as u8 != 0 {
+            m.name = todo!();
+        }
+        if m.flags & Flag::Comment as u8 != 0 {
+            m.comment = todo!();
+        }
+        if m.flags & Flag::HeaderCrc as u8 != 0 {
+            m.crc_16 = todo!();
+            // TODO: confirm equality of header CRC
+        }
+
+        m.data = it.collect();
+        let read = m.data.len();
+        m.size = u32::from_be_bytes([
+            m.data[read - 4],
+            m.data[read - 3],
+            m.data[read - 2],
+            m.data[read - 1],
+        ]);
+        m.crc_32 = u32::from_be_bytes([
+            m.data[read - 8],
+            m.data[read - 7],
+            m.data[read - 6],
+            m.data[read - 5],
+        ]);
+        m.data.truncate(read - 8);
         m
     }
 }
@@ -304,13 +356,6 @@ impl<W: Write> Write for GzWriter<W> {
     }
 }
 
-impl<W: Write> Drop for GzWriter<W> {
-    /// Write the CRC-32 and original file size to finish the header.
-    fn drop(&mut self) {
-        drop(self)
-    }
-}
-
 impl<W: Write> GzWriter<W> {
     fn new(options: Options) -> Self {
         todo!()
@@ -319,5 +364,18 @@ impl<W: Write> GzWriter<W> {
     /// Terminate the current [GzWriter] file, writing the original file size and a CRC-32.
     pub fn finish(&mut self) -> io::Result<usize> {
         Ok(self.output.write(&self.bytes_written.to_le_bytes())? + self.output.write(b"crc-32")?)
+    }
+}
+
+pub struct GzReader<R: Read> {
+    member: Member,
+
+    input: GzDecoder<R>,
+}
+
+impl<R: Read> Read for GzReader<R> {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        let header = self.input.header().unwrap();
+        self.input.read(buf)
     }
 }
