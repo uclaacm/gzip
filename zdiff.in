@@ -49,14 +49,23 @@ escape='
 '
 
 while :; do
+  argdone=:
   case $1 in
   --h*) printf '%s\n' "$usage"   || exit 2; exit;;
   --v*) printf '%s\n' "$version" || exit 2; exit;;
   --) shift; break;;
-  -*\'*) cmp="$cmp '"`printf '%sX\n' "$1" | sed "$escape"`;;
+  -*\'*) argdone=false arg=$1;;
+  -[CDFISUWXx])
+    cmp="$cmp $1"
+    case ${2?} in
+    -*\'*) argdone=false arg=$2;;
+    *) cmp="$cmp '$2'";;
+    esac
+    shift;;
   -?*) cmp="$cmp '$1'";;
   *) break;;
   esac
+  $argdone || cmp="$cmp '"`printf '%sX\n' "$arg" | sed "$escape"`
   shift
 done
 cmp="$cmp --"

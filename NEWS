@@ -12,6 +12,10 @@ GNU gzip NEWS                                    -*- outline -*-
   much more time, nowadays the correctness pros seem to outweigh the
   performance cons.
 
+** Bug fixes
+
+  'zdiff -C 5' no longer misbehaves by treating '5' as a file name.
+
 
 * Noteworthy changes in release 1.11 (2021-09-03) [stable]
 
