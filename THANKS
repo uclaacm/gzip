@@ -85,7 +85,7 @@ Per Foreby              perf@efd.lth.se
 Alexander Fraser        alex@cs.umb.edu
 Noah Friedman		friedman@gnu.ai.mit.edu
 Bob Friesenhahn         bfriesen@iphase.com
-Gerhard Friesland-Koepke frieslan@rzdspc3.informatik.uni-hamburg.de
+Gerhard Friesland-Köpke frieslan@rzdspc3.informatik.uni-hamburg.de
 Andy Fyfe               andy@scp.caltech.edu
 Geoff                   geoff@frs.faxon.com
 Arnd Gerns              gerns@informatik.uni-hildesheim.de
@@ -99,7 +99,7 @@ Darrel R. Hankerson     hankedr@mail.auburn.edu
 Mark Hanning-Lee        markhl@romeo.caltech.edu
 Lars Hecking            st000002@hrz1.hrz.th-darmstadt.de
 Aki Helin               aki.helin@iki.fi
-Ruediger Helsch         ruediger@ramz.ing.tu-bs.de
+Rüdiger Helsch          ruediger@ramz.ing.tu-bs.de
 Mark C. Henderson       mch@sqwest.wimsey.bc.ca
 Karl Heuer              karl@kelp.boston.ma.us
 Jarkko Hietaniemi       jhi@dol-guldur.hut.fi
@@ -139,8 +139,8 @@ Fritz Kleemann          kleemann@informatik.uni-wuerzburg.dbp.de
 Wilhelm B. Kloke        wb@ifado.arb-phys.uni-dortmund.de
 Tom Kloos               tk@sequent.com
 Carsten Koch            carsten.koch@icem.de
-Winfried Koenig         win@in.rhein-main.de
-Mathias Koerber         mathias@solomon.technet.sg
+Winfried König          win@in.rhein-main.de
+Mathias Körber          mathias@solomon.technet.sg
 Steph Konigsdorfer      s.konigsdorfer@frmy.bull.fr
 Leif Kornstaedt         leif@rumtifsl.ruessel.sub.org
 Michael D. Lawler       mdlawler@bsu-cs.bsu.edu
@@ -177,14 +177,14 @@ M. Mesturino            mesturino@cselt.stet.it
 Luke Mewburn            zak@rmit.edu.au
 Jim Meyering		meyering@cs.utexas.edu
 Dragan Milicic          milicic@math.utah.edu
-Frederic Miserey        none.fred@applelink.apple.com
+Frédéric Miserey        none.fred@applelink.apple.com
 Marcel J.E. Mol         marcel@duteca.et.tudelft.nl
 Soren Juul Moller       sjm@dde.dk
 Chris Moore             moore@src.bae.co.uk
 Dan Mosedale            mosedale@genome.stanford.edu
-Helmut Muelner          hmuelner@fiicmds04.tu-graz.ac.at
-Urban D Mueller         umueller@amiga.physik.unizh.ch
-Ulrich Mueller          ulm@vsnhdb.cern.ch
+Helmut Mülner           hmuelner@fiicmds04.tu-graz.ac.at
+Urban D Müller          umueller@amiga.physik.unizh.ch
+Ulrich Müller           ulm@vsnhdb.cern.ch
 Timothy Murphy          tim@maths.tcd.ie
 Greg Naber              greg@squally.halcyon.com
 Jay Nayegandhi          jayng@bbiv02.enet.dec.com
@@ -202,12 +202,12 @@ Yves Perrenoud          pyves@nuga.alphanet.ch
 Hal Peterson            hrp@pecan.cray.com
 Pascal Petit            petit@cadillac.ibp.fr
 Bruno Pillard		bp@chorus.fr
-Franc,ois Pinard        pinard@iro.umontreal.ca
+François Pinard         pinard@iro.umontreal.ca
 Jay Pinkos              pinkos@butyng.bu.edu
 Petr Písař              petr.pisar@atlas.cz
 Thomas Plass            thomas@cogsci.ed.ac.uk
 Mike Polo               mikep@cfsmo.honeywell.com
-Francesco Potorti       pot@fly.cnuce.cnr.it
+Francesco Potortì       pot@fly.cnuce.cnr.it
 Will Priest             bpriest@lobby.ti.com
 David Purves            purves@apogee.com
 Andreas Raab            ar@nvmr.robin.de
@@ -275,7 +275,7 @@ Ivo Welch               iwelch@agsm.ucla.edu
 Jochen Wiedmann         zrawi01@zmcipdec1.zdv.uni-tuebingen.de
 Gijsb. Wiesenekker      wiesenecker@sara.nl
 Wietze van Winden       wietze@swi.psy.uva.nl
-Frank Wuebbeling        wuebbel@math.uni-muenster.de
+Frank Wübbeling         wuebbel@math.uni-muenster.de
 Larry W. Virden         lwv26@cas.org
 Bill Wohler             wohler@sap-ag.de
 Jamie Zawinski          jwz@lucid.com

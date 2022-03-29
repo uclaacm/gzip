@@ -230,7 +230,7 @@ static int dfd = -1;       /* output directory file descriptor */
 unsigned insize;           /* valid bytes in inbuf */
 unsigned inptr;            /* index of next byte to be processed in inbuf */
 unsigned outcnt;           /* bytes in output buffer */
-int rsync = 0;             /* make ryncable chunks */
+int rsync = 0;             /* make rsyncable chunks */
 
 static int handled_sig[] =
   {

@@ -18,7 +18,7 @@
    Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 /*
- * The 68020 version has been written by Francesco Potorti` <pot@cnuce.cnr.it>
+ * The 68020 version has been written by Francesco Potortì <pot@cnuce.cnr.it>
  * with adaptations by Carsten Steger <stegerc@informatik.tu-muenchen.de>,
  * Andreas Schwab <schwab@lamothe.informatik.uni-dortmund.de> and
  * Kristoffer Eriksson <ske@pkmab.se>
@@ -403,8 +403,8 @@ L__return:
 /*
  * 'longest_match.S' (assembly program for gzip for the IA-64 architecture)
  *
- * Optimised for McKinley, but with Merced-compatibility, such as MIB+MIB, used wherever
- * possible.
+ * Optimized for McKinley, but with Merced-compatibility, such as
+ * MIB+MIB, used wherever possible.
  *
  * Copyright: Sverre Jarp (HP Labs) 2001-2002
  *
@@ -724,7 +724,7 @@ longest_match:
 .only3:
 {.mib	// Cycle 0 (short)
         cmp.gt.unc p0,p_nbs=s_vlen,s_vbestlen		// (len > best_len) ?
-(p_nbs)	br.cond.dpnt.many .next_iter			// if not, re-iternate
+(p_nbs)	br.cond.dpnt.many .next_iter			// if not, reiterate
         ;;
 }{.mmi	// Cycle 1 (short)
         ld4 s_tm7=[s_anicematch] 			// nice_match
