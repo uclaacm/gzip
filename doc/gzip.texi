@@ -559,7 +559,7 @@ message the hardware and operating system, the compiler used to compile
 @command{gzip},
 a description of the bug behavior, and the input to @command{gzip}
 that triggered
-the bug.@refill
+the bug.
 
 @node GNU Free Documentation License
 @appendix GNU Free Documentation License
