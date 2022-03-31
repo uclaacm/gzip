@@ -31,8 +31,16 @@ noinst_LIBRARIES = libver.a
 nodist_libver_a_SOURCES = version.c version.h
 DISTCLEANFILES = version.c version.h
 
+if LESS
+ZLESS_MAN = zless.1
+ZLESS_PROG = zless
+else
+ZLESS_MAN =
+ZLESS_PROG =
+endif
+
 man_MANS = gunzip.1 gzexe.1 gzip.1 \
-  zcat.1 zcmp.1 zdiff.1 zforce.1 zgrep.1 zless.1 zmore.1 znew.1
+  zcat.1 zcmp.1 zdiff.1 zforce.1 zgrep.1 $(ZLESS_MAN) zmore.1 znew.1
 
 EXTRA_DIST = $(ACINCLUDE_INPUTS) $(man_MANS) \
   ChangeLog-2007 \
@@ -49,7 +57,7 @@ noinst_HEADERS = gzip.h lzw.h
 
 bin_PROGRAMS = gzip
 bin_SCRIPTS = gunzip gzexe zcat zcmp zdiff \
-  zegrep zfgrep zforce zgrep zless zmore znew
+  zegrep zfgrep zforce zgrep $(ZLESS_PROG) zmore znew
 gzip_SOURCES = \
   bits.c deflate.c gzip.c inflate.c \
   trees.c unlzh.c unlzw.c unpack.c unzip.c util.c zip.c

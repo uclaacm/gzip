@@ -46,6 +46,12 @@ EXTRA_DIST =				\
   init.sh				\
   hufts-segv.gz
 
+if LESS
+ZLESS_PROG = zless
+else
+ZLESS_PROG =
+endif
+
 built_programs = \
   gzip		\
   gunzip	\
@@ -57,7 +63,7 @@ built_programs = \
   zfgrep	\
   zforce	\
   zgrep		\
-  zless		\
+  $(ZLESS_PROG)	\
   zmore		\
   znew
 

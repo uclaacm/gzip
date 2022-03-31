@@ -12,6 +12,8 @@ GNU gzip NEWS                                    -*- outline -*-
   much more time, nowadays the correctness pros seem to outweigh the
   performance cons.
 
+  'zless' is no longer installed on platforms lacking 'less'.
+
 ** Bug fixes
 
   'zdiff -C 5' no longer misbehaves by treating '5' as a file name.
