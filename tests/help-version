@@ -143,7 +143,7 @@ zdiff_setup () { args="$zin $zin2"; }
 zcmp_setup () { zdiff_setup; }
 zcat_setup () { TERM=dumb; export TERM; args=$zin; }
 gunzip_setup () { zcat_setup; }
-zmore_setup () { zcat_setup; }
+zmore_setup () { unset PAGER; zcat_setup; }
 zless_setup () { zcat_setup; }
 znew_setup () { args=$bigZ_in; }
 zforce_setup () { zcat_setup; }
