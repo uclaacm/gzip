@@ -170,10 +170,13 @@ coding (as used in @command{pack}), or adaptive Huffman coding
 
 Compression is always performed, even if the compressed file is slightly
 larger than the original.  The worst case expansion is a few bytes for
-the @command{gzip} file header, plus 5 bytes every 32K block, or an expansion
-ratio of 0.015% for large files.  Note that the actual number of used
-disk blocks almost never increases.  @command{gzip} normally preserves the mode,
-ownership and timestamps of files when compressing or decompressing.
+the @command{gzip} file header, plus 5 bytes per 32@tie{}KiB block, or
+an expansion ratio of 0.015% for large files.  The actual number of
+used disk blocks almost never increases.
+
+@command{gzip} normally preserves the mode and modification timestamp
+of a file when compressing or decompressing.  If you have appropriate
+privileges, it also preserves the file's owner and group.
 
 The @command{gzip} file format is specified in P. Deutsch, GZIP file
 format specification version 4.3,
@@ -332,8 +335,11 @@ is the default when decompressing.
 @item --name
 @itemx -N
 When compressing, always save the original file name, and save
-the original timestamp if the original is a regular file; this
-is the default.  When decompressing, restore the original file name and
+the seconds part of the original modification timestamp if the
+original is a regular file and its timestamp is at least 1 (1970-01-01
+00:00:01 UTC) and is less than 2@sup{32} (2106-02-07 06:28:16 UTC,
+assuming leap seconds are not counted); this
+is the default.  When decompressing, restore from the saved file name and
 timestamp if present.  This option is useful on systems which have
 a limit on file name length or when the timestamp has been lost after
 a file transfer.
