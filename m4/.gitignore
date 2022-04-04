@@ -43,7 +43,6 @@
 /fseeko.m4
 /fseterr.m4
 /fstat.m4
-/fstatat.m4
 /fsync.m4
 /ftell.m4
 /ftello.m4

@@ -75,7 +75,6 @@
 /fseterr.c
 /fseterr.h
 /fstat.c
-/fstatat.c
 /fsync.c
 /ftell.c
 /ftello.c
@@ -181,7 +180,6 @@
 /stat-w32.c
 /stat-w32.h
 /stat.c
-/statat.c
 /stdalign.in.h
 /stdbool.h
 /stdbool.in.h
@@ -190,6 +188,8 @@
 /stdint.h
 /stdint.in.h
 /stdio-impl.h
+/stdio-read.c
+/stdio-write.c
 /stdio.h
 /stdio.in.h
 /stdlib.h
