@@ -54,4 +54,4 @@ case $1 in
 --version) printf '%s\n' "$version" || exit 1; exit;;
 esac
 
-exec gzip -d "$@"
+exec 'gzip' -d "$@"

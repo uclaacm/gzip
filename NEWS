@@ -18,6 +18,8 @@ GNU gzip NEWS                                    -*- outline -*-
 
   'zdiff -C 5' no longer misbehaves by treating '5' as a file name.
 
+  Configure-time options like --program-prefix now work.
+
 
 * Noteworthy changes in release 1.11 (2021-09-03) [stable]
 

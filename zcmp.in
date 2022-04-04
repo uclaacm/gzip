@@ -41,4 +41,4 @@ case $1 in
 --version) printf '%s\n' "$version" || exit 2; exit;;
 esac
 
-exec zdiff --__cmp "$@"
+exec 'zdiff' --__cmp "$@"

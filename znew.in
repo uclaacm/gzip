@@ -94,7 +94,7 @@ for i do
   fi
   test $keep -eq 1 && old=`wc -c < "$n.Z"`
   if test $pipe -eq 1; then
-    if gzip -d < "$n.Z" | gzip $opt > "$n$ext"; then
+    if 'gzip' -d < "$n.Z" | 'gzip' $opt > "$n$ext"; then
       # Copy file attributes from old file to new one, if possible.
       touch -r"$n.Z" -- "$n$ext" 2>/dev/null
       chmod --reference="$n.Z" -- "$n$ext" 2>/dev/null
@@ -111,14 +111,14 @@ for i do
         res=1; continue
       fi
     fi
-    if gzip -d "$n.Z"; then
+    if 'gzip' -d "$n.Z"; then
       :
     else
       test $check -eq 1 && mv "$n.$$" "$n.Z"
       printf '%s\n' "error while uncompressing $n.Z"
       res=1; continue
     fi
-    if gzip $opt "$n"; then
+    if 'gzip' $opt "$n"; then
       :
     else
       if test $check -eq 1; then
@@ -142,7 +142,7 @@ for i do
     printf '%s\n' "$n.Z smaller than $n$ext -- unchanged"
 
   elif test $check -eq 1; then
-    if gzip -t "$n$ext" ; then
+    if 'gzip' -t "$n$ext" ; then
       rm -f "$n.$$" "$n.Z"
     else
       test $pipe -eq 0 && mv "$n.$$" "$n.Z"

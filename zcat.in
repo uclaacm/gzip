@@ -48,4 +48,4 @@ case $1 in
 --version) printf '%s\n' "$version" || exit 1; exit;;
 esac
 
-exec gzip -cd "$@"
+exec 'gzip' -cd "$@"

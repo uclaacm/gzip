@@ -278,6 +278,16 @@ else
 fi
 AC_SUBST([ASFLAGS_config])
 
+GZIP_TRANSFORMED=` echo gzip  | sed "$program_transform_name"`
+ZDIFF_TRANSFORMED=`echo zdiff | sed "$program_transform_name"`
+ZGREP_TRANSFORMED=`echo zgrep | sed "$program_transform_name"`
+AC_SUBST([GZIP_TRANSFORMED])
+AC_SUBST([ZDIFF_TRANSFORMED])
+AC_SUBST([ZGREP_TRANSFORMED])
+AM_CONDITIONAL([GZIP_IS_TRANSFORMED],  [test "$GZIP_TRANSFORMED" != gzip])
+AM_CONDITIONAL([ZDIFF_IS_TRANSFORMED],  [test "$ZDIFF_TRANSFORMED" != zdiff])
+AM_CONDITIONAL([ZGREP_IS_TRANSFORMED],  [test "$ZGREP_TRANSFORMED" != zgrep])
+
 AC_C_CONST
 AC_CHECK_HEADERS_ONCE(fcntl.h limits.h memory.h time.h sys/sdt.h)
 AC_CHECK_FUNCS_ONCE([chown fchmod fchown lstat siginterrupt])

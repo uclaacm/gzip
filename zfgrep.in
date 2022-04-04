@@ -1,2 +1,2 @@
 #!/bin/sh
-exec zgrep -F "$@"
+exec 'zgrep' -F "$@"

@@ -50,5 +50,5 @@ for FILE
 do
   test $# -lt 2 ||
     printf '::::::::::::::\n%s\n::::::::::::::\n' "$FILE" || break
-  gzip -cdfq -- "$FILE"
+  'gzip' -cdfq -- "$FILE"
 done 2>&1 | eval ${PAGER-more}

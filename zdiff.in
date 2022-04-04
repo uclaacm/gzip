@@ -106,7 +106,7 @@ case $file2 in
     FILE=`expr "X$file1" : 'X\(.*\)[-.][zZtga]*$'`
     gzip_status=$(
       exec 4>&1
-      (gzip -cd -- "$file1" 4>&-; echo $? >&4) 3>&- |
+      ('gzip' -cd -- "$file1" 4>&-; echo $? >&4) 3>&- |
         eval "$cmp" - '"$FILE"' >&3
     );;
   *)
@@ -118,7 +118,7 @@ case $file2 in
   -,-)
         gzip_status=$(
           exec 4>&1
-          (gzip -cdfq - 4>&-; echo $? >&4) 3>&- |
+          ('gzip' -cdfq - 4>&-; echo $? >&4) 3>&- |
             eval "$cmp" - - >&3
         );;
   *)
@@ -134,8 +134,8 @@ case $file2 in
                     then
                         gzip_status=$(
                           exec 4>&1
-                          (gzip -cdfq -- "$file1" 4>&-; echo $? >&4) 3>&- |
-                              ((gzip -cdfq -- "$file2" 4>&-
+                          ('gzip' -cdfq -- "$file1" 4>&-; echo $? >&4) 3>&- |
+                              (('gzip' -cdfq -- "$file2" 4>&-
                                 echo $? >&4) 3>&- 5<&- </dev/null |
                                eval "$cmp" /dev/fd/5 - >&3) 5<&0
                         )
@@ -163,10 +163,10 @@ case $file2 in
                           set -C
                           tmp=${TMPDIR}zdiff$$
                         fi
-                        gzip -cdfq -- "$file2" > "$tmp" || exit 2
+                        'gzip' -cdfq -- "$file2" > "$tmp" || exit 2
                         gzip_status=$(
                           exec 4>&1
-                          (gzip -cdfq -- "$file1" 4>&-; echo $? >&4) 3>&- |
+                          ('gzip' -cdfq -- "$file1" 4>&-; echo $? >&4) 3>&- |
                             eval "$cmp" - '"$tmp"' >&3
                         )
                         cmp_status=$?
@@ -177,7 +177,7 @@ case $file2 in
                 *)
                     gzip_status=$(
                       exec 4>&1
-                      (gzip -cdfq -- "$file1" 4>&-; echo $? >&4) 3>&- |
+                      ('gzip' -cdfq -- "$file1" 4>&-; echo $? >&4) 3>&- |
                         eval "$cmp" - '"$file2"' >&3
                     );;
                 esac;;
@@ -185,7 +185,7 @@ case $file2 in
                 *[-.]gz* | *[-.][zZ] | *.t[ga]z | -)
                         gzip_status=$(
                           exec 4>&1
-                          (gzip -cdfq -- "$file2" 4>&-; echo $? >&4) 3>&- |
+                          ('gzip' -cdfq -- "$file2" 4>&-; echo $? >&4) 3>&- |
                             eval "$cmp" '"$file1"' - >&3
                         );;
                 *)	eval "$cmp" '"$file1"' '"$file2"';;

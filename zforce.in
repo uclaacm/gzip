@@ -56,7 +56,7 @@ for i do
     continue
   fi
 
-  if gzip -lv < "$i" 2>/dev/null | grep '^defl' > /dev/null; then
+  if 'gzip' -lv < "$i" 2>/dev/null | grep '^defl' > /dev/null; then
 
     new="$i.gz"
     mv "$i" "$new" && printf '%s\n' "$i -- replaced with $new" || res=1

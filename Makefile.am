@@ -92,9 +92,12 @@ gzip.doc.gz: gzip.doc $(bin_PROGRAMS)
 SUFFIXES = .in
 .in:
 	$(AM_V_GEN)rm -f $@-t $@ \
-          && sed \
+	  && sed \
 		-e 's|/bin/sh|$(SHELL)|g' \
 		-e 's|[@]GREP@|$(GREP)|g' \
+		-e "s|'gzip'|$(GZIP_TRANSFORMED)|g" \
+		-e "s|'zdiff'|$(ZDIFF_TRANSFORMED)|g" \
+		-e "s|'zgrep'|$(ZGREP_TRANSFORMED)|g" \
 		-e 's|[@]VERSION@|$(VERSION)|g' \
 		$(srcdir)/$@.in >$@-t \
 	  && chmod a=rx $@-t \
@@ -173,3 +176,35 @@ MAINTAINERCLEANFILES = gzip.doc
 
 MOSTLYCLEANFILES = _match.i match_.s _match.S gzip.doc.gz \
   gunzip gzexe zcat zcmp zdiff zegrep zfgrep zforce zgrep zless zmore znew
+
+# gzip, zdiff and zgrep are used by installed scripts, and installed names
+# might be transformed by 'configure' options like --program-transform-name.
+# Create executabls in the current directory by the transformed names,
+# for the benefit of 'make check'.
+if GZIP_IS_TRANSFORMED
+BUILT_SOURCES += $(GZIP_TRANSFORMED)
+MOSTLYCLEANFILES += $(GZIP_TRANSFORMED)
+$(GZIP_TRANSFORMED):
+	printf '%s\n' >'$@' \
+	  '#!$(SHELL)' \
+	  'exec '\''$(abs_top_builddir)/gzip'\'' "$$@"'
+	chmod a+x $@
+endif
+if ZDIFF_IS_TRANSFORMED
+BUILT_SOURCES += $(ZDIFF_TRANSFORMED)
+MOSTLYCLEANFILES += $(ZDIFF_TRANSFORMED)
+$(ZDIFF_TRANSFORMED):
+	printf '%s\n' >'$@' \
+	  '#!$(SHELL)' \
+	  'exec '\''$(abs_top_builddir)/zdiff'\'' "$$@"'
+	chmod a+x $@
+endif
+if ZGREP_IS_TRANSFORMED
+BUILT_SOURCES += $(ZGREP_TRANSFORMED)
+MOSTLYCLEANFILES += $(ZGREP_TRANSFORMED)
+$(ZGREP_TRANSFORMED):
+	printf '%s\n' >'$@' \
+	  '#!$(SHELL)' \
+	  'exec '\''$(abs_top_builddir)/zgrep'\'' "$$@"'
+	chmod a+x $@
+endif
