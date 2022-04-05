@@ -18,8 +18,10 @@ GNU gzip NEWS                                    -*- outline -*-
 
   zgrep applied to a crafted file name with two or more newlines
   can no longer overwrite an arbitrary, attacker-selected file.
+  [bug introduced in gzip-1.3.10]
 
   'zdiff -C 5' no longer misbehaves by treating '5' as a file name.
+  [bug present since the beginning]
 
   Configure-time options like --program-prefix now work.
 
