@@ -20,6 +20,9 @@ GNU gzip NEWS                                    -*- outline -*-
   can no longer overwrite an arbitrary, attacker-selected file.
   [bug introduced in gzip-1.3.10]
 
+  zgrep now names input file on error instead of mislabeling it as
+  "(standard input)", if grep supports the GNU -H and --label options.
+
   'zdiff -C 5' no longer misbehaves by treating '5' as a file name.
   [bug present since the beginning]
 

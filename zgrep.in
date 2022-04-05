@@ -23,6 +23,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 grep='${GREP-'\''@GREP@'\''}'
+args=
 
 version='zgrep (gzip) @VERSION@
 Copyright (C) 2010-2018 Free Software Foundation, Inc.
@@ -178,7 +179,7 @@ while test $# -ne 0; do
     option="'$option'";;
   esac
 
-  grep="$grep $option$optarg"
+  args="$args $option$optarg"
 done
 
 eval "set -- $operands "'${1+"$@"}'
@@ -186,15 +187,23 @@ eval "set -- $operands "'${1+"$@"}'
 if test $have_pat -eq 0; then
   case ${1?"missing pattern; try \`$0 --help' for help"} in
   (*\'*)
-    grep="$grep -- '"$(printf '%s\n' "$1" | LC_ALL=C sed "$escape");;
+    args="$args -- '"$(printf '%s\n' "$1" | LC_ALL=C sed "$escape");;
   (*)
-    grep="$grep -- '$1'";;
+    args="$args -- '$1'";;
   esac
   shift
 fi
 
 if test $# -eq 0; then
   set -- -
+elif test 1 -lt $# && test $no_filename -eq 0; then
+  with_filename=1
+fi
+
+l_e=$(eval "(echo e | $grep -H --label=l e) 2>/dev/null") && test "$l_e" = l:e
+gnuish_grep="test $? -eq 0"
+if $gnuish_grep && test $with_filename -eq 1; then
+  grep="$grep -H"
 fi
 
 exec 3>&1
@@ -207,9 +216,9 @@ do
     exec 5>&1
     ('gzip' -cdfq -- "$i" 5>&-; echo $? >&5) 3>&- |
     if test $files_with_matches -eq 1; then
-      eval "$grep" >/dev/null && { printf '%s\n' "$i" || exit 2; }
+      eval "$grep$args" >/dev/null && { printf '%s\n' "$i" || exit 2; }
     elif test $files_without_matches -eq 1; then
-      eval "$grep" >/dev/null || {
+      eval "$grep$args" >/dev/null || {
         r=$?
         if test $r -eq 1; then
           printf '%s\n' "$i" || r=2
@@ -217,9 +226,10 @@ do
         test 256 -le $r && r=$(expr 128 + $r % 128)
         exit $r
       }
-    elif test $with_filename -eq 0 &&
-         { test $# -eq 1 || test $no_filename -eq 1; }; then
-      eval "$grep"
+    elif $gnuish_grep && test "$i" != -; then
+      eval "$grep --label \"\$i\"$args"
+    elif $gnuish_grep || test $with_filename -eq 0; then
+      eval "$grep$args"
     else
       case $i in
       (*'
@@ -233,7 +243,7 @@ do
       # Fail if grep or sed fails.
       r=$(
         exec 4>&1
-        (eval "$grep" 4>&-; echo $? >&4) 3>&- |
+        (eval "$grep$args" 4>&-; echo $? >&4) 3>&- |
            LC_ALL=C sed "$sed_script" >&3 4>&-
       ) || { r=$?; test $r -lt 2 && r=2; }
       test 256 -le $r && r=$(expr 128 + $r % 128)
