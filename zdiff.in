@@ -59,7 +59,7 @@ do
   --h*) printf '%s\n' "$usage"   || exit 2; exit;;
   --v*) printf '%s\n' "$version" || exit 2; exit;;
   --) filesonly=t;;
-  -*\'*) cmp="$cmp '"`printf '%sX\n' "$arg" | sed "$escape"`;;
+  -*\'*) cmp="$cmp '"`printf '%sX\n' "$arg" | LC_ALL=C sed "$escape"`;;
   -[CDFISUWXx]) needop="'$arg'";;
   -?*) cmp="$cmp '$arg'";;
   *) case $needop in
@@ -103,7 +103,7 @@ case $file2 in
 '')
   case $file1 in
   *[-.]gz* | *[-.][zZ] | *.t[ga]z)
-    FILE=`expr "X$file1" : 'X\(.*\)[-.][zZtga]*$'`
+    FILE=`LC_ALL=C expr "X$file1" : 'X\(.*\)[-.][zZtga]*$'`
     gzip_status=$(
       exec 4>&1
       ('gzip' -cd -- "$file1" 4>&-; echo $? >&4) 3>&- |

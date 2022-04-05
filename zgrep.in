@@ -64,30 +64,33 @@ while test $# -ne 0; do
 
   case $option in
   (-[0123456789EFGHIKLPRTUVZabchilnoqrsuvwxyz]*[!0123456789]*)
-    arg2=-\'$(expr "X$option" : 'X-.[0-9]*\(.*\)' | sed "$escape")
+    arg2=-\'$(LC_ALL=C expr "X$option" : 'X-.[0-9]*\(.*\)' |
+                LC_ALL=C sed "$escape")
     eval "set -- $arg2 "'${1+"$@"}'
-    option=$(expr "X$option" : 'X\(-.[0-9]*\)');;
+    option=$(LC_ALL=C expr "X$option" : 'X\(-.[0-9]*\)');;
   (--binary-*=* | --[lm]a*=* | --reg*=*)
     ;;
   (-[ABCDXdefm] | --binary-* | --file | --[lm]a* | --reg*)
     case ${1?"$option option requires an argument"} in
     (*\'*)
-      optarg=" '"$(printf '%s\n' "$1" | sed "$escape");;
+      optarg=" '"$(printf '%s\n' "$1" | LC_ALL=C sed "$escape");;
     (*)
       optarg=" '$1'";;
     esac
     shift;;
   (-f?*\'*)
-    optarg=" '"$(expr "X$option" : 'X-f\(.*\)' | sed "$escape")
+    optarg=" '"$(LC_ALL=C expr "X$option" : 'X-f\(.*\)' |
+                   LC_ALL=C sed "$escape")
     option=-f;;
   (-f?*)
-    optarg=" '"$(expr "X$option" : 'X-f\(.*\)')\'
+    optarg=" '"$(LC_ALL=C expr "X$option" : 'X-f\(.*\)')\'
     option=-f;;
   (--file=*\'*)
-    optarg=" '"$(expr "X$option" : 'X--file=\(.*\)' | sed "$escape")
+    optarg=" '"$(LC_ALL=C expr "X$option" : 'X--file=\(.*\)' |
+                   LC_ALL=C sed "$escape")
     option=--file;;
   (--file=*)
-    optarg=" '"$(expr "X$option" : 'X--file=\(.*\)')\'
+    optarg=" '"$(LC_ALL=C expr "X$option" : 'X--file=\(.*\)')\'
     option=--file;;
   (--)
     break;;
@@ -96,7 +99,8 @@ while test $# -ne 0; do
   (*)
     case $option in
     (*\'*)
-      operands="$operands '"$(printf '%s\n' "$option" | sed "$escape");;
+      operands="$operands '"$(printf '%s\n' "$option" | LC_ALL=C sed "$escape")
+      ;;
     (*)
       operands="$operands '$option'";;
     esac
@@ -169,7 +173,7 @@ while test $# -ne 0; do
 
   case $option in
   (*\'?*)
-    option=\'$(printf '%s\n' "$option" | sed "$escape");;
+    option=\'$(printf '%s\n' "$option" | LC_ALL=C sed "$escape");;
   (*)
     option="'$option'";;
   esac
@@ -182,7 +186,7 @@ eval "set -- $operands "'${1+"$@"}'
 if test $have_pat -eq 0; then
   case ${1?"missing pattern; try \`$0 --help' for help"} in
   (*\'*)
-    grep="$grep -- '"$(printf '%s\n' "$1" | sed "$escape");;
+    grep="$grep -- '"$(printf '%s\n' "$1" | LC_ALL=C sed "$escape");;
   (*)
     grep="$grep -- '$1'";;
   esac
@@ -221,7 +225,7 @@ do
       (*'
 '* | *'&'* | *'\'* | *'|'*)
           icolon=$(printf '%s\n' "$i:" |
-                     sed -e 's/[&\|]/\\&/g' -e '$!s/$/\\/');;
+                     LC_ALL=C sed -e 's/[&\|]/\\&/g' -e '$!s/$/\\/');;
       (*) icolon="$i:";;
       esac
       sed_script="s|^|$icolon|"
@@ -229,7 +233,8 @@ do
       # Fail if grep or sed fails.
       r=$(
         exec 4>&1
-        (eval "$grep" 4>&-; echo $? >&4) 3>&- | sed "$sed_script" >&3 4>&-
+        (eval "$grep" 4>&-; echo $? >&4) 3>&- |
+           LC_ALL=C sed "$sed_script" >&3 4>&-
       ) || { r=$?; test $r -lt 2 && r=2; }
       test 256 -le $r && r=$(expr 128 + $r % 128)
       exit $r

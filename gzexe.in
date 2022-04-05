@@ -91,7 +91,7 @@ for i do
     continue
   fi
   if test $decomp -eq 0; then
-    case `sed -n -e 1d -e '/^skip=[0-9][0-9]*$/p' -e 2q "$file"` in
+    case `LC_ALL=C sed -n -e 1d -e '/^skip=[0-9][0-9]*$/p' -e 2q "$file"` in
     skip=[0-9] | skip=[0-9][0-9] | skip=[0-9][0-9][0-9])
       printf >&2 '%s\n' "$0: $i is already gzexe'd"
       continue;;
@@ -203,7 +203,7 @@ EOF
   else
     # decompression
     skip=44
-    skip_line=`sed -e 1d -e 2q "$file"`
+    skip_line=`LC_ALL=C sed -e 1d -e 2q "$file"`
     case $skip_line in
     skip=[0-9] | skip=[0-9][0-9] | skip=[0-9][0-9][0-9])
       eval "$skip_line";;

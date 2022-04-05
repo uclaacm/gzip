@@ -18,6 +18,9 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+LC_ALL=C
+export LC_ALL
+
 version="znew (gzip) @VERSION@
 Copyright (C) 2010-2018 Free Software Foundation, Inc.
 This is free software.  You may redistribute copies of it under the terms of
