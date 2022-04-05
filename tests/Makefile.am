@@ -36,6 +36,7 @@ TESTS =					\
   z-suffix				\
   zdiff					\
   zgrep-f				\
+  zgrep-abuse				\
   zgrep-context				\
   zgrep-signal				\
   znew-k
