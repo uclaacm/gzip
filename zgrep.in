@@ -222,9 +222,13 @@ do
 '* | *'&'* | *'\'* | *'|'*)
         i=$(printf '%s\n' "$i" |
             sed '
-              $!N
-              $s/[&\|]/\\&/g
-              $s/\n/\\n/g
+              :start
+              $!{
+                N
+                b start
+              }
+              s/[&\|]/\\&/g
+              s/\n/\\n/g
             ');;
       esac
       sed_script="s|^|$i:|"
