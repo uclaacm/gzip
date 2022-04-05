@@ -220,18 +220,11 @@ do
       case $i in
       (*'
 '* | *'&'* | *'\'* | *'|'*)
-        i=$(printf '%s\n' "$i" |
-            sed '
-              :start
-              $!{
-                N
-                b start
-              }
-              s/[&\|]/\\&/g
-              s/\n/\\n/g
-            ');;
+          icolon=$(printf '%s\n' "$i:" |
+                     sed -e 's/[&\|]/\\&/g' -e '$!s/$/\\/');;
+      (*) icolon="$i:";;
       esac
-      sed_script="s|^|$i:|"
+      sed_script="s|^|$icolon|"
 
       # Fail if grep or sed fails.
       r=$(
