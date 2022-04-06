@@ -185,17 +185,17 @@ local unsigned ins_h;  /* hash index of string to be inserted */
  *   H_SHIFT * MIN_MATCH >= HASH_BITS
  */
 
-local unsigned int near prev_length;
+       unsigned int near prev_length;
 /* Length of the best match at previous step. Matches not greater than this
  * are discarded. This is used in the lazy match evaluation.
  */
 
       unsigned near strstart;      /* start of string to insert */
-local unsigned near match_start;   /* start of matching string */
+      unsigned near match_start;   /* start of matching string */
 local int           eofile;        /* flag set at end of input file */
 local unsigned      lookahead;     /* number of valid bytes ahead in window */
 
-local unsigned max_chain_length;
+       unsigned max_chain_length;
 /* To speed up deflation, hash chains are never searched beyond this length.
  * A higher limit improves compression ratio but degrades the speed.
  */
@@ -211,7 +211,7 @@ local unsigned int max_lazy_match;
  * max_insert_length is used only for compression levels <= 3.
  */
 
-local unsigned good_match;
+unsigned good_match;
 /* Use a faster search when the previous match is longer than this */
 
 local ulg rsync_sum;  /* rolling sum of rsync window */
