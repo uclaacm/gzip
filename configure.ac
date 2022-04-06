@@ -171,6 +171,7 @@ if test "$gl_gcc_warnings" = yes; then
     gl_WARN_ADD([$w])
   done
   gl_WARN_ADD([-Wno-sign-compare])     # Too many warnings for now
+  gl_WARN_ADD([-Wno-type-limits]) # false alarms if 32-bit long, 64-bit time_t
   gl_WARN_ADD([-Wno-unused-parameter]) # Too many warnings for now
   gl_WARN_ADD([-Wsuggest-attribute=const])
   gl_WARN_ADD([-Wsuggest-attribute=noreturn])
