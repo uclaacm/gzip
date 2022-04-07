@@ -40,7 +40,7 @@ bootstrap-tools = autoconf,automake,gnulib
 # Now that we have better tests, make this the default.
 export VERBOSE = yes
 
-old_NEWS_hash = 525410f95ea9d830850d7a6900e6d229
+old_NEWS_hash = d66a67b9fd262869540fcc57b9c94e64
 
 sc_obs_header_regex = \
   \<(STDC_HEADERS|HAVE_(LIMITS|STRING|UNISTD|STDLIB)_H)\>
