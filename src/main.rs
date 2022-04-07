@@ -1,6 +1,7 @@
-use std::path::PathBuf;
+use std::{fs::OpenOptions, io, path::PathBuf, time::SystemTime};
 
 use clap::Parser;
+use flate2::{read::GzDecoder, Compression, GzBuilder};
 
 const DEFAULT_COMPRESSION_LEVEL: u32 = 6;
 
@@ -168,6 +169,7 @@ struct Args {
 }
 
 impl Args {
+    /// User-identified compression level for this run of gzip.
     fn compression_level(&self) -> u32 {
         match self {
             Args { level_1: true, .. } => 1,
@@ -185,5 +187,54 @@ impl Args {
 }
 
 fn main() {
-    let _args = Args::parse();
+    let args = Args::parse();
+
+    if args.decompress {
+        decompress_files(args)
+    } else {
+        compress_files(args)
+    }
+}
+
+fn decompress_files(args: Args) {
+    for file in args.files {
+        let file_name = file.file_name().unwrap().to_str().unwrap();
+        let mut output = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .open(file_name.strip_suffix(".gz").unwrap_or(file_name))
+            .unwrap();
+        let mut gz_in = GzDecoder::new(OpenOptions::new().read(true).open(file).unwrap());
+        io::copy(&mut gz_in, &mut output);
+    }
+}
+
+fn compress_files(args: Args) {
+    let compression_level = args.compression_level();
+
+    for file in args.files {
+        let file_name = file.file_name().unwrap().to_str().unwrap();
+        let gz_writer = GzBuilder::new().filename(file_name);
+        let gz_out = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .open(format!("{}.gz", file_name))
+            .unwrap();
+        let meta = file.metadata().expect("failed to acquire file metadata");
+        let gz_writer = gz_writer.mtime(
+            meta.modified()
+                .unwrap()
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .as_secs() as u32,
+        );
+
+        let mut reader = OpenOptions::new()
+            .read(true)
+            .write(false)
+            .open(file)
+            .unwrap();
+        let mut writer = gz_writer.write(gz_out, Compression::new(compression_level));
+        io::copy(&mut reader, &mut writer);
+    }
 }
