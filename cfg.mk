@@ -65,10 +65,16 @@ sc_prohibit_emacs__indent_tabs_mode__setting:
 	halt='use of emacs indent-tabs-mode: setting'			\
 	  $(_sc_search_regexp)
 
+ifeq ($(srcdir),.)
+  srcdirslash =
+else
+  srcdirslash = $(srcdir)/
+endif
+
 sc_gzip_copyright_check:
 	@require='Copyright \(C\) '$$(date +%Y)' Free'			\
-	in_vc_files=$(srcdir)/gzip.c					\
-	halt="out of date copyright in $$in_files; update it"		\
+	in_vc_files='^$(srcdirslash)(gzip\.c|[^z].*\.in|z[^ef].*\.in|zf[^g].*\.in)$$'	\
+	halt="out of date copyright in $$in_vc_files; update it"	\
 	  $(_sc_search_regexp)
 
 include $(srcdir)/dist-check.mk
