@@ -19,6 +19,7 @@
 # limit so don't run it by default.
 
 . "${srcdir=.}/init.sh"; path_prepend_ ..
+alias gzip="$GZIP_BIN"
 
 (echo 0 | gzip; printf '\0') > 0.gz || framework_failure_
 (echo 00 | gzip; printf '\0\0') > 00.gz || framework_failure_

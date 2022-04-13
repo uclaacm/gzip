@@ -18,6 +18,7 @@
 # limit so don't run it by default.
 
 . "${srcdir=.}/init.sh"; path_prepend_ ..
+alias gzip="$GZIP_BIN"
 
 dd bs=65536 seek=65536 if=/dev/null of=big || framework_failure_
 

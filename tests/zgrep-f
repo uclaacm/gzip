@@ -19,6 +19,7 @@
 # limit so don't run it by default.
 
 . "${srcdir=.}/init.sh"; path_prepend_ ..
+alias gzip="$GZIP_BIN"
 
 printf 'needle\nn2\n' > n || framework_failure_
 cp n haystack || framework_failure_
