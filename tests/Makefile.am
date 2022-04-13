@@ -107,7 +107,7 @@ TESTS_ENVIRONMENT =					\
   PERL='$(PERL)'					\
   SHELL='$(SHELL)'					\
   PATH='$(abs_top_builddir)$(PATH_SEPARATOR)'"$$PATH"	\
-  GZIP_BIN="gzip"	\
+  GZIP_BIN="./target/debug/gzip"	\
   ; 9>&2
 
 VERBOSE = yes

@@ -60,6 +60,8 @@
 #   4. Finally
 #   $ exit
 
+alias gzip="$GZIP_BIN"
+
 # =============================================================================
 # Elementary diagnostics
 
