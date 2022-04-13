@@ -1,0 +1,20 @@
+name: Test
+
+on:
+  push:
+    branches: [ tests ]
+  pull_request:
+    branches: [ tests ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Bootstrap
+      run: ./bootstrap
+    - name: Configure
+      run: ./configure
+    - name: Test
+      run: make -C tests check
