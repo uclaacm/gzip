@@ -12,6 +12,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Dependencies
+      run: sudo apt-get -y install autoconf automake autopoint build-essential
     - name: Bootstrap
       run: ./bootstrap
     - name: Configure
