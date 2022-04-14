@@ -40,7 +40,8 @@ TESTS =					\
   zgrep-binary				\
   zgrep-context				\
   zgrep-signal				\
-  znew-k
+  znew-k	\
+  rust-vs-c
 
 EXTRA_DIST =				\
   $(TESTS)				\
