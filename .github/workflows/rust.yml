@@ -3,8 +3,6 @@ name: Rust Build
 on:
   push:
     branches-ignore: [ master ]
-  pull_request:
-    branches-ignore: [ master ]
 
 env:
   CARGO_TERM_COLOR: always
