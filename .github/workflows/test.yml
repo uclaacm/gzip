@@ -2,9 +2,9 @@ name: Test
 
 on:
   push:
-    branches: [ tests ]
+    branches-ignore: [ master ]
   pull_request:
-    branches: [ tests ]
+    branches-ignore: [ master ]
 
 jobs:
   build:
