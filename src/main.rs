@@ -1,3 +1,4 @@
+use std::io::Write;
 use std::{fs::OpenOptions, io, path::PathBuf, time::SystemTime};
 
 use clap::Parser;
@@ -207,11 +208,17 @@ fn decompress_files(args: Args) {
     } else {
         for file in args.files {
             let file_name = file.file_name().unwrap().to_str().unwrap();
-            let mut output = OpenOptions::new()
-                .create(true)
-                .write(true)
-                .open(file_name.strip_suffix(".gz").unwrap_or(file_name))
-                .unwrap();
+            let mut output: Box<dyn Write> = if args.to_stdout {
+                Box::new(io::stdout())
+            } else {
+                Box::new(
+                    OpenOptions::new()
+                        .create(true)
+                        .write(true)
+                        .open(file_name.strip_suffix(".gz").unwrap_or(file_name))
+                        .unwrap(),
+                )
+            };
             let mut gz_in = GzDecoder::new(OpenOptions::new().read(true).open(file).unwrap());
             io::copy(&mut gz_in, &mut output).unwrap();
         }
@@ -229,11 +236,17 @@ fn compress_files(args: Args) {
         for file in args.files {
             let file_name = file.file_name().unwrap().to_str().unwrap();
             let gz_writer = GzBuilder::new().filename(file_name);
-            let gz_out = OpenOptions::new()
-                .create(true)
-                .write(true)
-                .open(format!("{}.gz", file_name))
-                .unwrap();
+            let gz_out: Box<dyn Write> = if args.to_stdout {
+                Box::new(io::stdout())
+            } else {
+                Box::new(
+                    OpenOptions::new()
+                        .create(true)
+                        .write(true)
+                        .open(format!("{}.gz", file_name))
+                        .unwrap(),
+                )
+            };
             let meta = file.metadata().expect("failed to acquire file metadata");
             let gz_writer = gz_writer.mtime(
                 meta.modified()
