@@ -24,8 +24,8 @@ test -r /dev/urandom || skip_ "/dev/urandom missing"
 
 dd if=/dev/urandom of=a count=5000 bs=1
 cp a b
-gzip -1 a || fail=1
-$GZIP_BIN -1 a || fail=1
+gzip -n -1 a || fail=1
+$GZIP_BIN -n -1 a || fail=1
 compare a b || fail=1
 
 Exit $fail
