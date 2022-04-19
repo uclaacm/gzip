@@ -40,7 +40,8 @@ TESTS =					\
   zgrep-binary				\
   zgrep-context				\
   zgrep-signal				\
-  znew-k
+  znew-k	\
+  rust-vs-c
 
 EXTRA_DIST =				\
   $(TESTS)				\
@@ -107,6 +108,7 @@ TESTS_ENVIRONMENT =					\
   PERL='$(PERL)'					\
   SHELL='$(SHELL)'					\
   PATH='$(abs_top_builddir)$(PATH_SEPARATOR)'"$$PATH"	\
+  GZIP_BIN='$(abs_top_srcdir)/target/debug/gzip'	\
   ; 9>&2
 
 VERBOSE = yes

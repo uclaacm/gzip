@@ -19,6 +19,7 @@
 # limit so don't run it by default.
 
 . "${srcdir=.}/init.sh"; path_prepend_ ..
+alias gzip="$GZIP_BIN"
 
 # Use a suffix of "T":
 :|gzip > kT || framework_failure_

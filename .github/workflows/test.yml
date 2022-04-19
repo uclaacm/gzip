@@ -1,0 +1,22 @@
+name: Test
+
+on:
+  push:
+    branches-ignore: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: sudo apt-get -y install autoconf automake autopoint build-essential
+    - name: Bootstrap
+      run: ./bootstrap
+    - name: Configure
+      run: ./configure
+    - name: Build Rust gzip
+      run: cargo build
+    - name: Test
+      run: make -C tests check

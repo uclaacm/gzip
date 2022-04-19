@@ -1,7 +1,7 @@
 #!/bin/sh
-# Test the obsolescent GZIP environment variable.
+# Compare the output of the Rust gzip rewrite with the original C version.
 
-# Copyright 2015-2022 Free Software Foundation, Inc.
+# Copyright 2020-2022 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,27 +18,14 @@
 # limit so don't run it by default.
 
 . "${srcdir=.}/init.sh"; path_prepend_ ..
-alias gzip="$GZIP_BIN"
+#alias gzip="$GZIP_BIN"
 
-echo a >exp || framework_failure_
-gzip <exp >in || framework_failure_
+test -r /dev/urandom || skip_ "/dev/urandom missing"
 
-fail=0
-GZIP=-qv gzip -d <in >out 2>err || fail=1
-compare exp out || fail=1
-
-for badopt in -- -c --stdout -d --decompress -f --force -h --help -k --keep \
-  -l --list -L --license -r --recursive -Sxxx --suffix=xxx '--suffix xxx' \
-  -t --test -V --version
-do
-  GZIP=$badopt gzip -d <in >out 2>err && fail=1
-done
-
-for goodopt in -n --no-name -N --name -q --quiet -v --verbose \
-  -1 --fast -2 -3 -4 -5 -6 -7 -8 -9 --best
-do
-  GZIP=$goodopt gzip -d <in >out 2>err || fail=1
-  compare exp out || fail=1
-done
+dd if=/dev/urandom of=a count=5000 bs=1
+cp a b
+gzip -n -1 a || fail=1
+$GZIP_BIN -n -1 a || fail=1
+compare a b || fail=1
 
 Exit $fail
