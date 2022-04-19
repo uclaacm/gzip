@@ -196,45 +196,60 @@ fn main() {
     }
 }
 
+fn is_stdin(args: &Args) -> bool {
+    args.files.len() == 0 || args.files[0].to_str().unwrap() == "-"
+}
+
 fn decompress_files(args: Args) {
-    for file in args.files {
-        let file_name = file.file_name().unwrap().to_str().unwrap();
-        let mut output = OpenOptions::new()
-            .create(true)
-            .write(true)
-            .open(file_name.strip_suffix(".gz").unwrap_or(file_name))
-            .unwrap();
-        let mut gz_in = GzDecoder::new(OpenOptions::new().read(true).open(file).unwrap());
-        io::copy(&mut gz_in, &mut output);
+    if is_stdin(&args) {
+        let mut gz_in = GzDecoder::new(io::stdin());
+        io::copy(&mut gz_in, &mut io::stdout()).unwrap();
+    } else {
+        for file in args.files {
+            let file_name = file.file_name().unwrap().to_str().unwrap();
+            let mut output = OpenOptions::new()
+                .create(true)
+                .write(true)
+                .open(file_name.strip_suffix(".gz").unwrap_or(file_name))
+                .unwrap();
+            let mut gz_in = GzDecoder::new(OpenOptions::new().read(true).open(file).unwrap());
+            io::copy(&mut gz_in, &mut output).unwrap();
+        }
     }
 }
 
 fn compress_files(args: Args) {
     let compression_level = args.compression_level();
 
-    for file in args.files {
-        let file_name = file.file_name().unwrap().to_str().unwrap();
-        let gz_writer = GzBuilder::new().filename(file_name);
-        let gz_out = OpenOptions::new()
-            .create(true)
-            .write(true)
-            .open(format!("{}.gz", file_name))
-            .unwrap();
-        let meta = file.metadata().expect("failed to acquire file metadata");
-        let gz_writer = gz_writer.mtime(
-            meta.modified()
-                .unwrap()
-                .duration_since(SystemTime::UNIX_EPOCH)
-                .unwrap()
-                .as_secs() as u32,
-        );
+    if is_stdin(&args) {
+        let gz_writer = GzBuilder::new();
+        let mut writer = gz_writer.write(io::stdout(), Compression::new(compression_level));
+        io::copy(&mut io::stdin(), &mut writer).unwrap();
+    } else {
+        for file in args.files {
+            let file_name = file.file_name().unwrap().to_str().unwrap();
+            let gz_writer = GzBuilder::new().filename(file_name);
+            let gz_out = OpenOptions::new()
+                .create(true)
+                .write(true)
+                .open(format!("{}.gz", file_name))
+                .unwrap();
+            let meta = file.metadata().expect("failed to acquire file metadata");
+            let gz_writer = gz_writer.mtime(
+                meta.modified()
+                    .unwrap()
+                    .duration_since(SystemTime::UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs() as u32,
+            );
 
-        let mut reader = OpenOptions::new()
-            .read(true)
-            .write(false)
-            .open(file)
-            .unwrap();
-        let mut writer = gz_writer.write(gz_out, Compression::new(compression_level));
-        io::copy(&mut reader, &mut writer);
+            let mut reader = OpenOptions::new()
+                .read(true)
+                .write(false)
+                .open(file)
+                .unwrap();
+            let mut writer = gz_writer.write(gz_out, Compression::new(compression_level));
+            io::copy(&mut reader, &mut writer).unwrap();
+        }
     }
 }
