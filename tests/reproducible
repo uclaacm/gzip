@@ -18,6 +18,7 @@
 # limit so don't run it by default.
 
 . "${srcdir=.}/init.sh"; path_prepend_ ..
+alias gzip="$GZIP_BIN"
 
 echo a | gzip > exp || fail=1
 sleep 1

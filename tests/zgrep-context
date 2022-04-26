@@ -18,6 +18,7 @@
 # limit so don't run it by default.
 
 . "${srcdir=.}/init.sh"; path_prepend_ ..
+alias gzip="$GZIP_BIN"
 
 # A limited replacement for seq: handle 1 or 2 args; increment must be 1
 seq()

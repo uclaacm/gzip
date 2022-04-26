@@ -18,6 +18,7 @@
 # limit so don't run it by default.
 
 . "${srcdir=.}/init.sh"; path_prepend_ ..
+alias gzip="$GZIP_BIN"
 
 # This test case was provided by Aki Helin.
 printf '\037\235\220\0\0\0\304' > helin.gz || framework_failure_
