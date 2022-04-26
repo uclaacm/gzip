@@ -185,6 +185,11 @@ impl Args {
             _ => DEFAULT_COMPRESSION_LEVEL,
         }
     }
+
+    /// Whether to use stdin for input data.
+    fn is_stdin(&self) -> bool {
+        self.files.len() == 0 || self.files[0].to_str().unwrap() == "-"
+    }
 }
 
 fn main() {
@@ -197,28 +202,38 @@ fn main() {
     }
 }
 
-fn is_stdin(args: &Args) -> bool {
-    args.files.len() == 0 || args.files[0].to_str().unwrap() == "-"
+fn get_output_file(file_name: Option<String>) -> Box<dyn Write> {
+    if let Some(f) = file_name {
+        Box::new(
+            OpenOptions::new()
+                .create(true)
+                .write(true)
+                .open(&f)
+                .unwrap(),
+        )
+    } else {
+        Box::new(io::stdout())
+    }
 }
 
 fn decompress_files(args: Args) {
-    if is_stdin(&args) {
+    if args.is_stdin() {
         let mut gz_in = GzDecoder::new(io::stdin());
         io::copy(&mut gz_in, &mut io::stdout()).unwrap();
     } else {
         for file in args.files {
             let file_name = file.file_name().unwrap().to_str().unwrap();
-            let mut output: Box<dyn Write> = if args.to_stdout {
-                Box::new(io::stdout())
+            let output_file = if args.to_stdout {
+                None
             } else {
-                Box::new(
-                    OpenOptions::new()
-                        .create(true)
-                        .write(true)
-                        .open(file_name.strip_suffix(".gz").unwrap_or(file_name))
-                        .unwrap(),
+                Some(
+                    file_name
+                        .strip_suffix(".gz")
+                        .unwrap_or(file_name)
+                        .to_owned(),
                 )
             };
+            let mut output = get_output_file(output_file);
             let mut gz_in = GzDecoder::new(OpenOptions::new().read(true).open(file).unwrap());
             io::copy(&mut gz_in, &mut output).unwrap();
         }
@@ -228,7 +243,7 @@ fn decompress_files(args: Args) {
 fn compress_files(args: Args) {
     let compression_level = args.compression_level();
 
-    if is_stdin(&args) {
+    if args.is_stdin() {
         let gz_writer = GzBuilder::new();
         let mut writer = gz_writer.write(io::stdout(), Compression::new(compression_level));
         io::copy(&mut io::stdin(), &mut writer).unwrap();
@@ -236,17 +251,12 @@ fn compress_files(args: Args) {
         for file in args.files {
             let file_name = file.file_name().unwrap().to_str().unwrap();
             let gz_writer = GzBuilder::new().filename(file_name);
-            let gz_out: Box<dyn Write> = if args.to_stdout {
-                Box::new(io::stdout())
+            let gz_out_file = if args.to_stdout {
+                None
             } else {
-                Box::new(
-                    OpenOptions::new()
-                        .create(true)
-                        .write(true)
-                        .open(format!("{}.gz", file_name))
-                        .unwrap(),
-                )
+                Some(format!("{}.gz", file_name))
             };
+            let gz_out = get_output_file(gz_out_file);
             let meta = file.metadata().expect("failed to acquire file metadata");
             let gz_writer = gz_writer.mtime(
                 meta.modified()
