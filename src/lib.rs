@@ -36,7 +36,20 @@ struct Stream {
     stream: z_stream,
 }
 
+/// Opaque data passed between calls to malloc and free by the system zlib.
+#[repr(C)]
+#[derive(Debug, Clone)]
+struct Opaque;
+
+impl Opaque {
+    /// Get the *mut c_void pointer for the given [Opaque].
+    unsafe fn into_void(mut self) -> *mut c_void {
+        &mut self as *mut _ as *mut c_void
+    }
+}
+
 impl Drop for Stream {
+    /// Shutdown the stream and any relevant resources in use by it.
     fn drop(&mut self) {
         unsafe {
             match self.mode {
