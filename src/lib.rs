@@ -24,7 +24,7 @@ unsafe extern "C" fn mem_free(_opaque: *mut c_void, ptr: *mut c_void) {
 }
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 enum Mode {
     INFLATE,
     DEFLATE,
@@ -72,40 +72,23 @@ impl Into<z_streamp> for &mut Stream {
     }
 }
 
-/// Lightweight reference to z_streamp for the given [Stream].
-impl AsMut<z_streamp> for Stream {
-    fn as_mut(&mut self) -> &mut z_streamp {
-        // &mut addr_of_mut!(self.stream);
-        todo!()
-    }
-}
-
-impl AsRef<z_streamp> for Stream {
-    fn as_ref(&self) -> &z_streamp {
-        // self.into()
-        todo!()
-    }
-}
-
 impl Stream {
     fn default_stream() -> z_stream {
-        unsafe {
-            z_stream {
-                zalloc: mem_alloc,
-                zfree: mem_free,
-                opaque: null_mut(),
-                next_in: null_mut(),
-                avail_in: 0,
-                total_in: 0,
-                next_out: null_mut(),
-                avail_out: 0,
-                total_out: 0,
-                msg: null_mut(),
-                state: null_mut(),
-                data_type: 0,
-                adler: 0,
-                reserved: 0,
-            }
+        z_stream {
+            zalloc: mem_alloc,
+            zfree: mem_free,
+            opaque: null_mut(),
+            next_in: null_mut(),
+            avail_in: 0,
+            total_in: 0,
+            next_out: null_mut(),
+            avail_out: 0,
+            total_out: 0,
+            msg: null_mut(),
+            state: null_mut(),
+            data_type: 0,
+            adler: 0,
+            reserved: 0,
         }
     }
 
@@ -116,24 +99,32 @@ impl Stream {
         }
     }
 
-    fn init_inflate(&mut self) -> Result<(), ()> {
+    fn init_inflate(&mut self, version: &[i8], stream_size: i32) -> io::Result<()> {
         assert_eq!(self.mode, Mode::INFLATE);
-        let res = inflateInit_(&mut self.stream);
-        if res == Z_OK {
-            Ok(())
-        } else {
-            Err(())
+        unsafe {
+            let res = inflateInit_(&mut self.stream as _, version.as_ptr(), stream_size);
+            if res == Z_OK {
+                Ok(())
+            } else {
+                Err(io::ErrorKind::Other.into())
+            }
         }
     }
 
-    fn init_deflate(&mut self, level: i32, version: &[u8], stream_size: i32) -> Result<(), ()> {
+    fn init_deflate(&mut self, level: i32, version: &[i8], stream_size: i32) -> io::Result<()> {
         assert_eq!(self.mode, Mode::DEFLATE);
-        let res = deflateInit_(&mut self.stream, level, version.as_ptr(), stream_size);
-        if res == Z_OK {
-            Ok(())
-        } else {
-            Err(())
+        unsafe {
+            let res = deflateInit_(&mut self.stream as _, level, version.as_ptr(), stream_size);
+            if res == Z_OK {
+                Ok(())
+            } else {
+                Err(io::ErrorKind::Other.into())
+            }
         }
+    }
+
+    fn as_mut_ptr(&mut self) -> z_streamp {
+        &mut self.stream as z_streamp
     }
 }
 
@@ -149,15 +140,15 @@ pub struct Reader<R: Read> {
 }
 
 impl<R: Read> Reader<R> {
-    fn new(file: R, buf_len: usize) -> Self<R> {
-        let stream = Stream::new(Mode::INFLATE);
-        stream.init_inflate();
+    fn new(file: R, buf_len: usize, version: &[i8], stream_size: i32) -> io::Result<Self> {
+        let mut stream = Stream::new(Mode::INFLATE);
+        stream.init_inflate(version, stream_size)?;
 
-        Self {
+        Ok(Self {
             stream,
             file,
             buf: vec![0; buf_len],
-        }
+        })
     }
 }
 
@@ -166,16 +157,16 @@ where
     R: Read,
 {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        if self.stream.avail_in == 0 {
-            self.stream.avail_in = self.file.read(&mut self.buf)?;
-            self.stream.next_in = self.buf.as_mut_ptr();
+        if self.stream.stream.avail_in == 0 {
+            self.stream.stream.avail_in = self.file.read(&mut self.buf)? as u32;
+            self.stream.stream.next_in = self.buf.as_mut_ptr();
         }
-        self.stream.avail_out = buf.len();
-        self.stream.next_out = buf.as_mut_ptr();
+        self.stream.stream.avail_out = buf.len() as u32;
+        self.stream.stream.next_out = buf.as_mut_ptr();
         unsafe {
-            let res = inflate(&mut self.stream, Z_NO_FLUSH);
+            let res = inflate(self.stream.as_mut_ptr(), Z_NO_FLUSH);
         }
-        let len = buf.len() - self.stream.avail_out;
+        let len = buf.len() - (self.stream.stream.avail_out as usize);
         Ok(len)
     }
 }
@@ -196,16 +187,16 @@ where
     W: Write,
 {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        self.stream.avail_in = buf.len();
-        self.stream.next_in = buf.as_mut_ptr();
-        self.stream.avail_out = self.buf.len();
-        self.stream.next_out = self.buf.as_mut_ptr();
+        self.stream.stream.avail_in = buf.len() as u32;
+        self.stream.stream.next_in = buf.as_ptr() as *mut _;
+        self.stream.stream.avail_out = self.buf.len() as u32;
+        self.stream.stream.next_out = self.buf.as_mut_ptr();
         unsafe {
-            let res = deflate(&mut self.stream, Z_NO_FLUSH);
+            let res = deflate(self.stream.as_mut_ptr(), Z_NO_FLUSH);
         }
-        let out_len = self.buf.len() - self.stream.avail_out;
+        let out_len = self.buf.len() - (self.stream.stream.avail_out as usize);
         self.file.write(&self.buf[..out_len])?;
-        let in_len = buf.len() - self.stream.avail_in;
+        let in_len = buf.len() - (self.stream.stream.avail_in as usize);
         Ok(in_len)
     }
 
@@ -219,14 +210,14 @@ impl<W> Writer<W>
 where
     W: Write,
 {
-    pub fn new(writer: W, buf_len: usize, level: i32, version: &[u8], stream_size: i32) -> Self {
-        let stream = Stream::new(Mode::DEFLATE);
-        stream.init_deflate(level, version, stream_size);
+    pub fn new(writer: W, buf_len: usize, level: i32, version: &[i8], stream_size: i32) -> io::Result<Self> {
+        let mut stream = Stream::new(Mode::DEFLATE);
+        stream.init_deflate(level, version, stream_size)?;
 
-        Self {
+        Ok(Self {
             stream,
             file: writer,
             buf: vec![0; buf_len],
-        }
+        })
     }
 }
