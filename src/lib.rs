@@ -1,11 +1,12 @@
 //! An [RFC 1952](https://datatracker.ietf.org/doc/html/rfc1952)-correct description
 //! of the gzip file format in Rust.
-//! 
+//!
 //! To use the library, create a [Reader] or [Writer] with an underlying data structure
 //! implementing [Read] or [Write], respectively. Libz stream initialization and management
 //! is carried out automatically.
 
 use std::{
+    ffi::CString,
     io::{self, Read, Write},
     ptr::null_mut,
 };
@@ -111,9 +112,10 @@ impl Stream {
         }
     }
 
-    fn init_deflate(&mut self, level: i32, version: &[i8], stream_size: i32) -> io::Result<()> {
+    fn init_deflate(&mut self, level: i32, version: &str, stream_size: i32) -> io::Result<()> {
         assert_eq!(self.mode, Mode::DEFLATE);
         unsafe {
+            let version = CString::new(version).expect("string");
             let res = deflateInit_(&mut self.stream as _, level, version.as_ptr(), stream_size);
             if res == Z_OK {
                 Ok(())
@@ -210,7 +212,13 @@ impl<W> Writer<W>
 where
     W: Write,
 {
-    pub fn new(writer: W, buf_len: usize, level: i32, version: &[i8], stream_size: i32) -> io::Result<Self> {
+    pub fn new(
+        writer: W,
+        buf_len: usize,
+        level: i32,
+        version: &str,
+        stream_size: i32,
+    ) -> io::Result<Self> {
         let mut stream = Stream::new(Mode::DEFLATE);
         stream.init_deflate(level, version, stream_size)?;
 
@@ -219,5 +227,38 @@ where
             file: writer,
             buf: vec![0; buf_len],
         })
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::{cell::RefCell, ffi::CStr, mem::size_of};
+
+    use super::*;
+
+    struct MockFile<W: Write>(RefCell<W>);
+
+    impl<W> Write for MockFile<W>
+    where
+        W: Write,
+    {
+        fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+            self.0.borrow_mut().write(buf)
+        }
+
+        fn flush(&mut self) -> io::Result<()> {
+            self.0.borrow_mut().flush()
+        }
+    }
+
+    #[test]
+    fn write_smoke() {
+        let output = RefCell::new(vec![]);
+        // unsafe { println!("{:?}", CStr::from_ptr(zlibVersion()).to_str().unwrap()); }
+        let stream_size = size_of::<Stream>() as i32;
+        let mut gzip_writer =
+            Writer::new(MockFile(output.clone()), 1024, 6, "1.2.11", stream_size).expect("writer");
+        gzip_writer.write_all(b"test string").expect("write");
+        assert_ne!(output.borrow().len(), 0);
     }
 }
