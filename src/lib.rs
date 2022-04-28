@@ -232,11 +232,37 @@ where
 
 #[cfg(test)]
 mod test {
-    use std::{cell::RefCell, ffi::CStr, mem::size_of};
+    use std::{cell::RefCell, ffi::CStr, mem::size_of, rc::Rc};
 
     use super::*;
 
-    struct MockFile<W: Write>(RefCell<W>);
+    /// Smoke-test for our zlib wrapper. Confirms that [Writer] can be
+    /// constructed, data can be written to it, data can be flushed from
+    /// it, and the data processed isn't garbage.
+    #[test]
+    fn write_smoke() {
+        let output = Rc::new(RefCell::new(vec![]));
+        // unsafe { println!("{:?}", CStr::from_ptr(zlibVersion()).to_str().unwrap()); }
+        let stream_size = size_of::<Stream>() as i32;
+        let mut gzip_writer =
+            Writer::new(MockFile(output.clone()), 1024, 6, "1.2.11", stream_size).expect("writer");
+        gzip_writer.write_all(b"test string").expect("write");
+        gzip_writer.flush().expect("flush");
+        assert_ne!(output.borrow().len(), 0);
+    }
+
+    /// Refcell wrapper for monitoring of types consuming an [Rc] and
+    /// [RefCell]-wrapped [Writer](Write).
+    ///
+    /// ```
+    /// let buffer = Rc::new(RefCell::new(vec![]));
+    /// let mut mock_writer = MockFile(buffer.clone());
+    /// mock_writer.write(b"test");
+    /// mock_writer.flush();
+    /// assert_eq!(buffer.borrow()[..], b"test"[..]);
+    /// ```
+    #[derive(Debug, Clone)]
+    struct MockFile<W: Write>(Rc<RefCell<W>>);
 
     impl<W> Write for MockFile<W>
     where
@@ -252,13 +278,11 @@ mod test {
     }
 
     #[test]
-    fn write_smoke() {
-        let output = RefCell::new(vec![]);
-        // unsafe { println!("{:?}", CStr::from_ptr(zlibVersion()).to_str().unwrap()); }
-        let stream_size = size_of::<Stream>() as i32;
-        let mut gzip_writer =
-            Writer::new(MockFile(output.clone()), 1024, 6, "1.2.11", stream_size).expect("writer");
-        gzip_writer.write_all(b"test string").expect("write");
-        assert_ne!(output.borrow().len(), 0);
+    fn mockfile_works() {
+        let buffer = Rc::new(RefCell::new(vec![]));
+        let mut mock_writer = MockFile(buffer.clone());
+        mock_writer.write_all(b"test").expect("write");
+        mock_writer.flush().expect("flush");
+        assert_eq!(buffer.borrow()[..], b"test"[..]);
     }
 }
