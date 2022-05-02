@@ -6,23 +6,14 @@
 //! is carried out automatically.
 
 use std::{
-    ffi::CString,
+    ffi::{CStr, CString},
     io::{self, Read, Write},
+    mem::size_of,
     ptr::null_mut,
 };
 
 use libc::c_void;
 use libz_sys::*;
-
-/// Custom memory allocation handler for libz.
-unsafe extern "C" fn mem_alloc(_opaque: *mut c_void, _val: u32, size: u32) -> *mut c_void {
-    libc::malloc(size as usize)
-}
-
-/// Custom memory deallocation handler for libz.
-unsafe extern "C" fn mem_free(_opaque: *mut c_void, ptr: *mut c_void) {
-    libc::free(ptr)
-}
 
 #[repr(C)]
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -32,21 +23,10 @@ enum Mode {
 }
 
 /// Safety-wrapped representation of a libz stream.
+#[repr(C)]
 struct Stream {
     mode: Mode,
     stream: z_stream,
-}
-
-/// Opaque data passed between calls to malloc and free by the system zlib.
-#[repr(C)]
-#[derive(Debug, Clone)]
-struct Opaque;
-
-impl Opaque {
-    /// Get the *mut c_void pointer for the given [Opaque].
-    unsafe fn into_void(mut self) -> *mut c_void {
-        &mut self as *mut _ as *mut c_void
-    }
 }
 
 impl Drop for Stream {
@@ -75,21 +55,29 @@ impl Into<z_streamp> for &mut Stream {
 
 impl Stream {
     fn default_stream() -> z_stream {
-        z_stream {
-            zalloc: mem_alloc,
-            zfree: mem_free,
-            opaque: null_mut(),
-            next_in: null_mut(),
-            avail_in: 0,
-            total_in: 0,
-            next_out: null_mut(),
-            avail_out: 0,
-            total_out: 0,
-            msg: null_mut(),
-            state: null_mut(),
-            data_type: 0,
-            adler: 0,
-            reserved: 0,
+        unsafe {
+            z_stream {
+                zalloc: std::mem::transmute::<
+                    *const (),
+                    unsafe extern "C" fn(*mut c_void, u32, u32) -> *mut c_void,
+                >(null_mut() as *const ()),
+                zfree: std::mem::transmute::<
+                    *const (),
+                    unsafe extern "C" fn(*mut c_void, *mut c_void),
+                >(null_mut() as *const ()),
+                opaque: null_mut(),
+                next_in: null_mut(),
+                avail_in: 0,
+                total_in: 0,
+                next_out: null_mut(),
+                avail_out: 0,
+                total_out: 0,
+                msg: null_mut(),
+                state: null_mut(),
+                data_type: 0,
+                adler: 0,
+                reserved: 0,
+            }
         }
     }
 
@@ -103,7 +91,7 @@ impl Stream {
     fn init_inflate(&mut self, version: &[i8], stream_size: i32) -> io::Result<()> {
         assert_eq!(self.mode, Mode::INFLATE);
         unsafe {
-            let res = inflateInit_(&mut self.stream as _, version.as_ptr(), stream_size);
+            let res = inflateInit_(&mut self.stream as _, zlibVersion(), stream_size);
             if res == Z_OK {
                 Ok(())
             } else {
@@ -112,15 +100,17 @@ impl Stream {
         }
     }
 
-    fn init_deflate(&mut self, level: i32, version: &str, stream_size: i32) -> io::Result<()> {
+    fn init_deflate(&mut self, level: i32) -> io::Result<()> {
         assert_eq!(self.mode, Mode::DEFLATE);
         unsafe {
-            let version = CString::new(version).expect("string");
-            let res = deflateInit_(&mut self.stream as _, level, version.as_ptr(), stream_size);
-            if res == Z_OK {
-                Ok(())
-            } else {
-                Err(io::ErrorKind::Other.into())
+            match deflateInit_(
+                &mut self.stream as _,
+                level,
+                zlibVersion(),
+                size_of::<z_stream>() as i32,
+            ) {
+                Z_OK => Ok(()),
+                _ => Err(io::ErrorKind::Other.into()),
             }
         }
     }
@@ -212,15 +202,9 @@ impl<W> Writer<W>
 where
     W: Write,
 {
-    pub fn new(
-        writer: W,
-        buf_len: usize,
-        level: i32,
-        version: &str,
-        stream_size: i32,
-    ) -> io::Result<Self> {
+    pub fn new(writer: W, buf_len: usize, level: i32, version: &str) -> io::Result<Self> {
         let mut stream = Stream::new(Mode::DEFLATE);
-        stream.init_deflate(level, version, stream_size)?;
+        stream.init_deflate(level)?;
 
         Ok(Self {
             stream,
@@ -232,7 +216,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use std::{cell::RefCell, ffi::CStr, mem::size_of, rc::Rc};
+    use std::{cell::RefCell, rc::Rc};
 
     use super::*;
 
@@ -243,9 +227,8 @@ mod test {
     fn write_smoke() {
         let output = Rc::new(RefCell::new(vec![]));
         // unsafe { println!("{:?}", CStr::from_ptr(zlibVersion()).to_str().unwrap()); }
-        let stream_size = size_of::<Stream>() as i32;
         let mut gzip_writer =
-            Writer::new(MockFile(output.clone()), 1024, 6, "1.2.11", stream_size).expect("writer");
+            Writer::new(MockFile(output.clone()), 1024, 6, "1.2.11").expect("writer");
         gzip_writer.write_all(b"test string").expect("write");
         gzip_writer.flush().expect("flush");
         assert_ne!(output.borrow().len(), 0);
