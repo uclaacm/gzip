@@ -17,7 +17,7 @@ use libz_sys::*;
 
 #[repr(C)]
 #[derive(Debug, Clone, Copy, PartialEq)]
-enum Mode {
+pub enum Mode {
     INFLATE,
     DEFLATE,
 }
@@ -88,7 +88,7 @@ impl Stream {
         }
     }
 
-    fn init_inflate(&mut self, version: &[i8], stream_size: i32) -> io::Result<()> {
+    fn init_inflate(&mut self, stream_size: i32) -> io::Result<()> {
         assert_eq!(self.mode, Mode::INFLATE);
         unsafe {
             let res = inflateInit_(&mut self.stream as _, zlibVersion(), stream_size);
@@ -132,9 +132,9 @@ pub struct Reader<R: Read> {
 }
 
 impl<R: Read> Reader<R> {
-    fn new(file: R, buf_len: usize, version: &[i8], stream_size: i32) -> io::Result<Self> {
+    pub fn new(file: R, buf_len: usize, stream_size: i32) -> io::Result<Self> {
         let mut stream = Stream::new(Mode::INFLATE);
-        stream.init_inflate(version, stream_size)?;
+        stream.init_inflate(stream_size)?;
 
         Ok(Self {
             stream,
@@ -202,7 +202,7 @@ impl<W> Writer<W>
 where
     W: Write,
 {
-    pub fn new(writer: W, buf_len: usize, level: i32, version: &str) -> io::Result<Self> {
+    pub fn new(writer: W, buf_len: usize, level: i32) -> io::Result<Self> {
         let mut stream = Stream::new(Mode::DEFLATE);
         stream.init_deflate(level)?;
 
@@ -226,9 +226,7 @@ mod test {
     #[test]
     fn write_smoke() {
         let output = Rc::new(RefCell::new(vec![]));
-        // unsafe { println!("{:?}", CStr::from_ptr(zlibVersion()).to_str().unwrap()); }
-        let mut gzip_writer =
-            Writer::new(MockFile(output.clone()), 1024, 6, "1.2.11").expect("writer");
+        let mut gzip_writer = Writer::new(MockFile(output.clone()), 1024, 6).expect("writer");
         gzip_writer.write_all(b"test string").expect("write");
         gzip_writer.flush().expect("flush");
         assert_ne!(output.borrow().len(), 0);
